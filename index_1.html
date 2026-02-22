@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jan Perutka · Tennis AI Specialist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00e676;
+      --green-dark: #00b248;
+      --court: #2d6a4f;
+      --bg: #0a0f0d;
+      --bg2: #111a14;
+      --bg3: #172012;
+      --text: #e8f5e9;
+      --muted: #7a9e7e;
+      --card: #131f15;
+      --border: #1e3322;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(10,15,13,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--green); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 80% 50%, rgba(0,230,118,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 80% at 10% 80%, rgba(45,106,79,0.12) 0%, transparent 60%);
+    }
+    /* Court lines decoration */
+    .court-lines {
+      position: absolute; right: 0; top: 0; bottom: 0; width: 45%;
+      opacity: 0.07;
+      pointer-events: none;
+    }
+    .court-lines svg { width: 100%; height: 100%; }
+
+    .hero-content { position: relative; z-index: 1; max-width: 680px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: rgba(0,230,118,0.08);
+      border: 1px solid rgba(0,230,118,0.2);
+      border-radius: 2rem;
+      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 9vw, 7.5rem);
+      line-height: 0.95;
+      letter-spacing: 2px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    h1 span { color: var(--green); }
+
+    .hero-tagline {
+      margin-top: 1.5rem;
+      font-size: 1.15rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 520px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-tagline strong { color: var(--text); font-weight: 500; }
+
+    .hero-cta {
+      margin-top: 2.5rem;
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #0a0f0d;
+    }
+    .btn-primary:hover { background: #33ff8c; transform: translateY(-2px); }
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green); transform: translateY(-2px); }
+
+    .hero-stats {
+      margin-top: 4rem;
+      display: flex; gap: 3rem;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .stat-item { }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: var(--green);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.2rem;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 5rem 3rem; }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.8rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+    .section-sub {
+      margin-top: 0.8rem;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 300;
+      max-width: 500px;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 3rem;
+      align-items: start;
+    }
+    .about-text p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+    .skill-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .skill-chip .dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--bg); }
+    .projects-header { margin-bottom: 3rem; }
+
+    .category {
+      margin-bottom: 4rem;
+    }
+    .category-title {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .category-title h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+    .category-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .category-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+      background: rgba(0,230,118,0.08);
+      border: 1px solid rgba(0,230,118,0.2);
+      padding: 0.25rem 0.7rem;
+      border-radius: 2rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.8rem;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), transparent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .card:hover { border-color: rgba(0,230,118,0.25); transform: translateY(-3px); }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-top: 1.2rem;
+    }
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+    }
+    .card-link {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      margin-top: 1.2rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--green);
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .card-link:hover { gap: 0.6rem; }
+    .card-link-disabled {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      margin-top: 1.2rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    /* ── TECH ── */
+    #tech { background: var(--bg2); }
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .tech-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tech-item:hover { border-color: var(--green); color: var(--green); }
+    .tech-item .tech-icon { font-size: 1.6rem; display: block; margin-bottom: 0.5rem; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg3); }
+    .contact-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .contact-inner .section-label,
+    .contact-inner .section-title,
+    .contact-inner .section-sub { text-align: center; }
+    .contact-inner .section-sub { margin: 0.8rem auto 0; }
+    .contact-links {
+      display: flex; justify-content: center; gap: 1rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 1.5rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ── LANG TOGGLE ── */
+    .lang-toggle {
+      display: flex;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .lang-btn {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .lang-btn.active { background: var(--green); color: #0a0f0d; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      .hero-stats { gap: 2rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">JP</div>
+    <div class="nav-links">
+      <a href="#about" data-en="About" data-cs="O mně">About</a>
+      <a href="#projects" data-en="Projects" data-cs="Projekty">Projects</a>
+      <a href="#tech" data-en="Tech Stack" data-cs="Technologie">Tech Stack</a>
+      <a href="#contact" data-en="Contact" data-cs="Kontakt">Contact</a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('cs')">CZ</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="court-lines">
+      <svg viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- Court outline -->
+        <rect x="20" y="60" width="360" height="480" stroke="white" stroke-width="3"/>
+        <!-- Service boxes -->
+        <line x1="20" y1="300" x2="380" y2="300" stroke="white" stroke-width="2"/>
+        <line x1="200" y1="60" x2="200" y2="540" stroke="white" stroke-width="2"/>
+        <!-- Net -->
+        <line x1="20" y1="300" x2="380" y2="300" stroke="white" stroke-width="4"/>
+        <!-- Baseline -->
+        <line x1="80" y1="60" x2="80" y2="540" stroke="white" stroke-width="2"/>
+        <line x1="320" y1="60" x2="320" y2="540" stroke="white" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span data-en="Tennis Coach × AI Implementor" data-cs="Tenisový trenér × AI implementátor">Tennis Coach × AI Implementor</span>
+      </div>
+      <h1>JAN<br/><span>PERUTKA</span></h1>
+      <p class="hero-tagline" data-en="I build <strong>AI-powered tools</strong> for tennis — from grassroots clubs to national federations. Bridging the gap between coaching expertise and modern data technology." data-cs="Stavím <strong>AI nástroje</strong> pro tenis — od základních klubů po národní federace. Propojuji trenérské know-how s moderními datovými technologiemi.">
+        I build <strong>AI-powered tools</strong> for tennis — from grassroots clubs to national federations. Bridging the gap between coaching expertise and modern data technology.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary" data-en="See My Work" data-cs="Moje projekty">See My Work</a>
+        <a href="#contact" class="btn btn-outline" data-en="Get in Touch" data-cs="Kontakt">Get in Touch</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">10+</div>
+          <div class="stat-label" data-en="Years Coaching" data-cs="Let trenérství">Years Coaching</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">5+</div>
+          <div class="stat-label" data-en="AI Projects" data-cs="AI projektů">AI Projects</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">CZ</div>
+          <div class="stat-label" data-en="Czech Republic" data-cs="Česká republika">Czech Republic</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label" data-en="About" data-cs="O mně">About</div>
+    <div class="section-title" data-en="Coach Meets Code" data-cs="Trenér a technologie">Coach Meets Code</div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p data-en="I'm a <strong>tennis coach and AI implementor</strong> based in the Czech Republic. After years on the court, I started building the tools I always wished existed — affordable, intelligent, and built by someone who actually understands the game." data-cs="Jsem <strong>tenisový trenér a AI implementátor</strong> z České republiky. Po letech na kurtu jsem začal budovat nástroje, které mi vždy chyběly — dostupné, chytré a vytvořené někým, kdo hře opravdu rozumí.">
+          I'm a <strong>tennis coach and AI implementor</strong> based in the Czech Republic. After years on the court, I started building the tools I always wished existed — affordable, intelligent, and built by someone who actually understands the game.
+        </p>
+        <p data-en="My focus is making <strong>professional-grade analytics accessible</strong> to everyday clubs and federations — without the price tag of systems like PlaySight. I work across the full stack: from scraping live tournament data to building mobile tracking apps." data-cs="Zaměřuji se na zpřístupnění <strong>profesionální analytiky</strong> běžným klubům a federacím — bez vysokých nákladů systémů jako PlaySight. Pracuji na celém stacku: od scrapování živých turnajových dat po vývoj mobilních tracking aplikací.">
+          My focus is making <strong>professional-grade analytics accessible</strong> to everyday clubs and federations — without the price tag of systems like PlaySight. I work across the full stack: from scraping live tournament data to building mobile tracking apps.
+        </p>
+        <p data-en="I also hold training in <strong>mental coaching</strong> and work with the GROW model — which means my approach to both tennis and software is always goal-oriented and structured." data-cs="Mám vzdělání v <strong>mentálním koučinku</strong> a pracuji s modelem GROW — takže můj přístup k tenisu i vývoji je vždy cíleně orientovaný a strukturovaný.">
+          I also hold training in <strong>mental coaching</strong> and work with the GROW model — which means my approach to both tennis and software is always goal-oriented and structured.
+        </p>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-chip"><span class="dot"></span>Tennis Coaching</div>
+        <div class="skill-chip"><span class="dot"></span>AI Implementation</div>
+        <div class="skill-chip"><span class="dot"></span>Data Analytics</div>
+        <div class="skill-chip"><span class="dot"></span>Mental Coaching</div>
+        <div class="skill-chip"><span class="dot"></span>Web Development</div>
+        <div class="skill-chip"><span class="dot"></span>Match Analysis</div>
+        <div class="skill-chip"><span class="dot"></span>Python Scripting</div>
+        <div class="skill-chip"><span class="dot"></span>App Development</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="projects-header">
+      <div class="section-label" data-en="What I Build" data-cs="Co stavím">What I Build</div>
+      <div class="section-title" data-en="Projects" data-cs="Projekty">Projects</div>
+      <p class="section-sub" data-en="Tools built for every level of tennis — from player stats to federation infrastructure." data-cs="Nástroje pro každou úroveň tenisu — od hráčských statistik po federační infrastrukturu.">
+        Tools built for every level of tennis — from player stats to federation infrastructure.
+      </p>
+    </div>
+
+    <!-- STATS & DATA -->
+    <div class="category">
+      <div class="category-title">
+        <h3 data-en="Stats & Data Tools" data-cs="Statistiky & Data">Stats & Data Tools</h3>
+        <div class="category-line"></div>
+        <div class="category-badge" data-en="Analytics" data-cs="Analytika">Analytics</div>
+      </div>
+      <div class="cards-grid">
+        <div class="card">
+          <span class="card-icon">🎾</span>
+          <div class="card-title">ServeTag Pro</div>
+          <p class="card-desc" data-en="Mobile application for live serve tracking during matches. Records placement, speed zones, and success rates in real time — giving coaches instant data without manual notation." data-cs="Mobilní aplikace pro živé sledování servisů během zápasů. Zaznamenává umístění, rychlostní zóny a úspěšnost v reálném čase — trenéři mají okamžitá data bez ručních zápisků.">
+            Mobile application for live serve tracking during matches. Records placement, speed zones, and success rates in real time — giving coaches instant data without manual notation.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Mobile</span>
+            <span class="tag">Real-time</span>
+            <span class="tag">Coach Tool</span>
+          </div>
+          <span class="card-link-disabled">🔒 <span data-en="In Development" data-cs="Ve vývoji">In Development</span></span>
+        </div>
+        <div class="card">
+          <span class="card-icon">🕷️</span>
+          <div class="card-title">Tennis Data Scraper</div>
+          <p class="card-desc" data-en="Automated data pipeline scraping ITF and Czech Tennis Association (CTS) websites. Auto-populates tournament schedules, player rankings and match results into structured formats." data-cs="Automatizovaný datový pipeline scrapující weby ITF a České tenisové asociace (CTS). Automaticky plní turnajové rozvrhy, žebříčky hráčů a výsledky zápasů do strukturovaných formátů.">
+            Automated data pipeline scraping ITF and Czech Tennis Association (CTS) websites. Auto-populates tournament schedules, player rankings and match results into structured formats.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Automation</span>
+            <span class="tag">ITF</span>
+            <span class="tag">CTS</span>
+          </div>
+          <span class="card-link-disabled">🖥️ <span data-en="CLI Tool" data-cs="CLI nástroj">CLI Tool</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEDERATION -->
+    <div class="category">
+      <div class="category-title">
+        <h3 data-en="Federation Apps" data-cs="Svazové aplikace">Federation Apps</h3>
+        <div class="category-line"></div>
+        <div class="category-badge" data-en="National" data-cs="Národní">National</div>
+      </div>
+      <div class="cards-grid">
+        <div class="card">
+          <span class="card-icon">🏛️</span>
+          <div class="card-title">Tennis Planner</div>
+          <p class="card-desc" data-en="Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically." data-cs="Platforma pro turnajové a zápasové plánování navržená pro pracovní postupy České tenisové federace. Spravuje skupiny hráčů, přiřazení kurtů a automaticky generuje optimalizované rozvrhy zápasů.">
+            Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Scheduling</span>
+            <span class="tag">Federation</span>
+            <span class="tag">Web App</span>
+          </div>
+          <a href="https://tennis-planner-puce.vercel.app" target="_blank" class="card-link">
+            <span data-en="Live Demo →" data-cs="Živé demo →">Live Demo →</span>
+          </a>
+        </div>
+        <div class="card" style="border-style: dashed; opacity: 0.7;">
+          <span class="card-icon">⚡</span>
+          <div class="card-title" data-en="Czech Federation App" data-cs="Aplikace pro ČTS">Czech Federation App</div>
+          <p class="card-desc" data-en="New application in planning phase for the Czech Tennis Association. Targeting streamlined club-to-federation reporting, player management, and competition data flows." data-cs="Nová aplikace ve fázi plánování pro Českou tenisovou asociaci. Cílem je zjednodušit reporting klubů směrem k federaci, správu hráčů a toky soutěžních dat.">
+            New application in planning phase for the Czech Tennis Association. Targeting streamlined club-to-federation reporting, player management, and competition data flows.
+          </p>
+          <div class="card-tags">
+            <span class="tag">In Planning</span>
+            <span class="tag">CTS</span>
+            <span class="tag">2025</span>
+          </div>
+          <span class="card-link-disabled">🚧 <span data-en="Coming Soon" data-cs="Připravujeme">Coming Soon</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLUB APPS -->
+    <div class="category">
+      <div class="category-title">
+        <h3 data-en="Club Apps" data-cs="Klubové aplikace">Club Apps</h3>
+        <div class="category-line"></div>
+        <div class="category-badge" data-en="Grassroots" data-cs="Klubová úroveň">Grassroots</div>
+      </div>
+      <div class="cards-grid">
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <div class="card-title">Club Analytics</div>
+          <p class="card-desc" data-en="Comprehensive AI-powered analytics platform for grassroots tennis clubs. Provides professional-level match analysis, player development tracking, and performance reporting — at a fraction of the cost of commercial systems like PlaySight." data-cs="Komplexní AI analytická platforma pro tenisové kluby. Poskytuje profesionální analýzu zápasů, sledování rozvoje hráčů a výkonnostní reporty — za zlomek ceny komerčních systémů jako PlaySight.">
+            Comprehensive AI-powered analytics platform for grassroots tennis clubs. Provides professional-level match analysis, player development tracking, and performance reporting — at a fraction of the cost of commercial systems like PlaySight.
+          </p>
+          <div class="card-tags">
+            <span class="tag">AI</span>
+            <span class="tag">Analytics</span>
+            <span class="tag">Clubs</span>
+            <span class="tag">Supabase</span>
+          </div>
+          <span class="card-link-disabled">🔒 <span data-en="Private Beta" data-cs="Privátní beta">Private Beta</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section id="tech">
+    <div class="section-label" data-en="How I Build" data-cs="Jak stavím">How I Build</div>
+    <div class="section-title" data-en="Tech Stack" data-cs="Technologie">Tech Stack</div>
+    <div class="tech-grid">
+      <div class="tech-item"><span class="tech-icon">🧠</span>Claude AI</div>
+      <div class="tech-item"><span class="tech-icon">⚡</span>Supabase</div>
+      <div class="tech-item"><span class="tech-icon">▲</span>Vercel</div>
+      <div class="tech-item"><span class="tech-icon">🐍</span>Python</div>
+      <div class="tech-item"><span class="tech-icon">⚛️</span>React</div>
+      <div class="tech-item"><span class="tech-icon">🐙</span>GitHub</div>
+      <div class="tech-item"><span class="tech-icon">📱</span>Mobile Dev</div>
+      <div class="tech-item"><span class="tech-icon">🖥️</span>Cursor IDE</div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-inner">
+      <div class="section-label" data-en="Let's Work Together" data-cs="Spolupracujme">Let's Work Together</div>
+      <div class="section-title" data-en="Get In Touch" data-cs="Kontaktujte mě">Get In Touch</div>
+      <p class="section-sub" data-en="Looking for partnerships, consulting, or collaboration on tennis tech projects? I'd love to hear from you." data-cs="Hledám partnerství, konzultace nebo spolupráci na tenisových tech projektech? Rád uslyším od vás.">
+        Looking for partnerships, consulting, or collaboration on tennis tech projects? I'd love to hear from you.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:jperutka@proton.me" class="btn btn-primary">✉ jperutka@proton.me</a>
+        <a href="https://github.com/" target="_blank" class="btn btn-outline">⌥ GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Jan Perutka</span>
+    <span data-en="Tennis Coach · AI Implementor · Czech Republic" data-cs="Tenisový trenér · AI implementátor · Česká republika">Tennis Coach · AI Implementor · Czech Republic</span>
+  </footer>
+
+  <script>
+    let currentLang = 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll('[data-en]').forEach(el => {
+        const text = el.getAttribute('data-' + lang);
+        if (text) el.innerHTML = text;
+      });
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+      });
+    }
+
+    // Smooth reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .skill-chip, .tech-item, .stat-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
