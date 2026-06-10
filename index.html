@@ -304,6 +304,14 @@
       font-size: 1.05rem;
       margin-bottom: 0.5rem;
     }
+    .card-meta {
+      margin-bottom: 0.6rem;
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green);
+      font-weight: 600;
+    }
     .card-desc {
       font-size: 0.88rem;
       color: var(--muted);
@@ -340,6 +348,19 @@
       font-size: 0.82rem;
       font-weight: 500;
       color: var(--muted);
+    }
+    .status-pill {
+      display: inline-flex;
+      margin-top: 1.2rem;
+      padding: 0.28rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .status-live {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--green);
+      border: 1px solid rgba(0, 230, 118, 0.35);
     }
 
     /* ── TECH ── */
@@ -470,8 +491,8 @@
         <span data-en="Tennis Coach × AI Implementor" data-cs="Tenisový trenér × AI implementátor">Tennis Coach × AI Implementor</span>
       </div>
       <h1>JAN<br/><span>PERUTKA</span></h1>
-      <p class="hero-tagline" data-en="I build <strong>AI-powered tools</strong> for tennis — from grassroots clubs to national federations. Bridging the gap between coaching expertise and modern data technology." data-cs="Stavím <strong>AI nástroje</strong> pro tenis — od základních klubů po národní federace. Propojuji trenérské know-how s moderními datovými technologiemi.">
-        I build <strong>AI-powered tools</strong> for tennis — from grassroots clubs to national federations. Bridging the gap between coaching expertise and modern data technology.
+      <p class="hero-tagline" data-en="I build <strong>data tools and federation software</strong> for tennis — affordable alternatives to PlaySight and enterprise systems, built by someone who actually coaches." data-cs="Stavím <strong>datové nástroje a svazový software</strong> pro tenis — dostupné alternativy k PlaySight a enterprise systémům, od někoho, kdo tenis opravdu trénuje.">
+        I build <strong>data tools and federation software</strong> for tennis — affordable alternatives to PlaySight and enterprise systems, built by someone who actually coaches.
       </p>
       <div class="hero-cta">
         <a href="#projects" class="btn btn-primary" data-en="See My Work" data-cs="Moje projekty">See My Work</a>
@@ -557,16 +578,35 @@
         <div class="card">
           <span class="card-icon">🕷️</span>
           <div class="card-title">Tennis Data Scraper</div>
-          <p class="card-desc" data-en="Automated data pipeline scraping ITF and Czech Tennis Association (CTS) websites. Auto-populates tournament schedules, player rankings and match results into structured formats." data-cs="Automatizovaný datový pipeline scrapující weby ITF a České tenisové asociace (CTS). Automaticky plní turnajové rozvrhy, žebříčky hráčů a výsledky zápasů do strukturovaných formátů.">
-            Automated data pipeline scraping ITF and Czech Tennis Association (CTS) websites. Auto-populates tournament schedules, player rankings and match results into structured formats.
+          <p class="card-desc" data-en="Automated data pipeline scraping ITF, Czech Tennis Association (ČTS), and Tennis Europe websites. Populates tournament schedules, player rankings, and match results into structured formats. Includes a Coach App for federation talent centres (TSM, KTA) with player tracking, activity logs, and multi-role access." data-cs="Automatizovaný datový pipeline scrapující weby ITF, Českého tenisového svazu (ČTS) a Tennis Europe. Plní turnajové rozpisy, žebříčky hráčů a výsledky zápasů do strukturovaných formátů. Součástí je i Coach App pro svazová talentová centra (TSM, KTA) se sledováním hráčů, aktivitami a víceúrovňovým přístupem.">
+            Automated data pipeline scraping ITF, Czech Tennis Association (ČTS), and Tennis Europe websites. Populates tournament schedules, player rankings, and match results into structured formats. Includes a Coach App for federation talent centres (TSM, KTA) with player tracking, activity logs, and multi-role access.
           </p>
           <div class="card-tags">
             <span class="tag">Python</span>
             <span class="tag">Automation</span>
             <span class="tag">ITF</span>
-            <span class="tag">CTS</span>
+            <span class="tag">ČTS</span>
+            <span class="tag">Coach App</span>
           </div>
-          <span class="card-link-disabled">🖥️ <span data-en="CLI Tool" data-cs="CLI nástroj">CLI Tool</span></span>
+          <span class="status-pill status-live">Live ✅</span>
+        </div>
+        <div class="card">
+          <span class="card-icon">📈</span>
+          <div class="card-title">Wingfield Stats</div>
+          <div class="card-meta" data-en="ANALYTICS · FEDERATION" data-cs="ANALYTIKA · FEDERACE">ANALYTICS · FEDERATION</div>
+          <p class="card-desc" data-en="Player performance analytics platform for federations using Wingfield court sensors. Coaches upload XLSX exports from Wingfield devices — the system parses serve speed, rally stats, and return percentages, benchmarks them against age-category references (U12–Open), and generates prioritized coaching recommendations automatically." data-cs="Analytická platforma výkonu hráčů pro svazy využívající senzory Wingfield. Trenéři nahrávají XLSX exporty ze zařízení Wingfield — systém parsuje rychlost servisu, statistiky výměn a procenta returnů, porovnává je s referencemi podle věkových kategorií (U12–Open) a automaticky generuje prioritizovaná trenérská doporučení.">
+            Player performance analytics platform for federations using Wingfield court sensors. Coaches upload XLSX exports from Wingfield devices — the system parses serve speed, rally stats, and return percentages, benchmarks them against age-category references (U12–Open), and generates prioritized coaching recommendations automatically.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Next.js</span>
+            <span class="tag">Supabase</span>
+            <span class="tag">Tailwind</span>
+            <span class="tag">Wingfield</span>
+            <span class="tag">Analytics</span>
+            <span class="tag">Benchmarking</span>
+            <span class="tag">Web App</span>
+          </div>
+          <span class="card-link-disabled">🔒 <span data-en="In Development" data-cs="Ve vývoji">In Development</span></span>
         </div>
       </div>
     </div>
@@ -594,18 +634,23 @@
             <span data-en="Live Demo →" data-cs="Živé demo →">Live Demo →</span>
           </a>
         </div>
-        <div class="card" style="border-style: dashed; opacity: 0.7;">
-          <span class="card-icon">⚡</span>
-          <div class="card-title" data-en="Czech Federation App" data-cs="Aplikace pro ČTS">Czech Federation App</div>
-          <p class="card-desc" data-en="New application in planning phase for the Czech Tennis Association. Targeting streamlined club-to-federation reporting, player management, and competition data flows." data-cs="Nová aplikace ve fázi plánování pro Českou tenisovou asociaci. Cílem je zjednodušit reporting klubů směrem k federaci, správu hráčů a toky soutěžních dat.">
-            New application in planning phase for the Czech Tennis Association. Targeting streamlined club-to-federation reporting, player management, and competition data flows.
+        <div class="card">
+          <span class="card-icon">✈️</span>
+          <div class="card-title">Federation Trip Manager</div>
+          <div class="card-meta" data-en="NATIONAL · FEDERATION" data-cs="NÁRODNÍ · FEDERAČNÍ">NATIONAL · FEDERATION</div>
+          <p class="card-desc" data-en="Trip and expedition management platform built for national tennis federation workflows. Manages player travel logistics, accommodation, budgets, and documentation for federation-organized tournaments and training camps. Built with Czech Tennis Association (ČTS) and ready for international federations." data-cs="Platforma pro správu výjezdů a expedic navržená pro procesy národních tenisových svazů. Spravuje logistiku cest hráčů, ubytování, rozpočty a dokumentaci pro svazové turnaje a tréninkové kempy. Vytvořeno s Českým tenisovým svazem (ČTS) a připraveno i pro mezinárodní federace.">
+            Trip and expedition management platform built for national tennis federation workflows. Manages player travel logistics, accommodation, budgets, and documentation for federation-organized tournaments and training camps. Built with Czech Tennis Association (ČTS) and ready for international federations.
           </p>
           <div class="card-tags">
-            <span class="tag">In Planning</span>
-            <span class="tag">CTS</span>
-            <span class="tag">2025</span>
+            <span class="tag">React</span>
+            <span class="tag">Supabase</span>
+            <span class="tag">Vercel</span>
+            <span class="tag">Federation</span>
+            <span class="tag">Travel</span>
+            <span class="tag">Budget</span>
+            <span class="tag">Web App</span>
           </div>
-          <span class="card-link-disabled">🚧 <span data-en="Coming Soon" data-cs="Připravujeme">Coming Soon</span></span>
+          <span class="status-pill status-live" data-en="MVP Ready" data-cs="MVP připraveno">MVP Ready</span>
         </div>
       </div>
     </div>
@@ -669,7 +714,7 @@
 
   <!-- FOOTER -->
   <footer>
-    <span>© 2025 Jan Perutka</span>
+    <span>© 2026 Jan Perutka</span>
     <span data-en="Tennis Coach · AI Implementor · Czech Republic" data-cs="Tenisový trenér · AI implementátor · Česká republika">Tennis Coach · AI Implementor · Czech Republic</span>
   </footer>
 
