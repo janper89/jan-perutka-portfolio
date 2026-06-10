@@ -459,14 +459,16 @@
   <nav>
     <div class="nav-logo">JP</div>
     <div class="nav-links">
-      <a href="#about" data-en="About" data-cs="O mně">About</a>
-      <a href="#projects" data-en="Projects" data-cs="Projekty">Projects</a>
-      <a href="#tech" data-en="Tech Stack" data-cs="Technologie">Tech Stack</a>
-      <a href="#contact" data-en="Contact" data-cs="Kontakt">Contact</a>
+      <a href="#about" data-en="About" data-cs="O mně" data-pl="O mnie" data-de="Über mich">About</a>
+      <a href="#projects" data-en="Projects" data-cs="Projekty" data-pl="Projekty" data-de="Projekte">Projects</a>
+      <a href="#tech" data-en="Tech Stack" data-cs="Technologie" data-pl="Stos technologiczny" data-de="Tech-Stack">Tech Stack</a>
+      <a href="#contact" data-en="Contact" data-cs="Kontakt" data-pl="Kontakt" data-de="Kontakt">Contact</a>
     </div>
     <div class="lang-toggle">
-      <button class="lang-btn active" onclick="setLang('en')">EN</button>
-      <button class="lang-btn" onclick="setLang('cs')">CZ</button>
+      <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" data-lang="cs" onclick="setLang('cs')">CZ</button>
+      <button class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
+      <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
     </div>
   </nav>
 
@@ -488,28 +490,28 @@
     </div>
     <div class="hero-content">
       <div class="hero-eyebrow">
-        <span data-en="Tennis Coach × AI Implementor" data-cs="Tenisový trenér × AI implementátor">Tennis Coach × AI Implementor</span>
+        <span data-en="Tennis Coach × AI Implementor" data-cs="Tenisový trenér × AI implementátor" data-pl="Trener tenisa × Implementator AI" data-de="Tennistrainer × KI-Implementierer">Tennis Coach × AI Implementor</span>
       </div>
       <h1>JAN<br/><span>PERUTKA</span></h1>
-      <p class="hero-tagline" data-en="I build <strong>data tools and federation software</strong> for tennis — professional-grade tools built for real coaching budgets, by someone who actually coaches." data-cs="Stavím <strong>datové nástroje a svazový software</strong> pro tenis — profesionální řešení postavená pro reálné trenérské rozpočty, od někoho, kdo tenis opravdu trénuje.">
+      <p class="hero-tagline" data-en="I build <strong>data tools and federation software</strong> for tennis — professional-grade tools built for real coaching budgets, by someone who actually coaches." data-cs="Stavím <strong>datové nástroje a svazový software</strong> pro tenis — profesionální řešení postavená pro reálné trenérské rozpočty, od někoho, kdo tenis opravdu trénuje." data-pl="Tworzę <strong>narzędzia danych i oprogramowanie federacyjne</strong> dla tenisa — profesjonalne rozwiązania stworzone pod realne budżety trenerskie, przez osobę, która naprawdę trenuje." data-de="Ich entwickle <strong>Daten-Tools und Verbandssoftware</strong> für Tennis — professionelle Lösungen für reale Trainerbudgets, entwickelt von jemandem, der selbst wirklich coacht.">
         I build <strong>data tools and federation software</strong> for tennis — professional-grade tools built for real coaching budgets, by someone who actually coaches.
       </p>
       <div class="hero-cta">
-        <a href="#projects" class="btn btn-primary" data-en="See My Work" data-cs="Moje projekty">See My Work</a>
-        <a href="#contact" class="btn btn-outline" data-en="Get in Touch" data-cs="Kontakt">Get in Touch</a>
+        <a href="#projects" class="btn btn-primary" data-en="See My Work" data-cs="Moje projekty" data-pl="Zobacz moje projekty" data-de="Meine Projekte ansehen">See My Work</a>
+        <a href="#contact" class="btn btn-outline" data-en="Get in Touch" data-cs="Kontakt" data-pl="Skontaktuj się" data-de="Kontakt aufnehmen">Get in Touch</a>
       </div>
       <div class="hero-stats">
         <div class="stat-item">
           <div class="stat-num">10+</div>
-          <div class="stat-label" data-en="Years Coaching" data-cs="Let trenérství">Years Coaching</div>
+          <div class="stat-label" data-en="Years Coaching" data-cs="Let trenérství" data-pl="Lat doświadczenia trenerskiego" data-de="Jahre Coaching">Years Coaching</div>
         </div>
         <div class="stat-item">
           <div class="stat-num">5+</div>
-          <div class="stat-label" data-en="AI Projects" data-cs="AI projektů">AI Projects</div>
+          <div class="stat-label" data-en="AI Projects" data-cs="AI projektů" data-pl="Projekty AI" data-de="KI-Projekte">AI Projects</div>
         </div>
         <div class="stat-item">
           <div class="stat-num">CZ</div>
-          <div class="stat-label" data-en="Czech Republic" data-cs="Česká republika">Czech Republic</div>
+          <div class="stat-label" data-en="Czech Republic" data-cs="Česká republika" data-pl="Czechy" data-de="Tschechische Republik">Czech Republic</div>
         </div>
       </div>
     </div>
@@ -517,17 +519,17 @@
 
   <!-- ABOUT -->
   <section id="about">
-    <div class="section-label" data-en="About" data-cs="O mně">About</div>
-    <div class="section-title" data-en="Coach Meets Code" data-cs="Trenér a technologie">Coach Meets Code</div>
+    <div class="section-label" data-en="About" data-cs="O mně" data-pl="O mnie" data-de="Über mich">About</div>
+    <div class="section-title" data-en="Coach Meets Code" data-cs="Trenér a technologie" data-pl="Trener spotyka kod" data-de="Trainer trifft Code">Coach Meets Code</div>
     <div class="about-grid">
       <div class="about-text">
-        <p data-en="I'm a <strong>tennis coach and AI implementor</strong> based in the Czech Republic. After years on the court, I started building the tools I always wished existed — affordable, intelligent, and built by someone who actually understands the game." data-cs="Jsem <strong>tenisový trenér a AI implementátor</strong> z České republiky. Po letech na kurtu jsem začal budovat nástroje, které mi vždy chyběly — dostupné, chytré a vytvořené někým, kdo hře opravdu rozumí.">
+        <p data-en="I'm a <strong>tennis coach and AI implementor</strong> based in the Czech Republic. After years on the court, I started building the tools I always wished existed — affordable, intelligent, and built by someone who actually understands the game." data-cs="Jsem <strong>tenisový trenér a AI implementátor</strong> z České republiky. Po letech na kurtu jsem začal budovat nástroje, které mi vždy chyběly — dostupné, chytré a vytvořené někým, kdo hře opravdu rozumí." data-pl="Jestem <strong>trenerem tenisa i implementatorem AI</strong> z Czech. Po latach spędzonych na korcie zacząłem tworzyć narzędzia, których zawsze mi brakowało — dostępne, inteligentne i budowane przez kogoś, kto naprawdę rozumie tę grę." data-de="Ich bin <strong>Tennistrainer und KI-Implementierer</strong> aus der Tschechischen Republik. Nach Jahren auf dem Platz habe ich angefangen, die Tools zu entwickeln, die ich mir immer gewünscht habe — bezahlbar, intelligent und von jemandem gebaut, der das Spiel wirklich versteht.">
           I'm a <strong>tennis coach and AI implementor</strong> based in the Czech Republic. After years on the court, I started building the tools I always wished existed — affordable, intelligent, and built by someone who actually understands the game.
         </p>
-        <p data-en="My focus is making <strong>professional-grade analytics accessible</strong> to everyday clubs and federations — with practical pricing and implementation for real coaching environments. I work across the full stack: from scraping live tournament data to building mobile tracking apps." data-cs="Zaměřuji se na zpřístupnění <strong>profesionální analytiky</strong> běžným klubům a federacím — s praktickým cenovým i implementačním nastavením pro reálné trenérské prostředí. Pracuji na celém stacku: od scrapování živých turnajových dat po vývoj mobilních tracking aplikací.">
+        <p data-en="My focus is making <strong>professional-grade analytics accessible</strong> to everyday clubs and federations — with practical pricing and implementation for real coaching environments. I work across the full stack: from scraping live tournament data to building mobile tracking apps." data-cs="Zaměřuji se na zpřístupnění <strong>profesionální analytiky</strong> běžným klubům a federacím — s praktickým cenovým i implementačním nastavením pro reálné trenérské prostředí. Pracuji na celém stacku: od scrapování živých turnajových dat po vývoj mobilních tracking aplikací." data-pl="Skupiam się na tym, aby <strong>analityka klasy profesjonalnej</strong> była dostępna dla codziennie działających klubów i federacji — z praktycznym modelem cenowym i wdrożeniowym dla realnego środowiska trenerskiego. Pracuję full stack: od scrapowania danych turniejowych na żywo po budowę mobilnych aplikacji trackingowych." data-de="Mein Fokus liegt darauf, <strong>professionelle Analytik</strong> für alltägliche Vereine und Verbände zugänglich zu machen — mit praxisnaher Preisgestaltung und Umsetzung für echte Coaching-Umgebungen. Ich arbeite über den gesamten Stack: vom Scraping von Live-Turnierdaten bis zur Entwicklung mobiler Tracking-Apps.">
           My focus is making <strong>professional-grade analytics accessible</strong> to everyday clubs and federations — with practical pricing and implementation for real coaching environments. I work across the full stack: from scraping live tournament data to building mobile tracking apps.
         </p>
-        <p data-en="I also hold training in <strong>mental coaching</strong> and work with the GROW model — which means my approach to both tennis and software is always goal-oriented and structured." data-cs="Mám vzdělání v <strong>mentálním koučinku</strong> a pracuji s modelem GROW — takže můj přístup k tenisu i vývoji je vždy cíleně orientovaný a strukturovaný.">
+        <p data-en="I also hold training in <strong>mental coaching</strong> and work with the GROW model — which means my approach to both tennis and software is always goal-oriented and structured." data-cs="Mám vzdělání v <strong>mentálním koučinku</strong> a pracuji s modelem GROW — takže můj přístup k tenisu i vývoji je vždy cíleně orientovaný a strukturovaný." data-pl="Posiadam również przygotowanie w zakresie <strong>coachingu mentalnego</strong> i pracuję z modelem GROW — dlatego moje podejście zarówno do tenisa, jak i do oprogramowania jest zawsze zorientowane na cele i uporządkowane." data-de="Ich habe außerdem eine Ausbildung im <strong>Mentalcoaching</strong> und arbeite mit dem GROW-Modell — deshalb ist mein Ansatz sowohl im Tennis als auch in der Softwareentwicklung immer zielorientiert und strukturiert.">
           I also hold training in <strong>mental coaching</strong> and work with the GROW model — which means my approach to both tennis and software is always goal-oriented and structured.
         </p>
       </div>
@@ -547,9 +549,9 @@
   <!-- PROJECTS -->
   <section id="projects">
     <div class="projects-header">
-      <div class="section-label" data-en="What I Build" data-cs="Co stavím">What I Build</div>
-      <div class="section-title" data-en="Projects" data-cs="Projekty">Projects</div>
-      <p class="section-sub" data-en="Tools built for every level of tennis — from player stats to federation infrastructure." data-cs="Nástroje pro každou úroveň tenisu — od hráčských statistik po federační infrastrukturu.">
+      <div class="section-label" data-en="What I Build" data-cs="Co stavím" data-pl="Co tworzę" data-de="Was ich entwickle">What I Build</div>
+      <div class="section-title" data-en="Projects" data-cs="Projekty" data-pl="Projekty" data-de="Projekte">Projects</div>
+      <p class="section-sub" data-en="Tools built for every level of tennis — from player stats to federation infrastructure." data-cs="Nástroje pro každou úroveň tenisu — od hráčských statistik po federační infrastrukturu." data-pl="Narzędzia tworzone dla każdego poziomu tenisa — od statystyk zawodników po infrastrukturę federacyjną." data-de="Tools für jede Ebene im Tennis — von Spielerstatistiken bis zur Verbandsinfrastruktur.">
         Tools built for every level of tennis — from player stats to federation infrastructure.
       </p>
     </div>
@@ -557,15 +559,15 @@
     <!-- FEDERATION -->
     <div class="category">
       <div class="category-title">
-        <h3 data-en="Federation Apps" data-cs="Svazové aplikace">Federation Apps</h3>
+        <h3 data-en="Federation Apps" data-cs="Svazové aplikace" data-pl="Aplikacje federacyjne" data-de="Verbandsanwendungen">Federation Apps</h3>
         <div class="category-line"></div>
-        <div class="category-badge" data-en="National" data-cs="Národní">National</div>
+        <div class="category-badge" data-en="National" data-cs="Národní" data-pl="Krajowe" data-de="National">National</div>
       </div>
       <div class="cards-grid">
         <div class="card">
           <span class="card-icon">🏛️</span>
           <div class="card-title">Tennis Planner</div>
-          <p class="card-desc" data-en="Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players." data-cs="Platforma pro turnajové a zápasové plánování navržená pro pracovní postupy České tenisové federace. Spravuje skupiny hráčů, přiřazení kurtů a automaticky generuje optimalizované rozvrhy zápasů. Využít ji mohou také kluby, které organizují společné turnajové výjezdy pro své hráče.">
+          <p class="card-desc" data-en="Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players." data-cs="Platforma pro turnajové a zápasové plánování navržená pro pracovní postupy České tenisové federace. Spravuje skupiny hráčů, přiřazení kurtů a automaticky generuje optimalizované rozvrhy zápasů. Využít ji mohou také kluby, které organizují společné turnajové výjezdy pro své hráče." data-pl="Platforma do planowania turniejów i meczów zbudowana pod procesy Czeskiej Federacji Tenisowej. Zarządza pulami zawodników, przydziałem kortów i automatycznie generuje zoptymalizowane harmonogramy meczów. Może być także używana przez kluby organizujące wspólne wyjazdy turniejowe dla swoich zawodników." data-de="Plattform für Turnier- und Spielplanung, entwickelt für die Abläufe des Tschechischen Tennisverbands. Sie verwaltet Spielerpools, Platzzuweisungen und erstellt automatisch optimierte Spielpläne. Sie kann auch von Vereinen genutzt werden, die gemeinsame Turnierreisen für ihre Spieler organisieren.">
             Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players.
           </p>
           <div class="card-tags">
@@ -574,14 +576,14 @@
             <span class="tag">Web App</span>
           </div>
           <a href="https://tennis-planner-puce.vercel.app" target="_blank" class="card-link">
-            <span data-en="Live Demo →" data-cs="Živé demo →">Live Demo →</span>
+            <span data-en="Live Demo →" data-cs="Živé demo →" data-pl="Demo na żywo →" data-de="Live-Demo →">Live Demo →</span>
           </a>
         </div>
         <div class="card">
           <span class="card-icon">✈️</span>
           <div class="card-title">Federation Trip Manager</div>
-          <div class="card-meta" data-en="NATIONAL · FEDERATION" data-cs="NÁRODNÍ · FEDERAČNÍ">NATIONAL · FEDERATION</div>
-          <p class="card-desc" data-en="Trip and expedition management platform built for national tennis federation workflows. Manages player travel logistics, accommodation, budgets, and documentation for federation-organized tournaments and training camps. Built with Czech Tennis Association (ČTS) and ready for international federations." data-cs="Platforma pro správu výjezdů a expedic navržená pro procesy národních tenisových svazů. Spravuje logistiku cest hráčů, ubytování, rozpočty a dokumentaci pro svazové turnaje a tréninkové kempy. Vytvořeno s Českým tenisovým svazem (ČTS) a připraveno i pro mezinárodní federace.">
+          <div class="card-meta" data-en="NATIONAL · FEDERATION" data-cs="NÁRODNÍ · FEDERAČNÍ" data-pl="KRAJOWE · FEDERACJA" data-de="NATIONAL · VERBAND">NATIONAL · FEDERATION</div>
+          <p class="card-desc" data-en="Trip and expedition management platform built for national tennis federation workflows. Manages player travel logistics, accommodation, budgets, and documentation for federation-organized tournaments and training camps. Built with Czech Tennis Association (ČTS) and ready for international federations." data-cs="Platforma pro správu výjezdů a expedic navržená pro procesy národních tenisových svazů. Spravuje logistiku cest hráčů, ubytování, rozpočty a dokumentaci pro svazové turnaje a tréninkové kempy. Vytvořeno s Českým tenisovým svazem (ČTS) a připraveno i pro mezinárodní federace." data-pl="Platforma do zarządzania wyjazdami i ekspedycjami zbudowana pod procesy krajowych federacji tenisowych. Zarządza logistyką podróży zawodników, zakwaterowaniem, budżetami oraz dokumentacją dla turniejów i obozów treningowych organizowanych przez federację. Zbudowana we współpracy z Czeskim Związkiem Tenisowym (ČTS) i gotowa dla federacji międzynarodowych." data-de="Plattform für Reise- und Expeditionsmanagement, entwickelt für die Abläufe nationaler Tennisverbände. Sie verwaltet Reise-Logistik der Spieler, Unterkünfte, Budgets und Dokumentation für verbandsorganisierte Turniere und Trainingslager. Entwickelt mit dem Tschechischen Tennisverband (ČTS) und bereit für internationale Verbände.">
             Trip and expedition management platform built for national tennis federation workflows. Manages player travel logistics, accommodation, budgets, and documentation for federation-organized tournaments and training camps. Built with Czech Tennis Association (ČTS) and ready for international federations.
           </p>
           <div class="card-tags">
@@ -593,7 +595,7 @@
             <span class="tag">Budget</span>
             <span class="tag">Web App</span>
           </div>
-          <span class="status-pill status-live" data-en="MVP Ready" data-cs="MVP připraveno">MVP Ready</span>
+          <span class="status-pill status-live" data-en="MVP Ready" data-cs="MVP připraveno" data-pl="MVP gotowe" data-de="MVP bereit">MVP Ready</span>
         </div>
       </div>
     </div>
@@ -601,15 +603,15 @@
     <!-- STATS & DATA -->
     <div class="category">
       <div class="category-title">
-        <h3 data-en="Stats & Data Tools" data-cs="Statistiky & Data">Stats & Data Tools</h3>
+        <h3 data-en="Stats & Data Tools" data-cs="Statistiky & Data" data-pl="Narzędzia statystyczne i danych" data-de="Statistik- & Daten-Tools">Stats & Data Tools</h3>
         <div class="category-line"></div>
-        <div class="category-badge" data-en="Analytics" data-cs="Analytika">Analytics</div>
+        <div class="category-badge" data-en="Analytics" data-cs="Analytika" data-pl="Analityka" data-de="Analytik">Analytics</div>
       </div>
       <div class="cards-grid">
         <div class="card">
           <span class="card-icon">🎾</span>
           <div class="card-title">ServeTag Pro</div>
-          <p class="card-desc" data-en="Mobile application for live serve tracking during matches. Records placement, speed zones, and success rates in real time — giving coaches instant data without manual notation." data-cs="Mobilní aplikace pro živé sledování servisů během zápasů. Zaznamenává umístění, rychlostní zóny a úspěšnost v reálném čase — trenéři mají okamžitá data bez ručních zápisků.">
+          <p class="card-desc" data-en="Mobile application for live serve tracking during matches. Records placement, speed zones, and success rates in real time — giving coaches instant data without manual notation." data-cs="Mobilní aplikace pro živé sledování servisů během zápasů. Zaznamenává umístění, rychlostní zóny a úspěšnost v reálném čase — trenéři mají okamžitá data bez ručních zápisků." data-pl="Aplikacja mobilna do śledzenia serwisu na żywo podczas meczów. Rejestruje umiejscowienie, strefy prędkości i skuteczność w czasie rzeczywistym — dając trenerom natychmiastowe dane bez ręcznego notowania." data-de="Mobile Anwendung zur Live-Erfassung von Aufschlägen während Spielen. Sie erfasst Platzierung, Geschwindigkeitszonen und Erfolgsraten in Echtzeit — und liefert Trainern sofort Daten ohne manuelle Notation.">
             Mobile application for live serve tracking during matches. Records placement, speed zones, and success rates in real time — giving coaches instant data without manual notation.
           </p>
           <div class="card-tags">
@@ -617,12 +619,12 @@
             <span class="tag">Real-time</span>
             <span class="tag">Coach Tool</span>
           </div>
-          <span class="card-link-disabled">🔒 <span data-en="In Development" data-cs="Ve vývoji">In Development</span></span>
+          <span class="card-link-disabled">🔒 <span data-en="In Development" data-cs="Ve vývoji" data-pl="W rozwoju" data-de="In Entwicklung">In Development</span></span>
         </div>
         <div class="card">
           <span class="card-icon">🕷️</span>
           <div class="card-title">Tennis Data Scraper</div>
-          <p class="card-desc" data-en="Automated data pipeline scraping ITF, Czech Tennis Association (ČTS), and Tennis Europe websites. Populates tournament schedules, player rankings, and match results into structured formats. Includes a Coach App for federation talent centres (TSM, KTA) with player tracking, activity logs, and multi-role access." data-cs="Automatizovaný datový pipeline scrapující weby ITF, Českého tenisového svazu (ČTS) a Tennis Europe. Plní turnajové rozpisy, žebříčky hráčů a výsledky zápasů do strukturovaných formátů. Součástí je i Coach App pro svazová talentová centra (TSM, KTA) se sledováním hráčů, aktivitami a víceúrovňovým přístupem.">
+          <p class="card-desc" data-en="Automated data pipeline scraping ITF, Czech Tennis Association (ČTS), and Tennis Europe websites. Populates tournament schedules, player rankings, and match results into structured formats. Includes a Coach App for federation talent centres (TSM, KTA) with player tracking, activity logs, and multi-role access." data-cs="Automatizovaný datový pipeline scrapující weby ITF, Českého tenisového svazu (ČTS) a Tennis Europe. Plní turnajové rozpisy, žebříčky hráčů a výsledky zápasů do strukturovaných formátů. Součástí je i Coach App pro svazová talentová centra (TSM, KTA) se sledováním hráčů, aktivitami a víceúrovňovým přístupem." data-pl="Zautomatyzowany pipeline danych scrapujący strony ITF, Czeskiego Związku Tenisowego (ČTS) i Tennis Europe. Uzupełnia harmonogramy turniejów, rankingi zawodników i wyniki meczów w ustrukturyzowanych formatach. Zawiera także Coach App dla federacyjnych ośrodków talentowych (TSM, KTA) z trackingiem zawodników, logami aktywności i dostępem wielorolowym." data-de="Automatisierte Datenpipeline, die Websites von ITF, dem Tschechischen Tennisverband (ČTS) und Tennis Europe scrapt. Sie befüllt Turnierpläne, Spielerrankings und Spielergebnisse in strukturierte Formate. Enthält außerdem eine Coach App für Verbands-Talentzentren (TSM, KTA) mit Spieler-Tracking, Aktivitätsprotokollen und rollenbasiertem Zugriff.">
             Automated data pipeline scraping ITF, Czech Tennis Association (ČTS), and Tennis Europe websites. Populates tournament schedules, player rankings, and match results into structured formats. Includes a Coach App for federation talent centres (TSM, KTA) with player tracking, activity logs, and multi-role access.
           </p>
           <div class="card-tags">
@@ -637,8 +639,8 @@
         <div class="card">
           <span class="card-icon">📈</span>
           <div class="card-title">Wingfield Stats</div>
-          <div class="card-meta" data-en="ANALYTICS · FEDERATION" data-cs="ANALYTIKA · FEDERACE">ANALYTICS · FEDERATION</div>
-          <p class="card-desc" data-en="Player performance analytics platform for federations using Wingfield court sensors. Coaches upload XLSX exports from Wingfield devices — the system parses serve speed, rally stats, and return percentages, benchmarks them against age-category references (U12–Open), and generates prioritized coaching recommendations automatically." data-cs="Analytická platforma výkonu hráčů pro svazy využívající senzory Wingfield. Trenéři nahrávají XLSX exporty ze zařízení Wingfield — systém parsuje rychlost servisu, statistiky výměn a procenta returnů, porovnává je s referencemi podle věkových kategorií (U12–Open) a automaticky generuje prioritizovaná trenérská doporučení.">
+          <div class="card-meta" data-en="ANALYTICS · FEDERATION" data-cs="ANALYTIKA · FEDERACE" data-pl="ANALITYKA · FEDERACJA" data-de="ANALYTIK · VERBAND">ANALYTICS · FEDERATION</div>
+          <p class="card-desc" data-en="Player performance analytics platform for federations using Wingfield court sensors. Coaches upload XLSX exports from Wingfield devices — the system parses serve speed, rally stats, and return percentages, benchmarks them against age-category references (U12–Open), and generates prioritized coaching recommendations automatically." data-cs="Analytická platforma výkonu hráčů pro svazy využívající senzory Wingfield. Trenéři nahrávají XLSX exporty ze zařízení Wingfield — systém parsuje rychlost servisu, statistiky výměn a procenta returnů, porovnává je s referencemi podle věkových kategorií (U12–Open) a automaticky generuje prioritizovaná trenérská doporučení." data-pl="Platforma analityki wyników zawodników dla federacji korzystających z czujników kortowych Wingfield. Trenerzy przesyłają eksporty XLSX z urządzeń Wingfield — system analizuje prędkość serwisu, statystyki wymian i procenty returnów, porównuje je z benchmarkami dla kategorii wiekowych (U12–Open) i automatycznie generuje priorytetowe rekomendacje trenerskie." data-de="Plattform zur Leistungsanalyse von Spielern für Verbände mit Wingfield-Court-Sensoren. Trainer laden XLSX-Exporte aus Wingfield-Geräten hoch — das System analysiert Aufschlaggeschwindigkeit, Rallye-Statistiken und Return-Quoten, benchmarkt sie gegen Referenzen nach Alterskategorien (U12–Open) und erstellt automatisch priorisierte Coaching-Empfehlungen.">
             Player performance analytics platform for federations using Wingfield court sensors. Coaches upload XLSX exports from Wingfield devices — the system parses serve speed, rally stats, and return percentages, benchmarks them against age-category references (U12–Open), and generates prioritized coaching recommendations automatically.
           </p>
           <div class="card-tags">
@@ -650,7 +652,7 @@
             <span class="tag">Benchmarking</span>
             <span class="tag">Web App</span>
           </div>
-          <span class="card-link-disabled">🔒 <span data-en="In Development" data-cs="Ve vývoji">In Development</span></span>
+          <span class="card-link-disabled">🔒 <span data-en="In Development" data-cs="Ve vývoji" data-pl="W rozwoju" data-de="In Entwicklung">In Development</span></span>
         </div>
       </div>
     </div>
@@ -658,15 +660,15 @@
     <!-- CLUB APPS -->
     <div class="category">
       <div class="category-title">
-        <h3 data-en="Club Apps" data-cs="Klubové aplikace">Club Apps</h3>
+        <h3 data-en="Club Apps" data-cs="Klubové aplikace" data-pl="Aplikacje klubowe" data-de="Club-Apps">Club Apps</h3>
         <div class="category-line"></div>
-        <div class="category-badge" data-en="Grassroots" data-cs="Klubová úroveň">Grassroots</div>
+        <div class="category-badge" data-en="Grassroots" data-cs="Klubová úroveň" data-pl="Kluby lokalne" data-de="Basis">Grassroots</div>
       </div>
       <div class="cards-grid">
         <div class="card">
           <span class="card-icon">📊</span>
           <div class="card-title">Club Analytics</div>
-          <p class="card-desc" data-en="Comprehensive AI-powered analytics platform for grassroots tennis clubs. Provides enterprise-level match analysis, player development tracking, and performance reporting in a practical setup for everyday club operations." data-cs="Komplexní AI analytická platforma pro tenisové kluby. Poskytuje analytiku zápasů na enterprise úrovni, sledování rozvoje hráčů a výkonnostní reporty v praktickém nastavení pro každodenní provoz klubu.">
+          <p class="card-desc" data-en="Comprehensive AI-powered analytics platform for grassroots tennis clubs. Provides enterprise-level match analysis, player development tracking, and performance reporting in a practical setup for everyday club operations." data-cs="Komplexní AI analytická platforma pro tenisové kluby. Poskytuje analytiku zápasů na enterprise úrovni, sledování rozvoje hráčů a výkonnostní reporty v praktickém nastavení pro každodenní provoz klubu." data-pl="Kompleksowa platforma analityczna oparta na AI dla lokalnych klubów tenisowych. Zapewnia analizę meczów na poziomie enterprise, śledzenie rozwoju zawodników oraz raportowanie wydajności w praktycznej konfiguracji do codziennej pracy klubu." data-de="Umfassende KI-gestützte Analyseplattform für Tennisvereine auf Basisebene. Sie bietet Match-Analysen auf Enterprise-Niveau, Tracking der Spielerentwicklung und Performance-Reporting in einer praxisnahen Konfiguration für den Vereinsalltag.">
             Comprehensive AI-powered analytics platform for grassroots tennis clubs. Provides enterprise-level match analysis, player development tracking, and performance reporting in a practical setup for everyday club operations.
           </p>
           <div class="card-tags">
@@ -675,7 +677,7 @@
             <span class="tag">Clubs</span>
             <span class="tag">Supabase</span>
           </div>
-          <span class="card-link-disabled">🔒 <span data-en="Private Beta" data-cs="Privátní beta">Private Beta</span></span>
+          <span class="card-link-disabled">🔒 <span data-en="Private Beta" data-cs="Privátní beta" data-pl="Prywatna beta" data-de="Private Beta">Private Beta</span></span>
         </div>
       </div>
     </div>
@@ -683,8 +685,8 @@
 
   <!-- TECH -->
   <section id="tech">
-    <div class="section-label" data-en="How I Build" data-cs="Jak stavím">How I Build</div>
-    <div class="section-title" data-en="Tech Stack" data-cs="Technologie">Tech Stack</div>
+    <div class="section-label" data-en="How I Build" data-cs="Jak stavím" data-pl="Jak tworzę" data-de="Wie ich entwickle">How I Build</div>
+    <div class="section-title" data-en="Tech Stack" data-cs="Technologie" data-pl="Stos technologiczny" data-de="Tech-Stack">Tech Stack</div>
     <div class="tech-grid">
       <div class="tech-item"><span class="tech-icon">🧠</span>Claude AI</div>
       <div class="tech-item"><span class="tech-icon">⚡</span>Supabase</div>
@@ -700,9 +702,9 @@
   <!-- CONTACT -->
   <section id="contact">
     <div class="contact-inner">
-      <div class="section-label" data-en="Let's Work Together" data-cs="Spolupracujme">Let's Work Together</div>
-      <div class="section-title" data-en="Get In Touch" data-cs="Kontaktujte mě">Get In Touch</div>
-      <p class="section-sub" data-en="Looking for partnerships, consulting, or collaboration on tennis tech projects? I'd love to hear from you." data-cs="Hledám partnerství, konzultace nebo spolupráci na tenisových tech projektech? Rád uslyším od vás.">
+      <div class="section-label" data-en="Let's Work Together" data-cs="Spolupracujme" data-pl="Współpracujmy" data-de="Lassen Sie uns zusammenarbeiten">Let's Work Together</div>
+      <div class="section-title" data-en="Get In Touch" data-cs="Kontaktujte mě" data-pl="Skontaktuj się" data-de="Kontaktieren Sie mich">Get In Touch</div>
+      <p class="section-sub" data-en="Looking for partnerships, consulting, or collaboration on tennis tech projects? I'd love to hear from you." data-cs="Hledám partnerství, konzultace nebo spolupráci na tenisových tech projektech? Rád uslyším od vás." data-pl="Szukasz partnerstwa, konsultacji lub współpracy przy projektach tennis tech? Chętnie o tym porozmawiam." data-de="Suchen Sie Partnerschaften, Beratung oder Zusammenarbeit bei Tennis-Tech-Projekten? Ich würde mich freuen, von Ihnen zu hören.">
         Looking for partnerships, consulting, or collaboration on tennis tech projects? I'd love to hear from you.
       </p>
       <div class="contact-links">
@@ -715,7 +717,7 @@
   <!-- FOOTER -->
   <footer>
     <span>© 2026 Jan Perutka</span>
-    <span data-en="Tennis Coach · AI Implementor · Czech Republic" data-cs="Tenisový trenér · AI implementátor · Česká republika">Tennis Coach · AI Implementor · Czech Republic</span>
+    <span data-en="Tennis Coach · AI Implementor · Czech Republic" data-cs="Tenisový trenér · AI implementátor · Česká republika" data-pl="Trener tenisa · Implementator AI · Czechy" data-de="Tennistrainer · KI-Implementierer · Tschechische Republik">Tennis Coach · AI Implementor · Czech Republic</span>
   </footer>
 
   <script>
@@ -728,7 +730,7 @@
         if (text) el.innerHTML = text;
       });
       document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+        btn.classList.toggle('active', btn.dataset.lang === lang);
       });
     }
 
