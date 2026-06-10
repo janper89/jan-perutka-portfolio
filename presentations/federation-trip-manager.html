@@ -38,6 +38,29 @@
   .nav-btn:hover { background: var(--orange); border-color: var(--orange); }
 
   .slide-counter { position: fixed; top: 24px; right: 40px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 2px; z-index: 100; }
+  .back-home {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 120;
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 11px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(0,0,0,0.55);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: blur(8px);
+  }
+  .back-home:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+  }
 
   .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--orange); transition: width 0.4s ease; z-index: 200; }
 
@@ -222,6 +245,7 @@
 </head>
 <body>
 
+<a class="back-home" href="https://www.janperutka.com">← Back to janperutka.com</a>
 <div class="cursor" id="cursor"></div>
 <div class="progress-bar" id="progressBar"></div>
 <div class="slide-counter" id="slideCounter">01 / 12</div>
