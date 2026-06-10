@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Federation Trip Manager — Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #E8500A;
+    --orange-light: #FF6B2B;
+    --blue: #1a6cc4;
+    --blue-dark: #0d4a8a;
+    --dark: #1a1a1a;
+    --darker: #0d0d0d;
+    --gray: #2d2d2d;
+    --white: #ffffff;
+    --text-muted: #999;
+  }
+
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--darker); font-family: 'Barlow', sans-serif; cursor: none; }
+
+  .cursor { width: 20px; height: 20px; border: 2px solid var(--orange); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.1s ease; transform: translate(-50%, -50%); }
+
+  .slides { width: 100%; height: 100vh; position: relative; }
+
+  .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow: hidden; }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  .nav { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s ease; }
+  .nav-dot.active { background: var(--orange); transform: scale(1.4); }
+
+  .nav-arrows { position: fixed; bottom: 24px; right: 40px; display: flex; gap: 12px; z-index: 100; }
+  .nav-btn { width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+  .nav-btn:hover { background: var(--orange); border-color: var(--orange); }
+
+  .slide-counter { position: fixed; top: 24px; right: 40px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 2px; z-index: 100; }
+
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--orange); transition: width 0.4s ease; z-index: 200; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+
+  .slide.active .animate-in { animation: fadeUp 0.7s ease forwards; }
+  .slide.active .animate-in:nth-child(1) { animation-delay: 0.1s; opacity: 0; }
+  .slide.active .animate-in:nth-child(2) { animation-delay: 0.25s; opacity: 0; }
+  .slide.active .animate-in:nth-child(3) { animation-delay: 0.4s; opacity: 0; }
+  .slide.active .animate-in:nth-child(4) { animation-delay: 0.55s; opacity: 0; }
+  .slide.active .animate-in:nth-child(5) { animation-delay: 0.7s; opacity: 0; }
+  .slide.active .animate-in:nth-child(6) { animation-delay: 0.85s; opacity: 0; }
+
+  .slide-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 4px; color: var(--orange); text-transform: uppercase; margin-bottom: 24px; }
+  .slide-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 8vw, 100px); color: white; line-height: 0.95; margin-bottom: 60px; }
+
+  /* ===== SLIDE 1 — INTRO ===== */
+  #slide-1 { background: var(--darker); flex-direction: column; }
+
+  .tennis-balls-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .tball { position: absolute; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c8e63c, #8fb800); box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 0 0 20px rgba(200,230,60,0.2); top: -60px; animation: ballFall linear infinite; opacity: 0; }
+  .tball::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%), repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.08) 8px, rgba(255,255,255,0.08) 9px); }
+  @keyframes ballFall { 0% { top: -60px; opacity: 0; transform: rotate(0deg); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 110vh; opacity: 0; transform: rotate(720deg); } }
+
+  .slide-1-content { position: relative; z-index: 10; text-align: center; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.5s forwards; }
+  .logo-icon { width: 64px; height: 64px; background: var(--orange); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .logo-text { text-align: left; line-height: 1; }
+  .logo-text span:first-child { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; color: var(--orange); letter-spacing: 3px; text-transform: uppercase; }
+  .logo-text span:last-child { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: white; letter-spacing: 2px; }
+  .slide-1-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 12vw, 140px); line-height: 0.9; color: white; letter-spacing: 4px; opacity: 0; animation: fadeUp 0.8s ease 0.9s forwards; }
+  .slide-1-title span { color: var(--orange); display: block; }
+  .slide-1-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-top: 24px; opacity: 0; animation: fadeUp 0.8s ease 1.3s forwards; }
+  .slide-1-cta { margin-top: 48px; font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 3px; text-transform: uppercase; opacity: 0; animation: pulse 2s ease 2s infinite, fadeUp 0.8s ease 1.8s forwards; }
+
+  /* ===== SLIDE 2 — PROBLEM ===== */
+  #slide-2 { background: var(--dark); flex-direction: column; align-items: flex-start; padding: 80px; }
+  .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
+  .problem-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; position: relative; overflow: hidden; }
+  .problem-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--orange), transparent); }
+  .problem-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+  .problem-tool { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: white; letter-spacing: 1px; margin-bottom: 8px; }
+  .problem-desc { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .problem-issue { margin-top: 16px; padding: 12px 16px; background: rgba(232,80,10,0.1); border-radius: 8px; font-size: 13px; color: var(--orange-light); border-left: 3px solid var(--orange); }
+
+  /* ===== SLIDE 3 — CITIES ===== */
+  #slide-3 { background: var(--darker); overflow: hidden; flex-direction: column; justify-content: center; align-items: center; }
+  .cities-track { display: flex; gap: 60px; animation: scrollLeft 20s linear infinite; white-space: nowrap; margin-bottom: 20px; }
+  .cities-track-reverse { animation: scrollRight 25s linear infinite; margin-bottom: 60px; }
+  .city-item { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px); color: rgba(255,255,255,0.15); letter-spacing: 4px; transition: color 0.3s ease; flex-shrink: 0; }
+  .city-item.highlight { color: var(--orange); }
+  .city-item.highlight-blue { color: var(--blue); }
+  @keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  .slide-3-center { position: absolute; text-align: center; z-index: 10; }
+  .slide-3-center h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 8vw, 90px); color: white; line-height: 1; }
+  .slide-3-center p { font-size: 18px; color: rgba(255,255,255,0.5); margin-top: 12px; letter-spacing: 3px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+
+  /* ===== SLIDE 4 — SOLUTION ===== */
+  #slide-4 { background: linear-gradient(135deg, var(--darker) 0%, #1a1200 100%); padding: 80px; flex-direction: column; align-items: flex-start; }
+  .solution-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; margin-top: 40px; }
+  .solution-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(232,80,10,0.2); border-radius: 20px; padding: 32px; display: flex; gap: 20px; align-items: flex-start; transition: all 0.3s ease; }
+  .solution-card:hover { border-color: var(--orange); background: rgba(232,80,10,0.08); transform: translateY(-2px); }
+  .solution-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--orange); line-height: 1; flex-shrink: 0; opacity: 0.4; }
+  .solution-content h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .solution-content p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ===== SLIDE 5 — COURT ===== */
+  #slide-5 { background: var(--darker); flex-direction: column; align-items: center; justify-content: center; }
+  .court-container { position: relative; width: min(700px, 80vw); aspect-ratio: 1.5; }
+  svg.court { width: 100%; height: 100%; }
+  .court-line { stroke: #E8500A; stroke-width: 2; fill: none; stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 1s ease; }
+  .court-line.drawn { stroke-dashoffset: 0; }
+  .court-surface { fill: #1a3a6e; opacity: 0; transition: opacity 0.8s ease 0.5s; }
+  .court-surface.visible { opacity: 1; }
+  .court-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 72px); color: white; text-align: center; margin-bottom: 40px; letter-spacing: 3px; }
+  .court-title span { color: var(--orange); }
+
+  /* ===== SLIDE 6 — FEATURES ===== */
+  #slide-6 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; margin-top: 40px; }
+  .feature-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 28px; border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+  .feature-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: var(--orange); border-radius: 50%; opacity: 0.06; filter: blur(20px); }
+  .feature-emoji { font-size: 32px; margin-bottom: 16px; display: block; }
+  .feature-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .feature-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+  /* ===== SLIDE 7 — SCOUT ===== */
+  #slide-7 { background: linear-gradient(135deg, var(--darker), #001a2e); padding: 80px; flex-direction: column; align-items: flex-start; }
+  .timeline { width: 100%; margin-top: 48px; position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 80px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--orange), var(--blue)); }
+  .timeline-item { display: flex; gap: 40px; align-items: flex-start; margin-bottom: 32px; position: relative; }
+  .timeline-age { width: 80px; flex-shrink: 0; font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--orange); text-align: right; line-height: 1; padding-top: 4px; }
+  .timeline-dot { position: absolute; left: 72px; top: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--orange); border: 3px solid var(--darker); z-index: 2; }
+  .timeline-content { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 20px 24px; flex: 1; border-left: 3px solid rgba(232,80,10,0.3); }
+  .timeline-content h4 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .timeline-content p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+  /* ===== SLIDE 8 — ROADMAP ===== */
+  #slide-8 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .roadmap-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; margin-top: 48px; }
+  .phase-card { border-radius: 20px; padding: 32px; position: relative; overflow: hidden; }
+  .phase-card.phase-1 { background: linear-gradient(135deg, rgba(232,80,10,0.15), rgba(232,80,10,0.05)); border: 1px solid rgba(232,80,10,0.4); }
+  .phase-card.phase-2 { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+  .phase-card.phase-3 { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+  .phase-badge { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: 2px; padding: 4px 10px; border-radius: 4px; margin-bottom: 20px; text-transform: uppercase; }
+  .phase-1 .phase-badge { background: var(--orange); color: white; }
+  .phase-2 .phase-badge { background: rgba(26,108,196,0.3); color: var(--blue); border: 1px solid var(--blue); }
+  .phase-3 .phase-badge { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); }
+  .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: white; letter-spacing: 1px; margin-bottom: 20px; }
+  .phase-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .phase-items li { font-size: 14px; color: rgba(255,255,255,0.6); padding-left: 20px; position: relative; line-height: 1.4; }
+  .phase-items li::before { content: '→'; position: absolute; left: 0; color: var(--orange); opacity: 0.7; }
+  .phase-2 .phase-items li::before { color: var(--blue); }
+  .phase-3 .phase-items li::before { color: rgba(255,255,255,0.3); }
+
+  /* ===== SLIDE 9 — SAVINGS ===== */
+  #slide-9 { background: var(--darker); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .savings-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; margin-top: 40px; }
+  .savings-real-box { background: rgba(232,80,10,0.08); border: 1px solid rgba(232,80,10,0.35); border-radius: 20px; padding: 36px; }
+  .box-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; letter-spacing: 3px; color: var(--orange); text-transform: uppercase; margin-bottom: 20px; }
+  .big-num { font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 7vw, 90px); color: white; line-height: 1; letter-spacing: 2px; }
+  .big-num span { color: var(--orange); }
+  .sub-text { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 10px; line-height: 1.6; }
+  .savings-breakdown { display: flex; flex-direction: column; gap: 14px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+  .breakdown-row-label { font-size: 14px; color: rgba(255,255,255,0.65); }
+  .val-bad { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; color: #ff6b6b; text-decoration: line-through; opacity: 0.7; }
+  .val-good { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; color: #6bffb8; }
+
+  /* ===== SLIDE 10 — PLAYER PROFILE ===== */
+  #slide-10 { background: linear-gradient(135deg, var(--darker), #001a1a); }
+  .col-block { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 32px; border: 1px solid rgba(255,255,255,0.07); }
+  .col-block-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 3px; color: var(--orange); text-transform: uppercase; margin-bottom: 8px; }
+  .col-block-heading { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: white; letter-spacing: 1px; margin-bottom: 24px; }
+  .profile-tag { padding: 8px 16px; border-radius: 100px; font-size: 13px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .profile-tag.green { background: rgba(107,255,184,0.1); color: #6bffb8; border: 1px solid rgba(107,255,184,0.25); }
+  .profile-tag.blue { background: rgba(26,108,196,0.15); color: #5599e0; border: 1px solid rgba(26,108,196,0.3); }
+  .profile-tag.orange { background: rgba(232,80,10,0.12); color: var(--orange-light); border: 1px solid rgba(232,80,10,0.3); }
+  .kb-item { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .kb-item:last-child { border-bottom: none; }
+  .kb-item-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 16px; color: white; text-transform: uppercase; }
+  .kb-item-points { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--orange); }
+  .kb-item-detail { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; margin-top: 3px; }
+
+  /* ===== SLIDE 11 — YOUR STARS ===== */
+  #slide-11 { background: var(--darker); padding: 60px 80px; flex-direction: column; align-items: flex-start; overflow: hidden; }
+  .stars-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .quote-card { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 40px; border: 1px solid rgba(255,255,255,0.07); position: relative; overflow: hidden; }
+  .quote-card::before { content: '"'; position: absolute; top: -20px; left: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 160px; color: var(--orange); opacity: 0.06; line-height: 1; }
+  .player-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--blue-dark)); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: white; flex-shrink: 0; }
+  .player-info-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; color: white; text-transform: uppercase; letter-spacing: 1px; }
+  .player-info-sub { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 1px; margin-top: 2px; }
+  .quote-text { font-size: 16px; color: rgba(255,255,255,0.75); line-height: 1.8; font-style: italic; }
+  .exclusive-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(232,80,10,0.15); border: 1px solid rgba(232,80,10,0.4); border-radius: 100px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; color: var(--orange-light); letter-spacing: 2px; text-transform: uppercase; margin-top: 16px; }
+  .stars-right { display: flex; flex-direction: column; gap: 20px; }
+  .stars-feature { padding: 20px 24px; background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); display: flex; gap: 16px; align-items: flex-start; }
+  .stars-feature-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+  .stars-feature-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 16px; color: white; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stars-feature-desc { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+  /* ===== SLIDE 12 — FINALE ===== */
+  #slide-12 { background: var(--darker); flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+  .finale-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(232,80,10,0.15) 0%, transparent 70%); }
+  .finale-content { position: relative; z-index: 10; }
+  .finale-question { font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 9vw, 110px); color: white; line-height: 0.95; letter-spacing: 2px; margin-bottom: 32px; }
+  .finale-question span { color: var(--orange); }
+  .finale-sub { font-size: 18px; color: rgba(255,255,255,0.5); letter-spacing: 3px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; margin-bottom: 48px; }
+  .finale-stats { display: flex; gap: 48px; justify-content: center; margin-bottom: 48px; }
+  .finale-stat { text-align: center; }
+  .finale-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--orange); line-height: 1; display: block; }
+  .finale-stat-label { font-size: 13px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+  .finale-buttons { display: flex; gap: 16px; justify-content: center; }
+  .finale-cta { display: inline-block; padding: 18px 48px; background: var(--orange); color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; border-radius: 8px; border: none; cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+  .finale-cta:hover { background: var(--orange-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,80,10,0.4); }
+  .finale-cta-secondary { display: inline-block; padding: 18px 48px; background: transparent; color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+  .finale-cta-secondary:hover { border-color: white; transform: translateY(-2px); }
+  .reference-badge { margin-top: 24px; font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 2px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; }
+  .reference-badge span { color: var(--orange); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-counter" id="slideCounter">01 / 12</div>
+<div class="nav" id="navDots"></div>
+<div class="nav-arrows">
+  <button class="nav-btn" onclick="prevSlide()">←</button>
+  <button class="nav-btn" onclick="nextSlide()">→</button>
+</div>
+
+<div class="slides">
+
+  <!-- SLIDE 1: INTRO -->
+  <div class="slide active" id="slide-1">
+    <div class="tennis-balls-container" id="ballsContainer"></div>
+    <div class="slide-1-content">
+      <div class="logo-area">
+        <div class="logo-icon">✈️</div>
+        <div class="logo-text">
+          <span>Federation Software</span>
+          <span>Jan Perutka</span>
+        </div>
+      </div>
+      <div class="slide-1-title">
+        Federation<span>Trip Manager</span>
+      </div>
+      <div class="slide-1-sub">Digital Platform · New Era</div>
+      <div class="slide-1-cta">Press space or → to continue</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide" id="slide-2">
+    <div class="slide-label animate-in">Current situation</div>
+    <div class="slide-title animate-in">Information is<br>everywhere.</div>
+    <div class="problem-grid">
+      <div class="problem-card animate-in">
+        <span class="problem-icon">📧</span>
+        <div class="problem-tool">Email</div>
+        <p class="problem-desc">Flights, accommodation, instructions — every piece of information in a different thread.</p>
+        <div class="problem-issue">Staff must search through conversation history</div>
+      </div>
+      <div class="problem-card animate-in">
+        <span class="problem-icon">💬</span>
+        <div class="problem-tool">WhatsApp</div>
+        <p class="problem-desc">Operational updates from coordination staff — quickly lost in group chats.</p>
+        <div class="problem-issue">Disconnected from all other tools</div>
+      </div>
+      <div class="problem-card animate-in">
+        <span class="problem-icon">📊</span>
+        <div class="problem-tool">Excel</div>
+        <p class="problem-desc">Expenses and budgets — complex spreadsheets inaccessible to coaches in the field.</p>
+        <div class="problem-issue">No real-time access for the team on the road</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: CITIES -->
+  <div class="slide" id="slide-3">
+    <div class="cities-track">
+      <span class="city-item highlight">NEW YORK</span>
+      <span class="city-item">MELBOURNE</span>
+      <span class="city-item highlight-blue">LONDON</span>
+      <span class="city-item">PARIS</span>
+      <span class="city-item highlight">MIAMI</span>
+      <span class="city-item">MADRID</span>
+      <span class="city-item highlight-blue">DUBAI</span>
+      <span class="city-item">LOUGHBOROUGH</span>
+      <span class="city-item highlight">NEW YORK</span>
+      <span class="city-item">MELBOURNE</span>
+      <span class="city-item highlight-blue">LONDON</span>
+      <span class="city-item">PARIS</span>
+      <span class="city-item highlight">MIAMI</span>
+      <span class="city-item">MADRID</span>
+    </div>
+    <div class="cities-track cities-track-reverse">
+      <span class="city-item highlight">SINNER</span>
+      <span class="city-item">ALCARAZ</span>
+      <span class="city-item highlight-blue">ZVEREV</span>
+      <span class="city-item">ŚWIĄTEK</span>
+      <span class="city-item highlight">HURKACZ</span>
+      <span class="city-item">THIEM</span>
+      <span class="city-item highlight-blue">DJOKOVIC</span>
+      <span class="city-item">YOUR PLAYER</span>
+      <span class="city-item highlight">SINNER</span>
+      <span class="city-item">ALCARAZ</span>
+      <span class="city-item highlight-blue">ZVEREV</span>
+      <span class="city-item">ŚWIĄTEK</span>
+      <span class="city-item highlight">HURKACZ</span>
+      <span class="city-item">THIEM</span>
+    </div>
+    <div class="slide-3-center">
+      <h2>Tennis tradition<br>deserves modern tools.</h2>
+      <p>Your players. Your federation. Your platform.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: SOLUTION -->
+  <div class="slide" id="slide-4">
+    <div class="slide-label animate-in">The solution</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,80px)">One place.<br><span style="color:var(--orange)">Everything together.</span></div>
+    <div class="solution-grid">
+      <div class="solution-card animate-in">
+        <div class="solution-num">01</div>
+        <div class="solution-content">
+          <h3>Player Evaluations</h3>
+          <p>Structured performance assessment after every tournament — match performance and off-court behaviour. Full history across all trips. Trends and averages on one dashboard.</p>
+        </div>
+      </div>
+      <div class="solution-card animate-in">
+        <div class="solution-num">02</div>
+        <div class="solution-content">
+          <h3>Trip Documents</h3>
+          <p>Flights, insurance, accommodation, factsheets — everything uploaded in one place. Accessible to coaches and players at any time.</p>
+        </div>
+      </div>
+      <div class="solution-card animate-in">
+        <div class="solution-num">03</div>
+        <div class="solution-content">
+          <h3>Team Communication</h3>
+          <p>Direct chat between manager and coach in the context of each trip. No searching through emails — everything is in the conversation attached to that tournament.</p>
+        </div>
+      </div>
+      <div class="solution-card animate-in">
+        <div class="solution-num">04</div>
+        <div class="solution-content">
+          <h3>Analytics Dashboard</h3>
+          <p>Visual overview of player evaluations. Performance development over time. PDF export for federation management.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: COURT -->
+  <div class="slide" id="slide-5">
+    <div class="court-title">Built for<br><span>tennis federations.</span></div>
+    <div class="court-container">
+      <svg class="court" viewBox="0 0 600 400" id="courtSvg">
+        <rect class="court-surface" id="courtSurface" x="30" y="20" width="540" height="360" rx="4"/>
+        <rect class="court-line" x="30" y="20" width="540" height="360" rx="4" style="stroke-dasharray:1800;stroke-dashoffset:1800;transition-delay:0s"/>
+        <line class="court-line" x1="100" y1="20" x2="100" y2="380" style="transition-delay:0.3s"/>
+        <line class="court-line" x1="500" y1="20" x2="500" y2="380" style="transition-delay:0.3s"/>
+        <line class="court-line" x1="30" y1="200" x2="570" y2="200" stroke-width="3" style="transition-delay:0.6s"/>
+        <line class="court-line" x1="300" y1="20" x2="300" y2="200" style="transition-delay:0.9s"/>
+        <line class="court-line" x1="300" y1="200" x2="300" y2="380" style="transition-delay:0.9s"/>
+        <line class="court-line" x1="100" y1="113" x2="500" y2="113" style="transition-delay:1.2s"/>
+        <line class="court-line" x1="100" y1="287" x2="500" y2="287" style="transition-delay:1.2s"/>
+        <line class="court-line" x1="296" y1="113" x2="304" y2="113" stroke-width="3" style="transition-delay:1.5s"/>
+        <line class="court-line" x1="296" y1="287" x2="304" y2="287" stroke-width="3" style="transition-delay:1.5s"/>
+        <line class="court-line" x1="296" y1="20" x2="304" y2="20" stroke-width="3" style="transition-delay:1.7s"/>
+        <line class="court-line" x1="296" y1="380" x2="304" y2="380" stroke-width="3" style="transition-delay:1.7s"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: FEATURES -->
+  <div class="slide" id="slide-6">
+    <div class="slide-label animate-in">Platform features</div>
+    <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,64px)">What the platform does</div>
+    <div class="features-grid">
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">🎾</span>
+        <div class="feature-title">Match Performance</div>
+        <p class="feature-desc">1–4 rating scale. Excellent to Adequate. Coach evaluates every player after each tournament.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">🏃</span>
+        <div class="feature-title">Off-Court Behaviour</div>
+        <p class="feature-desc">Warm-ups, training sessions, team behaviour, sparring engagement. Complete picture of every player.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">📈</span>
+        <div class="feature-title">Development Over Time</div>
+        <p class="feature-desc">Visual overview of each player's ratings across all federation trips. Trends visible at a glance.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">📁</span>
+        <div class="feature-title">Trip Documents</div>
+        <p class="feature-desc">Flights, insurance, accommodation — uploaded by manager, instantly accessible to coaches and players.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">💬</span>
+        <div class="feature-title">Manager ↔ Coach Chat</div>
+        <p class="feature-desc">Direct communication in the context of each tournament. Nothing gets lost.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">📄</span>
+        <div class="feature-title">PDF Export</div>
+        <p class="feature-desc">Complete evaluation report per tournament — name, performance, comments. Ready for federation leadership.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: SCOUT DATABASE -->
+  <div class="slide" id="slide-7">
+    <div class="slide-label animate-in">Long-term vision</div>
+    <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,68px)">Opponent database<br><span style="color:var(--orange)">that builds itself.</span></div>
+    <div class="timeline animate-in">
+      <div class="timeline-item">
+        <div class="timeline-age">U12</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h4>First opponent records</h4>
+          <p>Coach enters: played against Smith (GBR), right-handed, flat serve, aggressive baseline → our player won because...</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-age">U14</div>
+        <div class="timeline-dot" style="background:var(--blue-dark)"></div>
+        <div class="timeline-content">
+          <h4>Profile grows automatically</h4>
+          <p>Same Smith plays U14 — the records from U12 are already there. Coach has the edge without a single phone call.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-age">U18</div>
+        <div class="timeline-dot" style="background:var(--blue)"></div>
+        <div class="timeline-content">
+          <h4>Full scouting + AI match prep</h4>
+          <p>6 years of data → AI generates match preparation: serve patterns, playing style, what has worked against this opponent.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: ROADMAP -->
+  <div class="slide" id="slide-8">
+    <div class="slide-label animate-in">Development plan</div>
+    <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,68px)">What comes next</div>
+    <div class="roadmap-phases">
+      <div class="phase-card phase-1 animate-in">
+        <div class="phase-badge">Available now ✓</div>
+        <div class="phase-title">Phase 1<br>MVP</div>
+        <ul class="phase-items">
+          <li>Trip and tournament management</li>
+          <li>Player evaluations by coach</li>
+          <li>Trip document storage</li>
+          <li>Manager ↔ Coach chat</li>
+          <li>Analytics dashboard</li>
+          <li>PDF report export</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-2 animate-in">
+        <div class="phase-badge">Phase 2</div>
+        <div class="phase-title">Players<br>& Scouting</div>
+        <ul class="phase-items">
+          <li>Player profiles with history</li>
+          <li>Players see their own ratings</li>
+          <li>Opponent database</li>
+          <li>Scouting across age groups</li>
+          <li>Email notifications</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-3 animate-in">
+        <div class="phase-badge">Phase 3</div>
+        <div class="phase-title">AI<br>& Analytics</div>
+        <ul class="phase-items">
+          <li>AI match preparation</li>
+          <li>Player ratings of coaches</li>
+          <li>Coach of the year ranking</li>
+          <li>Opponent statistics</li>
+          <li>Mobile application</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: REAL SAVINGS -->
+  <div class="slide" id="slide-9">
+    <div class="slide-label animate-in">Real numbers from the field</div>
+    <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,68px)">Loughborough 2026.<br><span style="color:var(--orange)">The platform pays for itself.</span></div>
+    <div class="savings-hero">
+      <div class="savings-real-box animate-in">
+        <div class="box-label">Federation savings (accommodation)</div>
+        <div class="big-num"><span>£696</span>–<span style="font-size:0.7em">£1 744</span></div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;color:rgba(255,255,255,0.45);letter-spacing:1px;margin-top:6px">on a single trip</div>
+        <div class="sub-text" style="margin-top:10px">8 nights, smarter hotel selection — no compromise on quality. Real example from Czech Tennis Association trip to Loughborough.</div>
+        <div style="margin-top:16px;padding:14px 18px;background:rgba(26,108,196,0.1);border-radius:10px;border-left:3px solid var(--blue);font-size:13px;color:rgba(255,255,255,0.55);line-height:1.8">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span><strong style="color:#5599e0">10 trips per year</strong></span>
+            <span style="color:white;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px">£7 000 – £17 000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span><strong style="color:#5599e0">20 trips per year</strong></span>
+            <span style="color:white;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px">£14 000 – £35 000</span>
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4)">Platform cost: a fraction of this.</div>
+        </div>
+      </div>
+      <div class="savings-breakdown animate-in">
+        <div class="breakdown-row">
+          <div class="breakdown-row-label">Accommodation (3 rooms/night)</div>
+          <div style="display:flex;gap:16px;align-items:center">
+            <span class="val-bad">£313–£444</span>
+            <span class="val-good">£226</span>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="breakdown-row-label">8 nights (paid accommodation)</div>
+          <div style="display:flex;gap:16px;align-items:center">
+            <span class="val-bad">£2 504–£3 552</span>
+            <span class="val-good">£1 808</span>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="breakdown-row-label">5 nights — free accommodation (quarterfinal)</div>
+          <div style="display:flex;gap:16px;align-items:center">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:#6bffb8">Bonus 🏆</span>
+          </div>
+        </div>
+        <div class="breakdown-row" style="border:1px solid rgba(232,80,10,0.3);border-radius:12px;background:rgba(232,80,10,0.06);padding:16px 20px;">
+          <div class="breakdown-row-label" style="color:white;font-weight:700">Total savings for federation</div>
+          <div style="text-align:right">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange)">£696 – £1 744</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:rgba(255,255,255,0.4)">per trip</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: PLAYER PROFILE + KB -->
+  <div class="slide" id="slide-10">
+    <div style="width:100%;padding:50px 80px;display:flex;flex-direction:column;height:100%">
+      <div class="slide-label animate-in">Coach & player ready</div>
+      <div class="slide-title animate-in" style="font-size:clamp(28px,4vw,54px);margin-bottom:28px">Know your player. Know your opponent.<br><span style="color:var(--orange)">Grow with every match.</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:1">
+
+        <div class="col-block animate-in" style="padding:22px">
+          <div class="col-block-title">Player Profile</div>
+          <div class="col-block-heading" style="font-size:22px;margin-bottom:16px">Coach knows everything without asking</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+            <span class="profile-tag green" style="font-size:11px;padding:5px 10px">✓ Silent coaching</span>
+            <span class="profile-tag blue" style="font-size:11px;padding:5px 10px">✓ Cheering OK</span>
+            <span class="profile-tag orange" style="font-size:11px;padding:5px 10px">⚠ Gluten-free</span>
+            <span class="profile-tag green" style="font-size:11px;padding:5px 10px">Applause: welcome</span>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.7">Player fills it in once. Coach sees it automatically when assigned to a trip. No awkward questions.</div>
+        </div>
+
+        <div class="col-block animate-in" style="padding:22px;border-color:rgba(232,80,10,0.25);background:rgba(232,80,10,0.05)">
+          <div class="col-block-title">After the trip</div>
+          <div class="col-block-heading" style="font-size:22px;margin-bottom:16px">2 + 1 from coach</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="padding:10px 14px;background:rgba(107,255,184,0.08);border-radius:8px;border-left:3px solid #6bffb8">
+              <div style="font-size:10px;color:#6bffb8;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">✓ What worked</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7)">Serve under pressure — excellent performance in the tiebreak</div>
+            </div>
+            <div style="padding:10px 14px;background:rgba(107,255,184,0.08);border-radius:8px;border-left:3px solid #6bffb8">
+              <div style="font-size:10px;color:#6bffb8;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">✓ What worked</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7)">Net approach — good initiative at the right moment</div>
+            </div>
+            <div style="padding:10px 14px;background:rgba(232,80,10,0.1);border-radius:8px;border-left:3px solid var(--orange)">
+              <div style="font-size:10px;color:var(--orange-light);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">→ To improve</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7)">Backhand return on opponent's second serve</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-block animate-in" style="padding:22px;border-color:rgba(26,108,196,0.25);background:rgba(26,108,196,0.04)">
+          <div class="col-block-title" style="color:#5599e0">Player Diary</div>
+          <div class="col-block-heading" style="font-size:22px;margin-bottom:16px">A whole season in data</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06)">
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:3px">March 8 · Loughborough</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7)">Smith (GBR) — loss 4:6, 6:4, 3:6. Cross BH worked, struggled with flat serve.</div>
+            </div>
+            <div style="padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06)">
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:3px">March 6 · Loughborough</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7)">Müller (GER) — win 6:3, 6:2. BH side pressure worked throughout the match.</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.5">Player logs entries continuously. Own development database across the full season.</div>
+        </div>
+
+        <div class="col-block animate-in" style="padding:22px">
+          <div class="col-block-title">Knowledge Base</div>
+          <div class="col-block-heading" style="font-size:22px;margin-bottom:16px">Database that builds itself</div>
+          <div class="kb-item" style="padding:10px 0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+              <span class="kb-item-name" style="font-size:14px">Smith J. (GBR)</span>
+              <span class="kb-item-points" style="font-size:14px">+5 pts 📊</span>
+            </div>
+            <div class="kb-item-detail">Flat serve, weak on high balls to FH. Video uploaded.</div>
+          </div>
+          <div class="kb-item" style="padding:10px 0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+              <span class="kb-item-name" style="font-size:14px">Müller T. (GER)</span>
+              <span class="kb-item-points" style="font-size:14px">+1 pt 📝</span>
+            </div>
+            <div class="kb-item-detail">Aggressive baseline, double faults under pressure.</div>
+          </div>
+          <div style="margin-top:12px;padding:10px 14px;background:rgba(232,80,10,0.08);border-radius:10px;border-left:3px solid var(--orange);font-size:12px;color:rgba(255,255,255,0.6)">
+            <strong style="color:var(--orange-light)">Gamification:</strong> info = 1 pt · stats/video = 5 pts 🏆
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: YOUR STARS -->
+  <div class="slide" id="slide-11">
+    <div class="slide-label animate-in">Match preparation</div>
+    <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,68px)">Your stars.<br><span style="color:var(--orange)">Exclusive content.</span></div>
+    <div class="stars-layout">
+      <div class="quote-card animate-in">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+          <div class="player-avatar">★</div>
+          <div>
+            <div class="player-info-name">Your Federation's Star</div>
+            <div class="player-info-sub">Top player · Direct contact</div>
+          </div>
+        </div>
+        <div class="quote-text">
+          "I lost that match. But I knew I had played the best tennis I could. You can draw energy from a loss like that for the whole season — because you know your ceiling is higher than the result suggests."
+        </div>
+        <div class="exclusive-badge">⭐ Exclusive content · Direct access</div>
+        <div style="margin-top:16px;font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6">
+          We work with your federation to gather exclusive content from your top players — stories and messages your juniors will find nowhere else. Czech Tennis Association already uses quotes from Berdych, Menšík, and Lehečka.
+        </div>
+      </div>
+      <div class="stars-right">
+        <div class="stars-feature animate-in">
+          <div class="stars-feature-icon">🎯</div>
+          <div>
+            <div class="stars-feature-title">Opponent Preparation</div>
+            <div class="stars-feature-desc">Player enters opponent → app shows tactics from knowledge base. Everything ready before warm-up.</div>
+          </div>
+        </div>
+        <div class="stars-feature animate-in">
+          <div class="stars-feature-icon">💬</div>
+          <div>
+            <div class="stars-feature-title">Quotes from players they know</div>
+            <div class="stars-feature-desc">Your federation's stars — stories from tournaments they played. Not from the internet.</div>
+          </div>
+        </div>
+        <div class="stars-feature animate-in">
+          <div class="stars-feature-icon">🏆</div>
+          <div>
+            <div class="stars-feature-title">Your content, your identity</div>
+            <div class="stars-feature-desc">Content that belongs to your federation. Your players, your stories — personalised for every junior.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: FINALE -->
+  <div class="slide" id="slide-12">
+    <div class="finale-bg"></div>
+    <div class="finale-content">
+      <div class="finale-question">
+        Ready for<br><span>a new era?</span>
+      </div>
+      <div class="finale-sub">Federation Trip Manager · janperutka.com</div>
+      <div class="finale-stats">
+        <div class="finale-stat">
+          <span class="finale-stat-num">4</span>
+          <span class="finale-stat-label">User roles</span>
+        </div>
+        <div class="finale-stat">
+          <span class="finale-stat-num">£1 300+</span>
+          <span class="finale-stat-label">Savings / trip</span>
+        </div>
+        <div class="finale-stat">
+          <span class="finale-stat-num">1</span>
+          <span class="finale-stat-label">Place for everything</span>
+        </div>
+      </div>
+      <div class="finale-buttons">
+        <a class="finale-cta" href="mailto:jperutka@proton.me?subject=Interest%20in%20Federation%20Trip%20Manager&body=Hi%20Jan%2C%0D%0A%0D%0AI%20watched%20your%20presentation%20and%20I%27d%20like%20to%20learn%20more%20about%20Federation%20Trip%20Manager%20for%20our%20federation.%0D%0A%0D%0ABest%20regards%2C">
+          Get in touch →
+        </a>
+        <a class="finale-cta-secondary" href="https://cts-vyjezdy.vercel.app" target="_blank">
+          Live demo ↗
+        </a>
+      </div>
+      <div class="reference-badge">Developed with · <span>Czech Tennis Association</span> · input · 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  const navDots = document.getElementById('navDots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    navDots.appendChild(dot);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    navDots.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    navDots.children[current].classList.add('active');
+    document.getElementById('slideCounter').textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+    if (current === 4) drawCourt();
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  function createBall() {
+    const container = document.getElementById('ballsContainer');
+    const ball = document.createElement('div');
+    ball.className = 'tball';
+    const size = 20 + Math.random() * 40;
+    ball.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*2}s;`;
+    container.appendChild(ball);
+    setTimeout(() => ball.remove(), 8000);
+  }
+  setInterval(createBall, 300);
+  for (let i = 0; i < 8; i++) setTimeout(createBall, i * 200);
+
+  function drawCourt() {
+    setTimeout(() => {
+      document.getElementById('courtSurface').classList.add('visible');
+      document.querySelectorAll('.court-line').forEach(l => l.classList.add('drawn'));
+    }, 300);
+  }
+
+  document.getElementById('progressBar').style.width = (1 / total * 100) + '%';
+</script>
+</body>
+</html>
