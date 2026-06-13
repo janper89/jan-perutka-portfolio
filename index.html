@@ -431,6 +431,13 @@
     }
     .lang-btn.active { background: var(--green); color: #0a0f0d; }
 
+    .collab-strip { padding: 32px 0; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; align-items: center; gap: 20px; background: #0d0d0d; }
+    .collab-label { font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.2); }
+    .collab-logos { display: flex; gap: 48px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .collab-item { display: flex; align-items: center; }
+    .collab-name { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+    .collab-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -513,6 +520,19 @@
           <div class="stat-num">CZ</div>
           <div class="stat-label" data-en="Czech Republic" data-cs="Česká republika" data-pl="Czechy" data-de="Tschechische Republik">Czech Republic</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="collab-strip">
+    <div class="collab-label" data-en="Working with" data-cs="Spolupráce" data-pl="Współpraca" data-de="Zusammenarbeit">Working with</div>
+    <div class="collab-logos">
+      <div class="collab-item">
+        <span class="collab-name">TK Agrofert Prostějov</span>
+      </div>
+      <div class="collab-divider"></div>
+      <div class="collab-item">
+        <span class="collab-name">Český tenisový svaz</span>
       </div>
     </div>
   </section>
