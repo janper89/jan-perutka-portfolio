@@ -125,6 +125,82 @@
   .feature-emoji { font-size: 32px; margin-bottom: 16px; display: block; }
   .feature-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
   .feature-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+  .feature-card { cursor: pointer; transition: border-color 0.25s, transform 0.25s; }
+  .feature-card:hover { border-color: rgba(255,140,0,0.45); transform: translateY(-4px); }
+  .peek-hint { display: block; margin-top: 14px; font-size: 11px; color: var(--orange); opacity: 0; transition: opacity 0.2s; letter-spacing: 1px; }
+  .feature-card:hover .peek-hint { opacity: 1; }
+
+  /* ===== LIGHTBOX ===== */
+  #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 9000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.22s; backdrop-filter: blur(4px); }
+  #lightbox.open { opacity: 1; pointer-events: all; }
+  .lb-window { background: #f5f5f5; border-radius: 14px; width: min(860px, 92vw); max-height: 84vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 40px 100px rgba(0,0,0,0.6); position: relative; }
+  .lb-close { position: absolute; top: 12px; right: 16px; font-size: 20px; cursor: pointer; color: #888; background: none; border: none; z-index: 10; line-height: 1; }
+  .lb-close:hover { color: #333; }
+  /* App chrome mockup */
+  .mock-nav { background: #1a1a1a; color: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; font-family: 'Barlow', sans-serif; font-size: 14px; flex-shrink: 0; }
+  .mock-nav-title { font-weight: 700; font-size: 15px; }
+  .mock-nav-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.7); }
+  .mock-badge { background: #e8500a; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+  .mock-body { padding: 28px 32px; overflow-y: auto; max-height: calc(84vh - 48px); font-family: 'Barlow', sans-serif; }
+  /* Dashboard mockup */
+  .mock-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
+  .mock-stat { background: #fff; border-radius: 10px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .mock-stat-val { font-size: 28px; font-weight: 700; color: #111; }
+  .mock-stat-label { font-size: 12px; color: #888; margin-top: 2px; }
+  .mock-stat-icon { font-size: 28px; }
+  .mock-table { background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .mock-table-title { font-weight: 700; font-size: 14px; margin-bottom: 14px; color: #222; }
+  .mock-th { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 8px; padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 12px; color: #888; font-weight: 600; }
+  .mock-tr { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 8px; padding: 10px 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; align-items: center; }
+  .mock-score-g { color: #16a34a; font-weight: 700; }
+  .mock-score-b { color: #1a6cc4; font-weight: 700; }
+  /* Evaluation form mockup */
+  .mock-form-title { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .mock-form-sub { font-size: 14px; color: #e8500a; margin-bottom: 20px; }
+  .mock-field-label { font-size: 12px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; margin-top: 18px; }
+  .mock-rating-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mock-rating { border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #333; display: flex; align-items: center; gap: 10px; }
+  .mock-rating.sel { border-color: #1a6cc4; background: #eff6ff; }
+  .mock-dot-g { width: 12px; height: 12px; border-radius: 50%; background: #16a34a; display: inline-block; }
+  .mock-dot-b { width: 12px; height: 12px; border-radius: 50%; background: #1a6cc4; display: inline-block; }
+  .mock-dot-o { width: 12px; height: 12px; border-radius: 50%; background: #e8500a; display: inline-block; }
+  .mock-dot-r { width: 12px; height: 12px; border-radius: 50%; background: #dc2626; display: inline-block; }
+  .mock-textarea { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px; font-size: 13px; color: #333; background: #fff; margin-top: 6px; resize: none; box-sizing: border-box; font-family: inherit; }
+  .mock-btn { background: #e8500a; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 18px; }
+  /* Documents mockup */
+  .mock-tabs { display: flex; gap: 0; border-bottom: 1px solid #e5e5e5; margin-bottom: 20px; }
+  .mock-tab { padding: 10px 18px; font-size: 14px; color: #888; border-bottom: 2px solid transparent; cursor: pointer; }
+  .mock-tab.active { color: #1a6cc4; border-color: #1a6cc4; font-weight: 600; }
+  .mock-section-title { font-weight: 700; font-size: 16px; color: #111; margin-bottom: 14px; }
+  .mock-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .mock-info-item label { font-size: 11px; color: #999; display: block; margin-bottom: 3px; text-transform: uppercase; }
+  .mock-info-item span { font-size: 14px; font-weight: 600; color: #222; }
+  .mock-players { background: #fff; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); margin-bottom: 16px; }
+  .mock-player-row { padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; display: flex; align-items: center; gap: 10px; }
+  .mock-player-row:last-child { border: none; }
+  .mock-role { font-size: 11px; color: #16a34a; font-weight: 700; border: 1px solid #16a34a; border-radius: 20px; padding: 1px 8px; }
+  .mock-file-list { display: flex; flex-direction: column; gap: 8px; }
+  .mock-file { background: #fff; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); font-size: 13px; color: #1a6cc4; }
+  .mock-file-meta { font-size: 11px; color: #999; margin-left: auto; }
+  /* Chat mockup */
+  .mock-chat { display: flex; flex-direction: column; gap: 14px; padding-bottom: 16px; }
+  .mock-msg-left { background: #f0f0f0; border-radius: 16px 16px 16px 4px; padding: 10px 14px; max-width: 68%; align-self: flex-start; font-size: 13px; color: #222; }
+  .mock-msg-right { background: #1a6cc4; border-radius: 16px 16px 4px 16px; padding: 10px 14px; max-width: 68%; align-self: flex-end; font-size: 13px; color: #fff; }
+  .mock-msg-meta { font-size: 11px; color: #999; margin-top: 3px; }
+  .mock-msg-meta-r { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; text-align: right; }
+  .mock-chat-input { display: flex; gap: 10px; margin-top: 12px; border-top: 1px solid #eee; padding-top: 14px; }
+  .mock-chat-field { flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #999; }
+  .mock-send { background: #e8500a; color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 700; font-size: 13px; }
+  /* PDF mockup */
+  .mock-pdf { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .mock-pdf-header { background: #e8500a; color: #fff; padding: 22px 28px; }
+  .mock-pdf-htitle { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .mock-pdf-hsub { font-size: 13px; opacity: 0.85; }
+  .mock-pdf-body { padding: 24px 28px; }
+  .mock-pdf-tournament { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 6px; }
+  .mock-pdf-meta { font-size: 13px; color: #666; margin-bottom: 20px; }
+  .mock-pdf-th { display: grid; grid-template-columns: 2fr 1.5fr 1fr 2fr; background: #f5f5f5; padding: 8px 12px; font-size: 12px; font-weight: 700; color: #555; border-radius: 6px 6px 0 0; }
+  .mock-pdf-tr { display: grid; grid-template-columns: 2fr 1.5fr 1fr 2fr; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; align-items: start; }
 
   /* ===== SLIDE 7 — SCOUT ===== */
   #slide-data { background: linear-gradient(135deg, #0d0d0d, #0a1a0a); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
@@ -388,41 +464,47 @@
     <div class="slide-label animate-in">Platform features</div>
     <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,64px)">What the platform does</div>
     <div class="features-grid">
-      <div class="feature-card animate-in">
+      <div class="feature-card animate-in" onclick="openLb('lb-match')">
         <div class="feature-glow"></div>
         <span class="feature-emoji">🎾</span>
         <div class="feature-title">Match Performance</div>
         <p class="feature-desc">1–4 rating scale. Excellent to Adequate. Coach evaluates every player after each tournament.</p>
+        <span class="peek-hint">SEE IT IN ACTION →</span>
       </div>
-      <div class="feature-card animate-in">
+      <div class="feature-card animate-in" onclick="openLb('lb-offcourt')">
         <div class="feature-glow"></div>
         <span class="feature-emoji">🏃</span>
         <div class="feature-title">Off-Court Behaviour</div>
         <p class="feature-desc">Warm-ups, training sessions, team behaviour, sparring engagement. Complete picture of every player.</p>
+        <span class="peek-hint">SEE IT IN ACTION →</span>
       </div>
-      <div class="feature-card animate-in">
+      <div class="feature-card animate-in" onclick="openLb('lb-dashboard')">
         <div class="feature-glow"></div>
         <span class="feature-emoji">📈</span>
         <div class="feature-title">Development Over Time</div>
         <p class="feature-desc">Visual overview of each player's ratings across all federation trips. Trends visible at a glance.</p>
+        <span class="peek-hint">SEE IT IN ACTION →</span>
       </div>
-      <div class="feature-card animate-in">
+      <div class="feature-card animate-in" onclick="openLb('lb-docs')">
         <div class="feature-glow"></div>
         <span class="feature-emoji">📁</span>
         <div class="feature-title">Trip Documents</div>
         <p class="feature-desc">Flights, insurance, accommodation — uploaded by manager, instantly accessible to coaches and players.</p>
+        <span class="peek-hint">SEE IT IN ACTION →</span>
       </div>
-      <div class="feature-card animate-in">
+      <div class="feature-card animate-in" onclick="openLb('lb-chat')">
         <div class="feature-glow"></div>
         <span class="feature-emoji">💬</span>
         <div class="feature-title">Manager ↔ Coach Chat</div>
         <p class="feature-desc">Direct communication in the context of each tournament. Nothing gets lost.</p>
+        <span class="peek-hint">SEE IT IN ACTION →</span>
       </div>
-      <div class="feature-card animate-in">
+      <div class="feature-card animate-in" onclick="openLb('lb-pdf')">
         <div class="feature-glow"></div>
         <span class="feature-emoji">📄</span>
         <div class="feature-title">PDF Export</div>
         <p class="feature-desc">Complete evaluation report per tournament — name, performance, comments. Ready for federation leadership.</p>
+        <span class="peek-hint">SEE IT IN ACTION →</span>
       </div>
     </div>
   </div>
@@ -743,6 +825,190 @@
 
 </div>
 
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="if(event.target===this)closeLb()">
+  <div class="lb-window">
+    <button class="lb-close" onclick="closeLb()">✕</button>
+
+    <!-- 1: MATCH PERFORMANCE -->
+    <div class="lb-content" id="lb-match" style="display:none">
+      <div class="mock-nav">
+        <span class="mock-nav-title">CTS Trips</span>
+        <div class="mock-nav-right"><span>EN</span><span>jperutka@proton.me</span><span class="mock-badge">Coach</span><span>Log out</span></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-form-title">Player evaluation</div>
+        <div class="mock-form-sub">Dujka &nbsp;<span style="color:#888;font-size:12px">(editing existing evaluation)</span></div>
+        <div class="mock-field-label">Match performance</div>
+        <div class="mock-rating-grid">
+          <div class="mock-rating sel"><span class="mock-dot-g"></span> 1 – Excellent</div>
+          <div class="mock-rating"><span class="mock-dot-b"></span> 2 – Very good</div>
+          <div class="mock-rating"><span class="mock-dot-o"></span> 3 – Good</div>
+          <div class="mock-rating"><span class="mock-dot-r"></span> 4 – Sufficient</div>
+        </div>
+        <div class="mock-field-label">Coach comment <span style="color:#aaa;font-weight:400">(optional)</span></div>
+        <textarea class="mock-textarea" rows="3" readonly>He opened the court with his serve but didn't follow up at the net. Only 3 approaches in the match. Focus: transition and zone 3 play.</textarea>
+        <button class="mock-btn">Save evaluation</button>
+      </div>
+    </div>
+
+    <!-- 2: OFF-COURT BEHAVIOUR -->
+    <div class="lb-content" id="lb-offcourt" style="display:none">
+      <div class="mock-nav">
+        <span class="mock-nav-title">CTS Trips</span>
+        <div class="mock-nav-right"><span>EN</span><span>jperutka@proton.me</span><span class="mock-badge">Coach</span><span>Log out</span></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-form-title">Player evaluation</div>
+        <div class="mock-form-sub">Ladman</div>
+        <div class="mock-field-label">Match performance</div>
+        <div class="mock-rating-grid">
+          <div class="mock-rating"><span class="mock-dot-g"></span> 1 – Excellent</div>
+          <div class="mock-rating sel"><span class="mock-dot-b"></span> 2 – Very good</div>
+          <div class="mock-rating"><span class="mock-dot-o"></span> 3 – Good</div>
+          <div class="mock-rating"><span class="mock-dot-r"></span> 4 – Sufficient</div>
+        </div>
+        <div class="mock-field-label">Off-court <span style="color:#aaa;font-weight:400">(warm-ups, practices, behaviour in team)</span></div>
+        <div class="mock-rating-grid">
+          <div class="mock-rating sel"><span class="mock-dot-g"></span> 1 – Excellent</div>
+          <div class="mock-rating"><span class="mock-dot-b"></span> 2 – Very good</div>
+          <div class="mock-rating"><span class="mock-dot-o"></span> 3 – Good</div>
+          <div class="mock-rating"><span class="mock-dot-r"></span> 4 – Sufficient</div>
+        </div>
+        <div class="mock-field-label">Coach comment <span style="color:#aaa;font-weight:400">(optional)</span></div>
+        <textarea class="mock-textarea" rows="2" readonly>Excellent attitude in practice. Led warm-up voluntarily on day 2. Great team player.</textarea>
+        <button class="mock-btn">Save evaluation</button>
+      </div>
+    </div>
+
+    <!-- 3: DASHBOARD / DEVELOPMENT OVER TIME -->
+    <div class="lb-content" id="lb-dashboard" style="display:none">
+      <div class="mock-nav">
+        <span class="mock-nav-title">CTS Trips</span>
+        <div class="mock-nav-right"><span>EN</span><span>jperutka@proton.me</span><span class="mock-badge">Manager</span><span>Log out</span></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-section-title" style="margin-bottom:16px">Dashboard</div>
+        <div class="mock-stat-row">
+          <div class="mock-stat"><div><div class="mock-stat-label">Tournaments</div><div class="mock-stat-val">2</div></div><div class="mock-stat-icon">🏆</div></div>
+          <div class="mock-stat"><div><div class="mock-stat-label">Players</div><div class="mock-stat-val">3</div></div><div class="mock-stat-icon">👤</div></div>
+          <div class="mock-stat"><div><div class="mock-stat-label">Evaluations</div><div class="mock-stat-val">3</div></div><div class="mock-stat-icon">📝</div></div>
+        </div>
+        <div class="mock-table">
+          <div class="mock-table-title">Players overview</div>
+          <div class="mock-th"><span>Player name</span><span>Avg performance</span><span>Avg off-court</span><span>Tournaments</span><span>Trend</span></div>
+          <div class="mock-tr"><span>Dujka</span><span class="mock-score-g">1.0</span><span class="mock-score-b">2.0</span><span>1</span><span style="color:#aaa">–</span></div>
+          <div class="mock-tr"><span>Ladman</span><span class="mock-score-b">2.0</span><span class="mock-score-g">1.0</span><span>1</span><span style="color:#aaa">–</span></div>
+          <div class="mock-tr"><span>Marsik</span><span class="mock-score-b">2.0</span><span class="mock-score-g">1.0</span><span>1</span><span style="color:#aaa">–</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4: TRIP DOCUMENTS -->
+    <div class="lb-content" id="lb-docs" style="display:none">
+      <div class="mock-nav">
+        <span class="mock-nav-title">CTS Trips</span>
+        <div class="mock-nav-right"><span>EN</span><span>jperutka@proton.me</span><span class="mock-badge">Manager</span><span>Log out</span></div>
+      </div>
+      <div class="mock-body">
+        <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:16px">Loughborough J100 II</div>
+        <div class="mock-tabs">
+          <div class="mock-tab active">Info</div>
+          <div class="mock-tab">Evaluations</div>
+          <div class="mock-tab">Experiences</div>
+          <div class="mock-tab">Messages</div>
+        </div>
+        <div class="mock-info-grid">
+          <div class="mock-info-item"><label>Location</label><span>Loughborough, England</span></div>
+          <div class="mock-info-item"><label>Date</label><span>3/9/2026 – 3/13/2026</span></div>
+          <div class="mock-info-item"><label>Status</label><span>Upcoming</span></div>
+        </div>
+        <div class="mock-section-title" style="font-size:14px;margin-bottom:10px">Players</div>
+        <div class="mock-players">
+          <div class="mock-player-row">Dujka <span class="mock-role">Player</span></div>
+          <div class="mock-player-row">Ladman <span class="mock-role">Player</span></div>
+          <div class="mock-player-row">Marsik <span class="mock-role">Player</span></div>
+        </div>
+        <div class="mock-section-title" style="font-size:14px;margin:16px 0 10px">Documents</div>
+        <div class="mock-file-list">
+          <div class="mock-file">📎 Letenky.pdf <span class="mock-file-meta">Other · 3/8/2026</span></div>
+          <div class="mock-file">📎 voucher_23313187.pdf <span class="mock-file-meta">Other · 3/8/2026</span></div>
+          <div class="mock-file">📎 prukazy_pojistenych.pdf <span class="mock-file-meta">Other · 3/8/2026</span></div>
+          <div class="mock-file">📎 2026_19_Diety_UK.pdf <span class="mock-file-meta">Other · 3/8/2026</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5: CHAT -->
+    <div class="lb-content" id="lb-chat" style="display:none">
+      <div class="mock-nav">
+        <span class="mock-nav-title">CTS Trips</span>
+        <div class="mock-nav-right"><span>EN</span><span>jperutka@proton.me</span><span class="mock-badge">Manager</span><span>Log out</span></div>
+      </div>
+      <div class="mock-body">
+        <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:16px">Loughborough J100 II</div>
+        <div class="mock-tabs">
+          <div class="mock-tab">Info</div>
+          <div class="mock-tab">Evaluations</div>
+          <div class="mock-tab">Experiences</div>
+          <div class="mock-tab active">Messages</div>
+        </div>
+        <div class="mock-chat" style="margin-top:16px">
+          <div>
+            <div class="mock-msg-left">We need help with accommodation.</div>
+            <div class="mock-msg-meta">j.perutka@seznam.cz · 3/7, 07:03 PM</div>
+          </div>
+          <div style="align-self:flex-end;text-align:right">
+            <div class="mock-msg-right">Find accommodation near the airport — I'll send a link.</div>
+            <div class="mock-msg-meta-r">jperutka@proton.me · 3/7, 07:05 PM</div>
+          </div>
+          <div>
+            <div class="mock-msg-left">The supervisor was very helpful and assisted us.</div>
+            <div class="mock-msg-meta">j.perutka@seznam.cz · 3/8, 10:26 AM</div>
+          </div>
+          <div style="align-self:flex-end;text-align:right">
+            <div class="mock-msg-right">Great. Confirm the reservation from 9/3 onwards and I'll update the documents.</div>
+            <div class="mock-msg-meta-r">jperutka@proton.me · 3/13, 10:45 AM</div>
+          </div>
+        </div>
+        <div class="mock-chat-input">
+          <div class="mock-chat-field">Write a message...</div>
+          <button class="mock-send">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6: PDF EXPORT -->
+    <div class="lb-content" id="lb-pdf" style="display:none">
+      <div class="mock-nav">
+        <span class="mock-nav-title">CTS Trips</span>
+        <div class="mock-nav-right"><span>EN</span><span>jperutka@proton.me</span><span class="mock-badge">Manager</span><span>Log out</span></div>
+      </div>
+      <div class="mock-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:18px;font-weight:700;color:#111">Loughborough J100 II — Evaluations</div>
+          <button style="background:#e8500a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer">⬇ Export PDF</button>
+        </div>
+        <div class="mock-pdf">
+          <div class="mock-pdf-header">
+            <div class="mock-pdf-htitle">National Trips</div>
+            <div class="mock-pdf-hsub">Player evaluations</div>
+          </div>
+          <div class="mock-pdf-body">
+            <div class="mock-pdf-tournament">Loughborough J100 II</div>
+            <div class="mock-pdf-meta">Date: 3/9/2026 – 3/13/2026 &nbsp;·&nbsp; Location: England</div>
+            <div class="mock-pdf-th"><span>Player</span><span>Match perf.</span><span>Off-court</span><span>Comment</span></div>
+            <div class="mock-pdf-tr"><span>Marsik</span><span>2/4</span><span>1/4</span><span style="color:#555;font-size:12px">Hard worker, great effort.</span></div>
+            <div class="mock-pdf-tr"><span>Ladman</span><span>2/4</span><span>1/4</span><span style="color:#555;font-size:12px">Super effort, excellent attitude.</span></div>
+            <div class="mock-pdf-tr"><span>Dujka</span><span>1/4</span><span>2/4</span><span style="color:#555;font-size:12px">Opened the court with his serve. Focus on net transition.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script>
   const cursor = document.getElementById('cursor');
   document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
@@ -798,6 +1064,19 @@
   }
 
   document.getElementById('progressBar').style.width = (1 / total * 100) + '%';
+
+  // Lightbox
+  function openLb(id) {
+    document.querySelectorAll('.lb-content').forEach(el => el.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLb() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLb();
+  });
 </script>
 </body>
 </html>
