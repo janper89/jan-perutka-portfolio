@@ -477,6 +477,10 @@
       background: #1a1a1a;
       overflow: hidden;
       border: 1px solid var(--border);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     /* ── ANIMATIONS ── */
@@ -598,12 +602,10 @@
     <div class="gallery-wrap">
       <div class="section-title gallery-title" data-en="Gallery" data-cs="Galerie" data-pl="Galeria" data-de="Galerie">Gallery</div>
       <div class="gallery-grid">
-        <div class="gallery-img"></div>
-        <div class="gallery-img"></div>
-        <div class="gallery-img"></div>
-        <div class="gallery-img"></div>
-        <div class="gallery-img"></div>
-        <div class="gallery-img"></div>
+        <img class="gallery-img" src="images/gallery/winter-cup-gold.jpg" alt="Winter Cup — Gold medal" loading="lazy">
+        <img class="gallery-img" src="images/gallery/coaching-clay.jpg" alt="Coaching on clay court" loading="lazy">
+        <img class="gallery-img" src="images/gallery/opening-ceremony.jpg" alt="European championship opening ceremony" loading="lazy">
+        <img class="gallery-img" src="images/gallery/us-open.jpg" alt="US Open" loading="lazy">
       </div>
     </div>
   </section>
