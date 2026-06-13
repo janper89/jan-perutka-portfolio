@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wingfield Stats — Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #E8500A;
+    --orange-light: #FF6B2B;
+    --teal: #00b4d8;
+    --teal-dark: #0077a8;
+    --dark: #1a1a1a;
+    --darker: #0d0d0d;
+    --white: #ffffff;
+  }
+
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--darker); font-family: 'Barlow', sans-serif; cursor: none; }
+
+  .cursor { width: 20px; height: 20px; border: 2px solid var(--orange); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.1s ease; transform: translate(-50%, -50%); }
+
+  .slides { width: 100%; height: 100vh; position: relative; }
+
+  .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow: hidden; }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  .nav { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s ease; }
+  .nav-dot.active { background: var(--orange); transform: scale(1.4); }
+
+  .nav-arrows { position: fixed; bottom: 24px; right: 40px; display: flex; gap: 12px; z-index: 100; }
+  .nav-btn { width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+  .nav-btn:hover { background: var(--orange); border-color: var(--orange); }
+
+  .slide-counter { position: fixed; top: 24px; right: 40px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 2px; z-index: 100; }
+
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--orange); transition: width 0.4s ease; z-index: 200; }
+
+  .back-btn { position: fixed; top: 24px; left: 40px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-decoration: none; text-transform: uppercase; z-index: 100; transition: color 0.3s ease; }
+  .back-btn:hover { color: var(--orange); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+
+  .slide.active .animate-in { animation: fadeUp 0.7s ease forwards; }
+  .slide.active .animate-in:nth-child(1) { animation-delay: 0.1s; opacity: 0; }
+  .slide.active .animate-in:nth-child(2) { animation-delay: 0.25s; opacity: 0; }
+  .slide.active .animate-in:nth-child(3) { animation-delay: 0.4s; opacity: 0; }
+  .slide.active .animate-in:nth-child(4) { animation-delay: 0.55s; opacity: 0; }
+  .slide.active .animate-in:nth-child(5) { animation-delay: 0.7s; opacity: 0; }
+  .slide.active .animate-in:nth-child(6) { animation-delay: 0.85s; opacity: 0; }
+
+  .slide-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 4px; color: var(--orange); text-transform: uppercase; margin-bottom: 24px; }
+  .slide-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 8vw, 100px); color: white; line-height: 0.95; margin-bottom: 60px; }
+
+  /* ===== SLIDE 1 ===== */
+  #slide-1 { background: var(--darker); flex-direction: column; }
+  .tennis-balls-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .tball { position: absolute; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c8e63c, #8fb800); box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 0 0 20px rgba(200,230,60,0.2); top: -60px; animation: ballFall linear infinite; opacity: 0; }
+  .tball::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%); }
+  @keyframes ballFall { 0% { top: -60px; opacity: 0; transform: rotate(0deg); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 110vh; opacity: 0; transform: rotate(720deg); } }
+
+  .slide-1-content { position: relative; z-index: 10; text-align: center; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.5s forwards; }
+  .logo-icon { width: 64px; height: 64px; background: var(--orange); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .logo-text { text-align: left; line-height: 1; }
+  .logo-text span:first-child { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; color: var(--orange); letter-spacing: 3px; text-transform: uppercase; }
+  .logo-text span:last-child { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: white; letter-spacing: 2px; }
+  .slide-1-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 12vw, 140px); line-height: 0.9; color: white; letter-spacing: 4px; opacity: 0; animation: fadeUp 0.8s ease 0.9s forwards; }
+  .slide-1-title span { color: var(--orange); display: block; }
+  .slide-1-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-top: 24px; opacity: 0; animation: fadeUp 0.8s ease 1.3s forwards; }
+  .slide-1-cta { margin-top: 48px; font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 3px; text-transform: uppercase; opacity: 0; animation: pulse 2s ease 2s infinite, fadeUp 0.8s ease 1.8s forwards; }
+
+  /* ===== SLIDE 2: PROBLEM ===== */
+  #slide-2 { background: var(--dark); flex-direction: column; align-items: flex-start; padding: 80px; }
+  .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
+  .problem-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; position: relative; overflow: hidden; }
+  .problem-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--orange), transparent); }
+  .problem-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+  .problem-tool { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: white; letter-spacing: 1px; margin-bottom: 8px; }
+  .problem-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .problem-issue { margin-top: 16px; padding: 10px 14px; background: rgba(232,80,10,0.1); border-radius: 8px; font-size: 12px; color: var(--orange-light); border-left: 3px solid var(--orange); }
+
+  /* ===== SLIDE 3: HOW IT WORKS ===== */
+  #slide-3 { background: linear-gradient(135deg, var(--darker), #001a20); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .flow-steps { display: flex; gap: 0; align-items: stretch; width: 100%; margin-top: 48px; }
+  .flow-step { flex: 1; padding: 32px 24px; text-align: center; position: relative; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+  .flow-step:first-child { border-radius: 16px 0 0 16px; }
+  .flow-step:last-child { border-radius: 0 16px 16px 0; }
+  .flow-step + .flow-step { border-left: none; }
+  .flow-step.highlight { background: rgba(0,180,216,0.06); border-color: rgba(0,180,216,0.2); }
+  .flow-step::after { content: '→'; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--orange); opacity: 0.4; z-index: 2; }
+  .flow-step:last-child::after { display: none; }
+  .flow-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--orange); opacity: 0.2; line-height: 1; margin-bottom: 8px; }
+  .flow-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+  .flow-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 16px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .flow-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+  /* ===== SLIDE 4: DASHBOARD ===== */
+  #slide-4 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .dashboard-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .dashboard-left { display: flex; flex-direction: column; gap: 12px; }
+  .metric-row { display: flex; gap: 12px; }
+  .metric-card { flex: 1; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 18px 20px; border: 1px solid rgba(255,255,255,0.06); }
+  .metric-card.warn { border-color: rgba(232,80,10,0.3); background: rgba(232,80,10,0.04); }
+  .metric-card.good { border-color: rgba(39,174,96,0.3); background: rgba(39,174,96,0.04); }
+  .metric-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 6px; }
+  .metric-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: white; line-height: 1; }
+  .metric-value.bad { color: #ff6b6b; }
+  .metric-value.ok { color: #ffbe32; }
+  .metric-value.good { color: #2ecc71; }
+  .metric-bench { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+  .bar-container { margin-top: 8px; }
+  .bar-track { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+  .bar-fill.bad { background: #ff6b6b; }
+  .bar-fill.ok { background: #ffbe32; }
+  .bar-fill.good { background: #2ecc71; }
+  .dashboard-right { display: flex; flex-direction: column; gap: 12px; }
+  .reco-card { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 20px; border: 1px solid rgba(255,255,255,0.06); }
+  .reco-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px; letter-spacing: 2px; color: var(--orange); text-transform: uppercase; margin-bottom: 10px; }
+  .reco-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+  .reco-item:last-child { margin-bottom: 0; }
+  .reco-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--orange); opacity: 0.5; flex-shrink: 0; line-height: 1.1; }
+  .reco-text { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+  .reco-text strong { color: white; }
+
+  /* ===== SLIDE 5: BENCHMARKING ===== */
+  #slide-5 { background: var(--darker); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .bench-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .bench-table { background: rgba(255,255,255,0.03); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07); }
+  .bench-header { padding: 14px 20px; background: rgba(0,180,216,0.08); border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr; gap: 8px; }
+  .bench-header span { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+  .bench-row { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); display: grid; grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr; gap: 8px; align-items: center; }
+  .bench-row:last-child { border-bottom: none; }
+  .bench-metric { font-size: 13px; color: rgba(255,255,255,0.75); }
+  .bench-player { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; }
+  .bench-player.bad { color: #ff6b6b; }
+  .bench-player.ok { color: #ffbe32; }
+  .bench-player.good { color: #2ecc71; }
+  .bench-ref { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .bench-delta { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px; }
+  .bench-delta.neg { color: #ff6b6b; }
+  .bench-delta.pos { color: #2ecc71; }
+  .bench-right { display: flex; flex-direction: column; gap: 14px; }
+  .age-cats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+  .age-cat { padding: 8px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: white; }
+  .age-cat.active { background: rgba(0,180,216,0.15); border-color: rgba(0,180,216,0.4); color: var(--teal); }
+  .bench-feature { padding: 18px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; align-items: flex-start; }
+  .bench-feat-icon { font-size: 22px; flex-shrink: 0; }
+  .bench-feat-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; color: white; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .bench-feat-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+  /* ===== SLIDE 6: METRICS ===== */
+  #slide-6 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; margin-top: 40px; }
+  .metric-stat { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 22px 18px; border: 1px solid rgba(255,255,255,0.06); text-align: center; }
+  .metric-stat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .metric-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--orange); letter-spacing: 1px; line-height: 1; }
+  .metric-stat-goal { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+
+  /* ===== SLIDE 7: HISTORY & TRENDS ===== */
+  #slide-7 { background: linear-gradient(135deg, var(--darker), #001a20); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .trend-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .trend-chart { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.07); }
+  .chart-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 20px; }
+  .chart-area { position: relative; height: 160px; display: flex; align-items: flex-end; gap: 10px; padding-bottom: 24px; }
+  .chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .chart-bar { width: 100%; border-radius: 4px 4px 0 0; position: relative; min-height: 4px; }
+  .chart-bar.player { background: linear-gradient(to top, var(--orange), rgba(232,80,10,0.4)); }
+  .chart-bar.bench { background: rgba(0,180,216,0.3); border: 1px dashed rgba(0,180,216,0.5); }
+  .chart-month { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; position: absolute; bottom: 0; }
+  .trend-features { display: flex; flex-direction: column; gap: 14px; }
+  .trend-feat { padding: 18px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; align-items: flex-start; }
+  .trend-feat-icon { font-size: 24px; flex-shrink: 0; }
+  .trend-feat-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; color: white; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .trend-feat-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+  /* ===== SLIDE 8: RECOMMENDATIONS ===== */
+  #slide-8 { background: var(--darker); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .reco-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .reco-side { display: flex; flex-direction: column; gap: 14px; }
+  .reco-side-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px; letter-spacing: 3px; color: var(--orange); text-transform: uppercase; margin-bottom: 4px; padding-bottom: 12px; border-bottom: 1px solid rgba(232,80,10,0.2); }
+  .rule-card { padding: 18px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+  .rule-condition { font-size: 12px; color: rgba(255,255,255,0.35); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .rule-text { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+  .rule-text strong { color: var(--orange-light); }
+  .priority-note { margin-top: 16px; padding: 16px 20px; background: rgba(0,180,216,0.06); border: 1px solid rgba(0,180,216,0.15); border-radius: 12px; }
+  .priority-note-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .priority-note-text { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+  /* ===== SLIDE 9: WINGFIELD ROI ===== */
+  #slide-9 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .roi-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .roi-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 36px; border: 1px solid rgba(255,255,255,0.07); }
+  .roi-card.highlight { background: rgba(232,80,10,0.06); border-color: rgba(232,80,10,0.25); }
+  .roi-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: 3px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 12px; }
+  .roi-label.orange { color: var(--orange); }
+  .roi-big { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 72px); color: white; line-height: 1; margin-bottom: 10px; }
+  .roi-big span { color: var(--orange); }
+  .roi-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .roi-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .roi-list li { font-size: 14px; color: rgba(255,255,255,0.65); padding-left: 18px; position: relative; line-height: 1.4; }
+  .roi-list li::before { content: '→'; position: absolute; left: 0; color: var(--orange); opacity: 0.6; }
+
+  /* ===== SLIDE 10: STATUS ===== */
+  #slide-10 { background: linear-gradient(135deg, var(--darker), #001a20); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .status-two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; margin-top: 40px; }
+  .status-block { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 28px; border: 1px solid rgba(255,255,255,0.07); }
+  .status-block-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 16px; }
+  .status-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: rgba(255,255,255,0.6); }
+  .s-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .s-dot.g { background: #2ecc71; }
+  .s-dot.o { background: var(--orange); }
+  .s-dot.gr { background: rgba(255,255,255,0.2); }
+  .dev-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: rgba(232,80,10,0.1); border: 1px solid rgba(232,80,10,0.25); border-radius: 100px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; color: var(--orange-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .stack-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .stack-tag { padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+  .madstats-note { margin-top: 16px; padding: 14px 18px; background: rgba(0,180,216,0.06); border: 1px solid rgba(0,180,216,0.15); border-radius: 10px; font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  .madstats-note strong { color: var(--teal); }
+
+  /* ===== FINALE ===== */
+  #slide-11 { background: var(--darker); }
+  .finale-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(232,80,10,0.12), transparent); }
+  .finale-content { position: relative; z-index: 10; text-align: center; max-width: 800px; padding: 40px; }
+  .finale-question { font-family: 'Bebas Neue', sans-serif; font-size: clamp(55px, 9vw, 105px); color: white; line-height: 0.95; letter-spacing: 3px; margin-bottom: 24px; }
+  .finale-question span { color: var(--orange); display: block; }
+  .finale-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 48px; }
+  .finale-stats { display: flex; gap: 48px; justify-content: center; margin-bottom: 56px; }
+  .finale-stat { text-align: center; }
+  .finale-stat-num { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: white; line-height: 1; }
+  .finale-stat-label { display: block; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+  .finale-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 40px; }
+  .finale-cta { padding: 18px 40px; background: var(--orange); color: white; text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; border-radius: 12px; transition: all 0.3s ease; }
+  .finale-cta:hover { background: var(--orange-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,80,10,0.4); }
+  .reference-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: rgba(255,255,255,0.25); letter-spacing: 2px; text-transform: uppercase; }
+  .reference-badge span { color: rgba(232,80,10,0.6); }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<a class="back-btn" href="https://www.janperutka.com">← Back to janperutka.com</a>
+<div id="progressBar" class="progress-bar"></div>
+<div id="slideCounter" class="slide-counter">01 / 11</div>
+
+<div class="nav" id="navDots"></div>
+<div class="nav-arrows">
+  <button class="nav-btn" onclick="prevSlide()">←</button>
+  <button class="nav-btn" onclick="nextSlide()">→</button>
+</div>
+
+<div class="slides">
+
+  <!-- SLIDE 1: INTRO -->
+  <div class="slide active" id="slide-1">
+    <div class="tennis-balls-container" id="ballsContainer"></div>
+    <div class="slide-1-content">
+      <div class="logo-area">
+        <div class="logo-icon">📈</div>
+        <div class="logo-text">
+          <span>janperutka.com</span>
+          <span>Wingfield Stats</span>
+        </div>
+      </div>
+      <div class="slide-1-title">
+        Court Data.<br><span>Tailored Advice.</span>
+      </div>
+      <div class="slide-1-sub">Performance Analytics for Wingfield Academies</div>
+      <div class="slide-1-cta">Press any key or click arrows to continue</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide" id="slide-2">
+    <div class="slide-label animate-in">The Problem</div>
+    <div class="slide-title animate-in">Data collected.<br><span style="color:var(--orange)">Never used.</span></div>
+    <div class="problem-grid animate-in">
+      <div class="problem-card">
+        <span class="problem-icon">💾</span>
+        <div class="problem-tool">Excel files</div>
+        <div class="problem-desc">Wingfield sensors generate detailed data after every session. That data lives in XLSX exports — on the coach's laptop. Nobody else sees it.</div>
+        <div class="problem-issue">Expensive sensors. Data gathering dust.</div>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">❓</span>
+        <div class="problem-tool">No benchmark</div>
+        <div class="problem-desc">Coach sees 62% first serve. But is that good for a U14 player? What's the target? There's no reference to compare against.</div>
+        <div class="problem-issue">Numbers without context are meaningless.</div>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">🧠</span>
+        <div class="problem-tool">Manual analysis</div>
+        <div class="problem-desc">Coach has to interpret raw numbers themselves and decide what to train. No automatic priorities. No recommendations. Time-consuming and subjective.</div>
+        <div class="problem-issue">Every coach interprets differently. No standard.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: HOW IT WORKS -->
+  <div class="slide" id="slide-3">
+    <div class="slide-label animate-in">How It Works</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Upload. Analyse.<br><span style="color:var(--orange)">Know what to train.</span></div>
+    <div class="flow-steps animate-in">
+      <div class="flow-step highlight">
+        <div class="flow-num">01</div>
+        <span class="flow-icon">📂</span>
+        <div class="flow-title">Upload XLSX</div>
+        <div class="flow-desc">Coach uploads Wingfield XLSX export from any session or match.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">02</div>
+        <span class="flow-icon">⚙️</span>
+        <div class="flow-title">Auto Parse</div>
+        <div class="flow-desc">System extracts all metrics — serve speed, first serve %, double faults, return, winners/UE ratio.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">03</div>
+        <span class="flow-icon">📊</span>
+        <div class="flow-title">Benchmark</div>
+        <div class="flow-desc">Each metric compared to age-group reference values (U12 → Open). Player's position visualised.</div>
+      </div>
+      <div class="flow-step highlight">
+        <div class="flow-num">04</div>
+        <span class="flow-icon">🎯</span>
+        <div class="flow-title">Recommendations</div>
+        <div class="flow-desc">Max 3 prioritised actions — ranked by gap from benchmark and impact. Ready for the next session.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: DASHBOARD -->
+  <div class="slide" id="slide-4">
+    <div class="slide-label animate-in">Player Dashboard</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Coach opens the app.<br><span style="color:var(--orange)">Knows what to fix.</span></div>
+    <div class="dashboard-layout">
+      <div class="dashboard-left animate-in">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:4px">Novák J. · U16 · Last match Jun 10</div>
+        <div class="metric-row">
+          <div class="metric-card warn">
+            <div class="metric-label">1st Serve %</div>
+            <div class="metric-value bad">52%</div>
+            <div class="metric-bench">Target: 60–65%</div>
+            <div class="bar-container"><div class="bar-track"><div class="bar-fill bad" style="width:52%"></div></div></div>
+          </div>
+          <div class="metric-card good">
+            <div class="metric-label">Return In %</div>
+            <div class="metric-value good">81%</div>
+            <div class="metric-bench">Target: 85%+</div>
+            <div class="bar-container"><div class="bar-track"><div class="bar-fill ok" style="width:81%"></div></div></div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-card warn">
+            <div class="metric-label">Double Faults</div>
+            <div class="metric-value bad">5</div>
+            <div class="metric-bench">Target: max 2/match</div>
+            <div class="bar-container"><div class="bar-track"><div class="bar-fill bad" style="width:70%"></div></div></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Winners/UE Ratio</div>
+            <div class="metric-value ok">0.38</div>
+            <div class="metric-bench">Target: &gt;0.5</div>
+            <div class="bar-container"><div class="bar-track"><div class="bar-fill ok" style="width:38%"></div></div></div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-card" style="flex:2">
+            <div class="metric-label">Avg Serve Speed</div>
+            <div class="metric-value" style="color:rgba(255,255,255,0.7)">158 km/h</div>
+            <div class="metric-bench">U16 benchmark: 155–170 km/h ✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-right animate-in">
+        <div class="reco-card">
+          <div class="reco-title">🎯 Top 3 Recommendations</div>
+          <div class="reco-item">
+            <div class="reco-num">1</div>
+            <div class="reco-text"><strong>Focus on serve consistency.</strong> First serve at 52% — below benchmark. Target: get above 60%.</div>
+          </div>
+          <div class="reco-item">
+            <div class="reco-num">2</div>
+            <div class="reco-text"><strong>Too many double faults.</strong> 5 in this match. Work on second serve under pressure.</div>
+          </div>
+          <div class="reco-item">
+            <div class="reco-num">3</div>
+            <div class="reco-text"><strong>Unforced errors too high.</strong> Ratio 0.38 — reduce unnecessary mistakes, not winners.</div>
+          </div>
+        </div>
+        <div style="padding:14px 18px;background:rgba(0,180,216,0.06);border:1px solid rgba(0,180,216,0.15);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6">
+          Recommendations prioritised by: (1) largest gap from benchmark, (2) highest impact — serve &gt; return &gt; rally.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: BENCHMARKING -->
+  <div class="slide" id="slide-5">
+    <div class="slide-label animate-in">Age Group Benchmarking</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Know where<br><span style="color:var(--orange)">your player stands.</span></div>
+    <div class="bench-layout">
+      <div>
+        <div style="margin-bottom:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase" class="animate-in">Novák J. · U16 vs benchmark</div>
+        <div class="bench-table animate-in">
+          <div class="bench-header">
+            <span>Metric</span>
+            <span>Player</span>
+            <span>Benchmark</span>
+            <span>Gap</span>
+          </div>
+          <div class="bench-row">
+            <div class="bench-metric">1st Serve %</div>
+            <div class="bench-player bad">52%</div>
+            <div class="bench-ref">60–65%</div>
+            <div class="bench-delta neg">−8%</div>
+          </div>
+          <div class="bench-row">
+            <div class="bench-metric">Double Faults</div>
+            <div class="bench-player bad">5</div>
+            <div class="bench-ref">max 2</div>
+            <div class="bench-delta neg">+3</div>
+          </div>
+          <div class="bench-row">
+            <div class="bench-metric">Return In %</div>
+            <div class="bench-player ok">81%</div>
+            <div class="bench-ref">85%+</div>
+            <div class="bench-delta neg">−4%</div>
+          </div>
+          <div class="bench-row">
+            <div class="bench-metric">Winners/UE</div>
+            <div class="bench-player ok">0.38</div>
+            <div class="bench-ref">&gt; 0.5</div>
+            <div class="bench-delta neg">−0.12</div>
+          </div>
+          <div class="bench-row">
+            <div class="bench-metric">Avg Serve Speed</div>
+            <div class="bench-player good">158 km/h</div>
+            <div class="bench-ref">155–170</div>
+            <div class="bench-delta pos">✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="bench-right animate-in">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:8px">Age categories</div>
+        <div class="age-cats">
+          <div class="age-cat">U12</div>
+          <div class="age-cat">U14</div>
+          <div class="age-cat active">U16</div>
+          <div class="age-cat">U18</div>
+          <div class="age-cat">Open</div>
+        </div>
+        <div class="bench-feature">
+          <span class="bench-feat-icon">🎯</span>
+          <div>
+            <div class="bench-feat-title">Context-aware</div>
+            <div class="bench-feat-desc">62% first serve is good for U12, below average for U18. The system always compares against the right peer group.</div>
+          </div>
+        </div>
+        <div class="bench-feature">
+          <span class="bench-feat-icon">📈</span>
+          <div>
+            <div class="bench-feat-title">5-session trend</div>
+            <div class="bench-feat-desc">Each metric shows trend over last 5 sessions. Coach sees not just current level, but direction of progress.</div>
+          </div>
+        </div>
+        <div class="bench-feature">
+          <span class="bench-feat-icon">👤</span>
+          <div>
+            <div class="bench-feat-title">Player's own profile</div>
+            <div class="bench-feat-desc">Player logs in and sees their own data. Benchmarking against peers. Motivation through numbers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: ALL METRICS -->
+  <div class="slide" id="slide-6">
+    <div class="slide-label animate-in">Tracked Metrics</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">8 metrics.<br><span style="color:var(--orange)">Every session.</span></div>
+    <div class="metrics-grid">
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">1st Serve %</div>
+        <div class="metric-stat-value">60–65%</div>
+        <div class="metric-stat-goal">Target range</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">1st Serve Pts Won</div>
+        <div class="metric-stat-value">70–75%</div>
+        <div class="metric-stat-goal">Target range</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">Double Faults</div>
+        <div class="metric-stat-value">max 2</div>
+        <div class="metric-stat-goal">Per match</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">Return In %</div>
+        <div class="metric-stat-value">85%+</div>
+        <div class="metric-stat-goal">Target</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">Return Pts Won</div>
+        <div class="metric-stat-value">55%+</div>
+        <div class="metric-stat-goal">Target</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">Winners/UE Ratio</div>
+        <div class="metric-stat-value">&gt; 0.5</div>
+        <div class="metric-stat-goal">Target</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">Avg Serve Speed</div>
+        <div class="metric-stat-value">by age</div>
+        <div class="metric-stat-goal">Per age group</div>
+      </div>
+      <div class="metric-stat animate-in">
+        <div class="metric-stat-name">0–4 Shot Pts</div>
+        <div class="metric-stat-value">short</div>
+        <div class="metric-stat-goal">Rally analysis</div>
+      </div>
+    </div>
+    <div style="margin-top:28px;padding:14px 24px;background:rgba(255,255,255,0.02);border-radius:10px;border:1px solid rgba(255,255,255,0.05);font-size:13px;color:rgba(255,255,255,0.35);text-align:center" class="animate-in">
+      All benchmarks are age-group specific — U12 through Open. Every number has context.
+    </div>
+  </div>
+
+  <!-- SLIDE 7: HISTORY & TRENDS -->
+  <div class="slide" id="slide-7">
+    <div class="slide-label animate-in">Progress Tracking</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Season in data.<br><span style="color:var(--orange)">Progress visible.</span></div>
+    <div class="trend-layout">
+      <div class="trend-chart animate-in">
+        <div class="chart-title">1st Serve % · Last 5 Sessions vs Benchmark</div>
+        <div style="display:flex;gap:12px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.4)"><div style="width:12px;height:4px;background:var(--orange);border-radius:2px"></div>Player</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.4)"><div style="width:12px;height:4px;background:rgba(0,180,216,0.5);border-radius:2px;border:1px dashed rgba(0,180,216,0.8)"></div>Benchmark</div>
+        </div>
+        <div style="position:relative;height:120px;display:flex;align-items:flex-end;gap:16px;padding-bottom:20px">
+          <!-- Bar groups -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;height:47px;background:linear-gradient(to top,var(--orange),rgba(232,80,10,0.4));border-radius:4px 4px 0 0"></div>
+            <div style="width:100%;height:60px;background:rgba(0,180,216,0.15);border:1px dashed rgba(0,180,216,0.4);border-radius:0 0 4px 4px;margin-top:-60px;opacity:0.3"></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px">Feb</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;height:52px;background:linear-gradient(to top,var(--orange),rgba(232,80,10,0.4));border-radius:4px 4px 0 0"></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px">Mar</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;height:49px;background:linear-gradient(to top,var(--orange),rgba(232,80,10,0.4));border-radius:4px 4px 0 0"></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px">Apr</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;height:55px;background:linear-gradient(to top,var(--orange),rgba(232,80,10,0.4));border-radius:4px 4px 0 0"></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px">May</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;height:52px;background:linear-gradient(to top,rgba(232,80,10,0.8),rgba(232,80,10,0.3));border-radius:4px 4px 0 0;border:1px solid var(--orange)"></div>
+            <div style="font-size:10px;color:var(--orange);margin-top:4px">Jun ✓</div>
+          </div>
+          <!-- Benchmark line overlay -->
+          <div style="position:absolute;left:0;right:0;bottom:20px;height:1px;background:rgba(0,180,216,0.4);border-top:1px dashed rgba(0,180,216,0.6)">
+            <span style="position:absolute;right:0;top:-18px;font-size:10px;color:rgba(0,180,216,0.7);font-family:'Barlow Condensed',sans-serif;font-weight:700">60% target</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.3)">Player is below benchmark consistently. First serve is priority #1.</div>
+      </div>
+      <div class="trend-features animate-in">
+        <div class="trend-feat">
+          <span class="trend-feat-icon">📚</span>
+          <div>
+            <div class="trend-feat-title">Full history</div>
+            <div class="trend-feat-desc">Every uploaded session stored. Coach and player can scroll back through the entire season's data.</div>
+          </div>
+        </div>
+        <div class="trend-feat">
+          <span class="trend-feat-icon">📉</span>
+          <div>
+            <div class="trend-feat-title">Trend per metric</div>
+            <div class="trend-feat-desc">Each of the 8 metrics has its own trend chart across the last 5 sessions. See what's improving, what isn't.</div>
+          </div>
+        </div>
+        <div class="trend-feat">
+          <span class="trend-feat-icon">🎯</span>
+          <div>
+            <div class="trend-feat-title">Player motivation</div>
+            <div class="trend-feat-desc">Player sees their own data and progress. Numbers as motivation — not just the coach's word.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: RECOMMENDATION ENGINE -->
+  <div class="slide" id="slide-8">
+    <div class="slide-label animate-in">Recommendation Engine</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Data tells you<br><span style="color:var(--orange)">what to train next.</span></div>
+    <div class="reco-layout">
+      <div class="reco-side animate-in">
+        <div class="reco-side-title">Rule examples</div>
+        <div class="rule-card">
+          <div class="rule-condition">If 1st serve % &lt; 55%</div>
+          <div class="rule-text"><strong>"Focus on consistency. Target: above 60%."</strong> Ranked #1 — biggest impact on the game.</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-condition">If double faults ≥ 4</div>
+          <div class="rule-text"><strong>"Too many double faults. Work on 2nd serve under pressure."</strong></div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-condition">If return in % &lt; 75%</div>
+          <div class="rule-text"><strong>"Return unstable. Priority: get the ball in play."</strong></div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-condition">If errors &gt; 3× winners</div>
+          <div class="rule-text"><strong>"Ratio imbalanced. Reduce unforced errors — not winners."</strong></div>
+        </div>
+      </div>
+      <div class="reco-side animate-in">
+        <div class="reco-side-title">Prioritisation logic</div>
+        <div class="priority-note">
+          <div class="priority-note-title">How the system ranks</div>
+          <div class="priority-note-text">
+            1. Largest gap from age-group benchmark<br>
+            2. Highest impact on match outcome<br>
+            — Serve &gt; Return &gt; Rally<br><br>
+            Maximum 3 recommendations per session. Coach gets a focused list, not a wall of feedback.
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:18px 20px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.06)">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">Why max 3?</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6">
+            Research shows coaches and players can meaningfully act on 2–3 focus areas per cycle. More recommendations = analysis paralysis. The system forces prioritisation.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: WINGFIELD ROI -->
+  <div class="slide" id="slide-9">
+    <div class="slide-label animate-in">Return on Investment</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Your Wingfield sensors<br><span style="color:var(--orange)">finally earning their keep.</span></div>
+    <div class="roi-layout">
+      <div class="roi-card highlight animate-in">
+        <div class="roi-label orange">The problem without Stats</div>
+        <div class="roi-big">Data <span>≠</span> Insight</div>
+        <div class="roi-desc">Wingfield devices generate data every session. Without a platform to analyse it, benchmarks and context — that data has no value. It sits in XLSX files, unread.</div>
+      </div>
+      <div class="roi-card animate-in">
+        <div class="roi-label">What Wingfield Stats unlocks</div>
+        <ul class="roi-list">
+          <li>Every session generates actionable insights, not just numbers</li>
+          <li>Coaches spend time coaching, not analysing spreadsheets</li>
+          <li>Players see their own progress — engagement increases</li>
+          <li>Federation gets standardised data across all academies</li>
+          <li>Training decisions based on data, not gut feeling</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: STATUS -->
+  <div class="slide" id="slide-10">
+    <div class="slide-label animate-in">Status &amp; Stack</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">In development.<br><span style="color:var(--orange)">ČTS pilot ready.</span></div>
+    <div class="status-two">
+      <div class="status-block animate-in">
+        <div class="dev-badge">In Development</div>
+        <div class="status-block-title">Build Progress</div>
+        <div class="status-item"><div class="s-dot g"></div>Core logic — XLSX parsing + benchmarking</div>
+        <div class="status-item"><div class="s-dot g"></div>Recommendation engine — rules defined</div>
+        <div class="status-item"><div class="s-dot o"></div>Dashboard UI — in progress</div>
+        <div class="status-item"><div class="s-dot o"></div>Player profile + history charts</div>
+        <div class="status-item"><div class="s-dot gr"></div>Supabase data migration</div>
+        <div class="status-item"><div class="s-dot gr"></div>Vercel deployment + auth</div>
+      </div>
+      <div class="status-block animate-in">
+        <div class="status-block-title">Tech Stack</div>
+        <div class="stack-row" style="margin-bottom:16px">
+          <span class="stack-tag">Next.js 14</span>
+          <span class="stack-tag">React</span>
+          <span class="stack-tag">Supabase</span>
+          <span class="stack-tag">Tailwind</span>
+          <span class="stack-tag">Recharts</span>
+          <span class="stack-tag">SheetJS</span>
+          <span class="stack-tag">Vercel</span>
+        </div>
+        <div class="madstats-note">
+          Built on <strong>proven MadStats logic</strong> — same author, same architecture, adapted for Wingfield data and tennis coaching context. Not a prototype — a battle-tested foundation.
+        </div>
+      </div>
+      <div class="status-block animate-in">
+        <div class="status-block-title">Target Pilot</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7">
+          Initial rollout: ~20 coaches, ~40 players at <strong style="color:white">Czech Tennis Association</strong> talent centres equipped with Wingfield sensors.<br><br>
+          <span style="color:rgba(255,255,255,0.35);font-size:12px">Federations with Wingfield: perfect fit. We scale from your existing hardware.</span>
+        </div>
+      </div>
+      <div class="status-block animate-in">
+        <div class="status-block-title">Interested?</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:16px">
+          If your federation uses Wingfield sensors, we can discuss a pilot deployment — connecting your existing data to actionable coaching insights.
+        </div>
+        <a href="mailto:jperutka@proton.me?subject=Interest%20in%20Wingfield%20Stats&body=Hi%20Jan%2C%0D%0A%0D%0AI%20watched%20your%20presentation%20and%20I%27d%20like%20to%20learn%20more%20about%20Wingfield%20Stats%20for%20our%20federation.%0D%0A%0D%0ABest%20regards%2C" style="display:inline-block;padding:12px 24px;background:var(--orange);color:white;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-radius:8px;transition:all 0.3s ease">Get in touch →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: FINALE -->
+  <div class="slide" id="slide-11">
+    <div class="finale-bg"></div>
+    <div class="finale-content">
+      <div class="finale-question">
+        Make your data<br><span>work for you.</span>
+      </div>
+      <div class="finale-sub">Wingfield Stats · janperutka.com</div>
+      <div class="finale-stats">
+        <div class="finale-stat">
+          <span class="finale-stat-num">8</span>
+          <span class="finale-stat-label">Tracked metrics</span>
+        </div>
+        <div class="finale-stat">
+          <span class="finale-stat-num">5</span>
+          <span class="finale-stat-label">Age categories</span>
+        </div>
+        <div class="finale-stat">
+          <span class="finale-stat-num">3</span>
+          <span class="finale-stat-label">Max recommendations</span>
+        </div>
+      </div>
+      <div class="finale-buttons">
+        <a class="finale-cta" href="mailto:jperutka@proton.me?subject=Interest%20in%20Wingfield%20Stats&body=Hi%20Jan%2C%0D%0A%0D%0AI%20watched%20your%20presentation%20and%20I%27d%20like%20to%20learn%20more%20about%20Wingfield%20Stats%20for%20our%20federation.%0D%0A%0D%0ABest%20regards%2C">
+          Get in touch →
+        </a>
+      </div>
+      <div class="reference-badge">Built on · <span>MadStats architecture</span> · ČTS pilot · 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  const navDots = document.getElementById('navDots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    navDots.appendChild(dot);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    navDots.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    navDots.children[current].classList.add('active');
+    document.getElementById('slideCounter').textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  function createBall() {
+    const container = document.getElementById('ballsContainer');
+    const ball = document.createElement('div');
+    ball.className = 'tball';
+    const size = 20 + Math.random() * 40;
+    ball.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*2}s;`;
+    container.appendChild(ball);
+    setTimeout(() => ball.remove(), 8000);
+  }
+  setInterval(createBall, 300);
+  for (let i = 0; i < 8; i++) setTimeout(createBall, i * 200);
+
+  document.getElementById('progressBar').style.width = (1 / total * 100) + '%';
+</script>
+</body>
+</html>
