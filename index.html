@@ -438,6 +438,47 @@
     .collab-name { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
     .collab-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); }
 
+    .bio-sentence {
+      padding: 48px 0;
+      background: var(--bg);
+    }
+    .bio-sentence-text {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .gallery-section {
+      padding: 48px 0;
+      background: var(--bg);
+    }
+    .gallery-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 3rem;
+    }
+    .gallery-title {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .gallery-img {
+      border-radius: 12px;
+      aspect-ratio: 4 / 3;
+      background: #1a1a1a;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -449,6 +490,10 @@
     }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
     @media (max-width: 768px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
@@ -457,6 +502,8 @@
       .hero-stats { gap: 2rem; }
       .about-grid { grid-template-columns: 1fr; gap: 2rem; }
       footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .gallery-wrap { padding: 0 1.5rem; }
+      .gallery-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -533,6 +580,30 @@
       <div class="collab-divider"></div>
       <div class="collab-item">
         <span class="collab-name">Český tenisový svaz</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="bio-sentence">
+    <p class="bio-sentence-text"
+       data-en="I offer tailored solutions — for clubs and federations. Drawing on my own experience as a coach who organised international tournaments including Summer and Winter Cup, served as both coach and event director, travelled the world with national junior players, and worked with professional tennis players. Now I bring AI into the equation."
+       data-cs="Nabízím řešení na míru — pro kluby i svazy. Vycházím z vlastní zkušenosti trenéra, který organizoval mezinárodní turnaje včetně Summer a Winter Cupu, působil na nich jako trenér i jako pořadatel, cestoval se svazovými hráči po světě a pracoval s profesionálními tenisty. Dnes do toho přidávám AI."
+       data-pl="Oferuję rozwiązania szyte na miarę — dla klubów i związków. Opieram się na własnym doświadczeniu trenera, który organizował międzynarodowe turnieje, w tym Summer i Winter Cup, działał jako trener i dyrektor turnieju, podróżował z reprezentantami i współpracował z zawodowymi tenisistami. Teraz dodaję do tego AI."
+       data-de="Ich biete maßgeschneiderte Lösungen — für Vereine und Verbände. Ich stütze mich auf meine Erfahrung als Trainer, der internationale Turniere organisiert hat, darunter Summer und Winter Cup, als Trainer und Turnierleiter tätig war, mit Nationalspielern durch die Welt gereist ist und mit Profispielern gearbeitet hat. Jetzt bringe ich KI ins Spiel.">
+      Nabízím řešení na míru — pro kluby i svazy. Vycházím z vlastní zkušenosti trenéra, který organizoval mezinárodní turnaje včetně Summer a Winter Cupu, působil na nich jako trenér i jako pořadatel, cestoval se svazovými hráči po světě a pracoval s profesionálními tenisty. Dnes do toho přidávám AI.
+    </p>
+  </section>
+
+  <section class="gallery-section">
+    <div class="gallery-wrap">
+      <div class="section-title gallery-title" data-en="Gallery" data-cs="Galerie" data-pl="Galeria" data-de="Galerie">Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-img"></div>
+        <div class="gallery-img"></div>
+        <div class="gallery-img"></div>
+        <div class="gallery-img"></div>
+        <div class="gallery-img"></div>
+        <div class="gallery-img"></div>
       </div>
     </div>
   </section>
