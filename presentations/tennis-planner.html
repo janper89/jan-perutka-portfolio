@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tennis Planner — Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #E8500A;
+    --orange-light: #FF6B2B;
+    --green: #27ae60;
+    --green-light: #2ecc71;
+    --dark: #1a1a1a;
+    --darker: #0d0d0d;
+    --gray: #2d2d2d;
+    --white: #ffffff;
+    --text-muted: #999;
+  }
+
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--darker); font-family: 'Barlow', sans-serif; cursor: none; }
+
+  .cursor { width: 20px; height: 20px; border: 2px solid var(--orange); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.1s ease; transform: translate(-50%, -50%); }
+
+  .slides { width: 100%; height: 100vh; position: relative; }
+
+  .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow: hidden; }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  .nav { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s ease; }
+  .nav-dot.active { background: var(--orange); transform: scale(1.4); }
+
+  .nav-arrows { position: fixed; bottom: 24px; right: 40px; display: flex; gap: 12px; z-index: 100; }
+  .nav-btn { width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+  .nav-btn:hover { background: var(--orange); border-color: var(--orange); }
+
+  .slide-counter { position: fixed; top: 24px; right: 40px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 2px; z-index: 100; }
+
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--orange); transition: width 0.4s ease; z-index: 200; }
+
+  .back-btn { position: fixed; top: 24px; left: 40px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-decoration: none; text-transform: uppercase; z-index: 100; transition: color 0.3s ease; }
+  .back-btn:hover { color: var(--orange); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+
+  .slide.active .animate-in { animation: fadeUp 0.7s ease forwards; }
+  .slide.active .animate-in:nth-child(1) { animation-delay: 0.1s; opacity: 0; }
+  .slide.active .animate-in:nth-child(2) { animation-delay: 0.25s; opacity: 0; }
+  .slide.active .animate-in:nth-child(3) { animation-delay: 0.4s; opacity: 0; }
+  .slide.active .animate-in:nth-child(4) { animation-delay: 0.55s; opacity: 0; }
+  .slide.active .animate-in:nth-child(5) { animation-delay: 0.7s; opacity: 0; }
+  .slide.active .animate-in:nth-child(6) { animation-delay: 0.85s; opacity: 0; }
+
+  .slide-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 4px; color: var(--orange); text-transform: uppercase; margin-bottom: 24px; }
+  .slide-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 8vw, 100px); color: white; line-height: 0.95; margin-bottom: 60px; }
+
+  /* ===== SLIDE 1 — INTRO ===== */
+  #slide-1 { background: var(--darker); flex-direction: column; }
+  .tennis-balls-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .tball { position: absolute; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c8e63c, #8fb800); box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 0 0 20px rgba(200,230,60,0.2); top: -60px; animation: ballFall linear infinite; opacity: 0; }
+  .tball::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%); }
+  @keyframes ballFall { 0% { top: -60px; opacity: 0; transform: rotate(0deg); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 110vh; opacity: 0; transform: rotate(720deg); } }
+
+  .slide-1-content { position: relative; z-index: 10; text-align: center; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.5s forwards; }
+  .logo-icon { width: 64px; height: 64px; background: var(--orange); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .logo-text { text-align: left; line-height: 1; }
+  .logo-text span:first-child { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; color: var(--orange); letter-spacing: 3px; text-transform: uppercase; }
+  .logo-text span:last-child { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: white; letter-spacing: 2px; }
+  .slide-1-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 12vw, 140px); line-height: 0.9; color: white; letter-spacing: 4px; opacity: 0; animation: fadeUp 0.8s ease 0.9s forwards; }
+  .slide-1-title span { color: var(--orange); display: block; }
+  .slide-1-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-top: 24px; opacity: 0; animation: fadeUp 0.8s ease 1.3s forwards; }
+  .slide-1-cta { margin-top: 48px; font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 3px; text-transform: uppercase; opacity: 0; animation: pulse 2s ease 2s infinite, fadeUp 0.8s ease 1.8s forwards; }
+
+  /* ===== SLIDE 2 — PROBLEM ===== */
+  #slide-2 { background: var(--dark); flex-direction: column; align-items: flex-start; padding: 80px; }
+  .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
+  .problem-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; position: relative; overflow: hidden; }
+  .problem-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--orange), transparent); }
+  .problem-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+  .problem-tool { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: white; letter-spacing: 1px; margin-bottom: 8px; }
+  .problem-desc { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .problem-issue { margin-top: 16px; padding: 12px 16px; background: rgba(232,80,10,0.1); border-radius: 8px; font-size: 13px; color: var(--orange-light); border-left: 3px solid var(--orange); }
+
+  /* ===== SLIDE 3 — WHO IS IT FOR ===== */
+  #slide-3 { background: var(--darker); padding: 80px; flex-direction: column; align-items: flex-start; }
+  .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; margin-top: 40px; }
+  .role-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px; text-align: center; transition: all 0.3s ease; }
+  .role-card:hover { border-color: var(--orange); background: rgba(232,80,10,0.06); transform: translateY(-4px); }
+  .role-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+  .role-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .role-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+  /* ===== SLIDE 4 — SOLUTION ===== */
+  #slide-4 { background: linear-gradient(135deg, var(--darker) 0%, #0d1a0d 100%); padding: 80px; flex-direction: column; align-items: flex-start; }
+  .solution-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; margin-top: 40px; }
+  .solution-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(39,174,96,0.2); border-radius: 20px; padding: 32px; display: flex; gap: 20px; align-items: flex-start; transition: all 0.3s ease; }
+  .solution-card:hover { border-color: var(--green); background: rgba(39,174,96,0.06); transform: translateY(-2px); }
+  .solution-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--green); line-height: 1; flex-shrink: 0; opacity: 0.4; }
+  .solution-content h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .solution-content p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ===== SLIDE 5 — CLUB VIEW ===== */
+  #slide-5 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .club-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .club-table { background: rgba(255,255,255,0.03); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07); }
+  .club-table-header { padding: 16px 20px; background: rgba(232,80,10,0.12); border-bottom: 1px solid rgba(255,255,255,0.07); display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; }
+  .club-table-header span { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+  .club-row { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; transition: background 0.2s ease; }
+  .club-row:hover { background: rgba(255,255,255,0.03); }
+  .club-row:last-child { border-bottom: none; }
+  .club-player-name { font-size: 14px; color: white; font-weight: 600; }
+  .club-player-coach { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .trip-pill { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  .trip-pill.confirmed { background: rgba(39,174,96,0.15); color: #2ecc71; border: 1px solid rgba(39,174,96,0.3); }
+  .trip-pill.pending { background: rgba(255,190,50,0.15); color: #ffbe32; border: 1px solid rgba(255,190,50,0.3); }
+  .trip-pill.none { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.08); }
+  .club-stats { display: flex; flex-direction: column; gap: 16px; }
+  .club-stat-card { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }
+  .club-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--orange); line-height: 1; }
+  .club-stat-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 4px; }
+
+  /* ===== SLIDE 6 — FEATURES ===== */
+  #slide-6 { background: var(--darker); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; margin-top: 40px; }
+  .feature-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 28px; border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+  .feature-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: var(--orange); border-radius: 50%; opacity: 0.06; filter: blur(20px); }
+  .feature-emoji { font-size: 32px; margin-bottom: 16px; display: block; }
+  .feature-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .feature-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+  /* ===== SLIDE 7 — PARENT COMMUNICATION ===== */
+  #slide-7 { background: linear-gradient(135deg, var(--darker), #0d1a0d); padding: 80px; flex-direction: column; align-items: flex-start; }
+  .chat-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .chat-box { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 32px; border: 1px solid rgba(255,255,255,0.06); }
+  .chat-box-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 3px; color: var(--orange); text-transform: uppercase; margin-bottom: 20px; }
+  .old-way { display: flex; flex-direction: column; gap: 12px; }
+  .old-msg { padding: 12px 16px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+  .old-msg.coach { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.65); border-radius: 12px 12px 12px 2px; }
+  .old-msg.parent { background: rgba(232,80,10,0.08); color: rgba(255,200,150,0.8); border-radius: 12px 12px 2px 12px; text-align: right; border: 1px solid rgba(232,80,10,0.15); }
+  .old-msg .sender { font-size: 10px; color: rgba(255,255,255,0.3); margin-bottom: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .new-way { display: flex; flex-direction: column; gap: 12px; }
+  .new-item { padding: 16px 20px; background: rgba(39,174,96,0.06); border-radius: 12px; border: 1px solid rgba(39,174,96,0.15); display: flex; gap: 14px; align-items: flex-start; }
+  .new-item-icon { font-size: 20px; flex-shrink: 0; }
+  .new-item-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; color: white; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .new-item-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+  /* ===== SLIDE 8 — AUTOMATIC DATA ===== */
+  #slide-8 { background: var(--dark); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .pipeline { width: 100%; margin-top: 48px; display: flex; gap: 0; align-items: center; }
+  .pipe-step { flex: 1; text-align: center; position: relative; }
+  .pipe-step:not(:last-child)::after { content: '→'; position: absolute; right: -16px; top: 50%; transform: translateY(-50%); font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--orange); opacity: 0.5; z-index: 2; }
+  .pipe-icon { width: 72px; height: 72px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; }
+  .pipe-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; color: white; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .pipe-sub { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+  .pipe-step.active .pipe-icon { background: rgba(232,80,10,0.15); border-color: rgba(232,80,10,0.4); }
+  .cron-badge { margin: 48px auto 0; max-width: 500px; padding: 20px 32px; background: rgba(39,174,96,0.06); border: 1px solid rgba(39,174,96,0.2); border-radius: 14px; text-align: center; }
+  .cron-badge-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; color: #2ecc71; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .cron-badge-text { font-size: 13px; color: rgba(255,255,255,0.45); }
+
+  /* ===== SLIDE 9 — BENEFITS ===== */
+  #slide-9 { background: var(--darker); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .benefits-list { width: 100%; margin-top: 48px; display: flex; flex-direction: column; gap: 16px; }
+  .benefit-row { display: flex; gap: 24px; align-items: center; padding: 24px 32px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s ease; }
+  .benefit-row:hover { border-color: rgba(232,80,10,0.3); background: rgba(232,80,10,0.04); }
+  .benefit-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--orange); opacity: 0.3; flex-shrink: 0; width: 40px; line-height: 1; }
+  .benefit-text { font-size: 16px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+  .benefit-text strong { color: white; }
+
+  /* ===== SLIDE 10 — LIVE DEMO ===== */
+  #slide-10 { background: linear-gradient(135deg, #0d1a0d, var(--darker)); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .demo-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; margin-top: 40px; }
+  .demo-left { display: flex; flex-direction: column; gap: 20px; }
+  .demo-card { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.07); }
+  .demo-card-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: 3px; color: var(--orange); text-transform: uppercase; margin-bottom: 12px; }
+  .demo-card-content { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; }
+  .live-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(39,174,96,0.12); border: 1px solid rgba(39,174,96,0.3); border-radius: 100px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px; color: #2ecc71; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; animation: pulse 1.5s ease-in-out infinite; }
+  .demo-right { display: flex; flex-direction: column; gap: 16px; }
+  .screen-preview { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; }
+  .screen-bar { background: rgba(255,255,255,0.05); padding: 10px 16px; display: flex; gap: 6px; align-items: center; }
+  .screen-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .screen-dot.r { background: #ff5f57; }
+  .screen-dot.y { background: #ffbd2e; }
+  .screen-dot.g { background: #28c840; }
+  .screen-content { padding: 20px; }
+  .screen-row { padding: 10px 14px; border-radius: 8px; background: rgba(255,255,255,0.03); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+  .screen-name { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 600; }
+  .screen-detail { font-size: 11px; color: rgba(255,255,255,0.35); }
+  .screen-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .screen-badge.go { background: rgba(39,174,96,0.15); color: #2ecc71; }
+  .screen-badge.wait { background: rgba(255,190,50,0.15); color: #ffbe32; }
+
+  /* ===== FINALE ===== */
+  #slide-11 { background: var(--darker); }
+  .finale-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(232,80,10,0.12), transparent); }
+  .finale-content { position: relative; z-index: 10; text-align: center; max-width: 800px; padding: 40px; }
+  .finale-question { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 10vw, 110px); color: white; line-height: 0.95; letter-spacing: 3px; margin-bottom: 24px; }
+  .finale-question span { color: var(--orange); display: block; }
+  .finale-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 48px; }
+  .finale-stats { display: flex; gap: 48px; justify-content: center; margin-bottom: 56px; }
+  .finale-stat { text-align: center; }
+  .finale-stat-num { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: white; line-height: 1; }
+  .finale-stat-label { display: block; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+  .finale-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 40px; }
+  .finale-cta { padding: 18px 40px; background: var(--orange); color: white; text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; border-radius: 12px; transition: all 0.3s ease; }
+  .finale-cta:hover { background: var(--orange-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,80,10,0.4); }
+  .finale-cta-secondary { padding: 18px 40px; border: 1px solid rgba(255,255,255,0.2); color: white; text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; border-radius: 12px; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+  .finale-cta-secondary:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
+  .reference-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: rgba(255,255,255,0.25); letter-spacing: 2px; text-transform: uppercase; }
+  .reference-badge span { color: rgba(232,80,10,0.6); }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<a class="back-btn" href="https://www.janperutka.com">← Back to janperutka.com</a>
+<div id="progressBar" class="progress-bar"></div>
+<div id="slideCounter" class="slide-counter">01 / 11</div>
+
+<div class="nav" id="navDots"></div>
+<div class="nav-arrows">
+  <button class="nav-btn" onclick="prevSlide()">←</button>
+  <button class="nav-btn" onclick="nextSlide()">→</button>
+</div>
+
+<div class="slides">
+
+  <!-- SLIDE 1: INTRO -->
+  <div class="slide active" id="slide-1">
+    <div class="tennis-balls-container" id="ballsContainer"></div>
+    <div class="slide-1-content">
+      <div class="logo-area">
+        <div class="logo-icon">📅</div>
+        <div class="logo-text">
+          <span>janperutka.com</span>
+          <span>Tennis Planner</span>
+        </div>
+      </div>
+      <div class="slide-1-title">
+        The Whole Club.<br><span>One View.</span>
+      </div>
+      <div class="slide-1-sub">Club & Federation Tournament Planning</div>
+      <div class="slide-1-cta">Press any key or click arrows to continue</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide" id="slide-2">
+    <div class="slide-label animate-in">The Problem</div>
+    <div class="slide-title animate-in">Coordination chaos.<br><span style="color:var(--orange)">Every club knows it.</span></div>
+    <div class="problem-grid animate-in">
+      <div class="problem-card">
+        <span class="problem-icon">💬</span>
+        <div class="problem-tool">WhatsApp</div>
+        <div class="problem-desc">Trip planning happens across group chats. Messages get lost, answers come late, nobody has the full picture.</div>
+        <div class="problem-issue">Who's going? When? Nobody knows for sure.</div>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">📊</span>
+        <div class="problem-tool">Excel</div>
+        <div class="problem-desc">Tournaments are tracked in spreadsheets — if they're tracked at all. Manual updates, outdated data, overlapping trips.</div>
+        <div class="problem-issue">Duplicate trips, missing players, wasted costs.</div>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">📧</span>
+        <div class="problem-tool">Email</div>
+        <div class="problem-desc">Parents get informed via mass emails. Information arrives late, incomplete, or not at all.</div>
+        <div class="problem-issue">Parents don't know what's happening with their child.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: WHO IS IT FOR -->
+  <div class="slide" id="slide-3">
+    <div class="slide-label animate-in">Made For</div>
+    <div class="slide-title animate-in">Who uses it</div>
+    <div class="roles-grid">
+      <div class="role-card animate-in">
+        <span class="role-icon">🎾</span>
+        <div class="role-title">Coach</div>
+        <div class="role-desc">Sees all their players' tournaments and trips. Easily plans shared travel with colleagues. No more missed overlaps.</div>
+      </div>
+      <div class="role-card animate-in">
+        <span class="role-icon">🏢</span>
+        <div class="role-title">Club Management</div>
+        <div class="role-desc">Bird's-eye view of the entire club — all coaches, all players, all trips. Plan with confidence, approve with one click.</div>
+      </div>
+      <div class="role-card animate-in">
+        <span class="role-icon">👨‍👧</span>
+        <div class="role-title">Parent</div>
+        <div class="role-desc">Logs in, sees their child's tournaments and trips in real time. All info in one place — no need to ask the coach.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: SOLUTION -->
+  <div class="slide" id="slide-4">
+    <div class="slide-label animate-in">The Solution</div>
+    <div class="slide-title animate-in">Everything in<br><span style="color:var(--orange)">one platform</span></div>
+    <div class="solution-grid">
+      <div class="solution-card animate-in">
+        <div class="solution-num">01</div>
+        <div class="solution-content">
+          <h3>Club-wide overview</h3>
+          <p>Coach sees not just their own players — they see the whole club. Who's going where, when, with whom. No more information silos between coaches.</p>
+        </div>
+      </div>
+      <div class="solution-card animate-in">
+        <div class="solution-num">02</div>
+        <div class="solution-content">
+          <h3>Shared trip coordination</h3>
+          <p>Identify which players can travel together in seconds. Shared trips reduce costs and improve player experience — without any WhatsApp back-and-forth.</p>
+        </div>
+      </div>
+      <div class="solution-card animate-in">
+        <div class="solution-num">03</div>
+        <div class="solution-content">
+          <h3>Parent portal</h3>
+          <p>Parents log in and see everything about their child's schedule. Trip details, dates, instructions — always up to date, always accessible.</p>
+        </div>
+      </div>
+      <div class="solution-card animate-in">
+        <div class="solution-num">04</div>
+        <div class="solution-content">
+          <h3>Automatic tournament data</h3>
+          <p>Tournaments pulled automatically from ITF, Tennis Europe and national federation databases. No manual entry — data arrives ready to assign.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: CLUB VIEW DEMO -->
+  <div class="slide" id="slide-5">
+    <div class="slide-label animate-in">Platform Overview</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Coach sees the<br><span style="color:var(--orange)">whole club</span></div>
+    <div class="club-layout">
+      <div class="club-table animate-in">
+        <div class="club-table-header">
+          <span>Player</span>
+          <span>Tournament</span>
+          <span>Status</span>
+        </div>
+        <div class="club-row">
+          <div><div class="club-player-name">Novák, J.</div><div class="club-player-coach">Coach: Perutka</div></div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">ITF J1 Prostějov</div>
+          <div><span class="trip-pill confirmed">Confirmed</span></div>
+        </div>
+        <div class="club-row">
+          <div><div class="club-player-name">Kratochvílová, E.</div><div class="club-player-coach">Coach: Nováček</div></div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">Tennis Europe U14</div>
+          <div><span class="trip-pill confirmed">Confirmed</span></div>
+        </div>
+        <div class="club-row">
+          <div><div class="club-player-name">Skalický, M.</div><div class="club-player-coach">Coach: Perutka</div></div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">ČTS Junior Cup</div>
+          <div><span class="trip-pill pending">Pending</span></div>
+        </div>
+        <div class="club-row">
+          <div><div class="club-player-name">Horáček, T.</div><div class="club-player-coach">Coach: Kratochvíl</div></div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">ITF J3 Brno</div>
+          <div><span class="trip-pill confirmed">Confirmed</span></div>
+        </div>
+        <div class="club-row">
+          <div><div class="club-player-name">Veselá, K.</div><div class="club-player-coach">Coach: Nováček</div></div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">No upcoming trip</div>
+          <div><span class="trip-pill none">—</span></div>
+        </div>
+      </div>
+      <div class="club-stats animate-in">
+        <div class="club-stat-card">
+          <div class="club-stat-num">3</div>
+          <div class="club-stat-label">Coaches · 1 view</div>
+        </div>
+        <div class="club-stat-card">
+          <div class="club-stat-num">12</div>
+          <div class="club-stat-label">Trips this month</div>
+        </div>
+        <div class="club-stat-card">
+          <div class="club-stat-num" style="color:var(--green-light)">4 →1</div>
+          <div class="club-stat-label">Shared trip: 4 players, 1 car</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: FEATURES -->
+  <div class="slide" id="slide-6">
+    <div class="slide-label animate-in">Features</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Everything you need.<br><span style="color:var(--orange)">Nothing you don't.</span></div>
+    <div class="features-grid">
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">👁️</span>
+        <div class="feature-title">Full Club Visibility</div>
+        <div class="feature-desc">Management sees all coaches and players at once. Filter by coach, age group, or time period. Real-time updates.</div>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">🚗</span>
+        <div class="feature-title">Trip Coordination</div>
+        <div class="feature-desc">See which players can share a trip. One-click coordination — who's going, who needs to be picked up, who drops out.</div>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">📱</span>
+        <div class="feature-title">Parent Portal</div>
+        <div class="feature-desc">Parents log in and see their child's full schedule. Trip details, conditions, instructions — always up to date.</div>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">🔄</span>
+        <div class="feature-title">Auto Tournament Data</div>
+        <div class="feature-desc">Tournaments pulled automatically every month from ITF, Tennis Europe, and national federation. Zero manual entry.</div>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">🔒</span>
+        <div class="feature-title">Role-based Access</div>
+        <div class="feature-desc">Player, coach, admin — each sees exactly what they need. Secure Supabase Auth with row-level security.</div>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="feature-glow"></div>
+        <span class="feature-emoji">📧</span>
+        <div class="feature-title">Email Notifications</div>
+        <div class="feature-desc">Automatic emails when trips are confirmed or updated. Parents always informed — no mass messages needed.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: PARENT COMMUNICATION -->
+  <div class="slide" id="slide-7">
+    <div class="slide-label animate-in">Communication</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">No more chaos.<br><span style="color:var(--orange)">Parents in the loop.</span></div>
+    <div class="chat-layout">
+      <div class="chat-box animate-in">
+        <div class="chat-box-title">❌ Before — the old way</div>
+        <div class="old-way">
+          <div class="old-msg coach"><div class="sender">Coach</div>Tournament in Prague next Friday, anyone interested?</div>
+          <div class="old-msg parent"><div class="sender">Parent</div>Which tournament? Where exactly? What time?</div>
+          <div class="old-msg coach"><div class="sender">Coach</div>Hold on, let me check the details…</div>
+          <div class="old-msg parent"><div class="sender">Parent</div>Haven't heard anything in 3 days, is it still on?</div>
+          <div class="old-msg coach"><div class="sender">Coach</div>Sorry, I meant to reply! Yes, confirmed. Details in the email…</div>
+        </div>
+      </div>
+      <div class="chat-box animate-in">
+        <div class="chat-box-title">✅ After — Tennis Planner</div>
+        <div class="new-way">
+          <div class="new-item">
+            <span class="new-item-icon">📋</span>
+            <div>
+              <div class="new-item-title">Trip created by coach</div>
+              <div class="new-item-desc">Prague ITF J3 · Friday 20/6 · Departs 7:00 from Prostějov</div>
+            </div>
+          </div>
+          <div class="new-item">
+            <span class="new-item-icon">🔔</span>
+            <div>
+              <div class="new-item-title">Parent gets notification</div>
+              <div class="new-item-desc">Automatic email with all trip details. Parent logs in, confirms attendance.</div>
+            </div>
+          </div>
+          <div class="new-item">
+            <span class="new-item-icon">✅</span>
+            <div>
+              <div class="new-item-title">Coach sees confirmations</div>
+              <div class="new-item-desc">4/5 confirmed. Skalický pending. No phone calls needed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: AUTO DATA PIPELINE -->
+  <div class="slide" id="slide-8">
+    <div class="slide-label animate-in">Automation</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Data arrives.<br><span style="color:var(--orange)">You just assign.</span></div>
+    <div class="pipeline animate-in">
+      <div class="pipe-step active">
+        <div class="pipe-icon">🌐</div>
+        <div class="pipe-label">Sources</div>
+        <div class="pipe-sub">ITF · Tennis Europe<br>National federation</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">⚙️</div>
+        <div class="pipe-label">Scraper</div>
+        <div class="pipe-sub">Runs automatically<br>every month</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">🗄️</div>
+        <div class="pipe-label">Database</div>
+        <div class="pipe-sub">4-month lookahead<br>kept fresh</div>
+      </div>
+      <div class="pipe-step active">
+        <div class="pipe-icon">🎾</div>
+        <div class="pipe-label">Players</div>
+        <div class="pipe-sub">Relevant tournaments<br>by age & ranking</div>
+      </div>
+    </div>
+    <div class="cron-badge animate-in">
+      <div class="cron-badge-title">✓ Zero manual work</div>
+      <div class="cron-badge-text">Tournaments update automatically every month. Coaches see only relevant events for each player's age group and ranking level.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: KEY BENEFITS -->
+  <div class="slide" id="slide-9">
+    <div class="slide-label animate-in">Why Tennis Planner</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Real results.<br><span style="color:var(--orange)">Real club.</span></div>
+    <div class="benefits-list">
+      <div class="benefit-row animate-in">
+        <div class="benefit-num">1</div>
+        <div class="benefit-text"><strong>Coach sees the whole club</strong> — not just their own players, but every coach's schedule. No more overlaps, no more surprises.</div>
+      </div>
+      <div class="benefit-row animate-in">
+        <div class="benefit-num">2</div>
+        <div class="benefit-text"><strong>Shared trips organise themselves</strong> — clear view of who travels when means a 4-player shared trip takes 1 minute, not a week of WhatsApp.</div>
+      </div>
+      <div class="benefit-row animate-in">
+        <div class="benefit-num">3</div>
+        <div class="benefit-text"><strong>Parents always informed</strong> — they log in, see everything, confirm with one click. No mass emails, no unanswered messages.</div>
+      </div>
+      <div class="benefit-row animate-in">
+        <div class="benefit-num">4</div>
+        <div class="benefit-text"><strong>Tournament data comes automatically</strong> — zero manual entry. Correct tournaments shown to the right players based on age and ranking.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: LIVE & PROVEN -->
+  <div class="slide" id="slide-10">
+    <div class="slide-label animate-in">In Production</div>
+    <div class="slide-title animate-in" style="font-size:clamp(40px,6vw,72px)">Running today at<br><span style="color:var(--orange)">TK Agrofert Prostějov</span></div>
+    <div class="demo-layout">
+      <div class="demo-left animate-in">
+        <div class="demo-card">
+          <div class="live-badge"><div class="live-dot"></div>Live in production</div>
+          <div class="demo-card-label">Status</div>
+          <div class="demo-card-content">
+            Tennis Planner has been running at TK Agrofert Prostějov — one of the Czech Republic's top clubs. Multiple coaches, dozens of players, real trips coordinated every week.
+          </div>
+        </div>
+        <div class="demo-card">
+          <div class="demo-card-label">Stack</div>
+          <div class="demo-card-content">
+            Next.js 16 · React 19 · Supabase Auth &amp; DB · Vercel · Resend for emails · GitHub Actions for tournament cache
+          </div>
+        </div>
+        <div class="demo-card">
+          <div class="demo-card-label">Scalable for federations</div>
+          <div class="demo-card-content">
+            The same platform scales from a single club to an entire federation — central overview, multiple clubs, national tournament calendar.
+          </div>
+        </div>
+      </div>
+      <div class="demo-right animate-in">
+        <div class="screen-preview">
+          <div class="screen-bar">
+            <div class="screen-dot r"></div><div class="screen-dot y"></div><div class="screen-dot g"></div>
+            <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-left:8px">Tennis Planner · Club View</span>
+          </div>
+          <div class="screen-content">
+            <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700">June 2026 · Active Trips</div>
+            <div class="screen-row">
+              <div><div class="screen-name">Novák, J.</div><div class="screen-detail">Prague ITF J3 · Jun 20</div></div>
+              <span class="screen-badge go">confirmed</span>
+            </div>
+            <div class="screen-row">
+              <div><div class="screen-name">Kratochvílová, E.</div><div class="screen-detail">Tennis Europe · Jun 22</div></div>
+              <span class="screen-badge go">confirmed</span>
+            </div>
+            <div class="screen-row">
+              <div><div class="screen-name">Skalický, M.</div><div class="screen-detail">ČTS Junior Cup · Jun 24</div></div>
+              <span class="screen-badge wait">pending</span>
+            </div>
+            <div style="margin-top:14px;padding:10px 14px;background:rgba(39,174,96,0.07);border-radius:8px;border:1px solid rgba(39,174,96,0.15)">
+              <div style="font-size:11px;color:#2ecc71;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">💡 Shared trip opportunity</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.45)">Novák + Horáček → Prague Jun 20. Same car, save ~1,200 CZK.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: FINALE -->
+  <div class="slide" id="slide-11">
+    <div class="finale-bg"></div>
+    <div class="finale-content">
+      <div class="finale-question">
+        Ready to organise<br><span>your club?</span>
+      </div>
+      <div class="finale-sub">Tennis Planner · janperutka.com</div>
+      <div class="finale-stats">
+        <div class="finale-stat">
+          <span class="finale-stat-num">3</span>
+          <span class="finale-stat-label">User roles</span>
+        </div>
+        <div class="finale-stat">
+          <span class="finale-stat-num">0</span>
+          <span class="finale-stat-label">Manual data entry</span>
+        </div>
+        <div class="finale-stat">
+          <span class="finale-stat-num">1</span>
+          <span class="finale-stat-label">Place for everything</span>
+        </div>
+      </div>
+      <div class="finale-buttons">
+        <a class="finale-cta" href="mailto:jperutka@proton.me?subject=Interest%20in%20Tennis%20Planner&body=Hi%20Jan%2C%0D%0A%0D%0AI%20watched%20your%20presentation%20and%20I%27d%20like%20to%20learn%20more%20about%20Tennis%20Planner%20for%20our%20club%20%2F%20federation.%0D%0A%0D%0ABest%20regards%2C">
+          Get in touch →
+        </a>
+      </div>
+      <div class="reference-badge">Live at · <span>TK Agrofert Prostějov</span> · Since 2025</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  const navDots = document.getElementById('navDots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    navDots.appendChild(dot);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    navDots.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    navDots.children[current].classList.add('active');
+    document.getElementById('slideCounter').textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  function createBall() {
+    const container = document.getElementById('ballsContainer');
+    const ball = document.createElement('div');
+    ball.className = 'tball';
+    const size = 20 + Math.random() * 40;
+    ball.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*2}s;`;
+    container.appendChild(ball);
+    setTimeout(() => ball.remove(), 8000);
+  }
+  setInterval(createBall, 300);
+  for (let i = 0; i < 8; i++) setTimeout(createBall, i * 200);
+
+  document.getElementById('progressBar').style.width = (1 / total * 100) + '%';
+</script>
+</body>
+</html>
