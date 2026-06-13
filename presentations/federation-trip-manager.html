@@ -38,29 +38,6 @@
   .nav-btn:hover { background: var(--orange); border-color: var(--orange); }
 
   .slide-counter { position: fixed; top: 24px; right: 40px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 2px; z-index: 100; }
-  .back-home {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 120;
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 11px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: rgba(0,0,0,0.55);
-    color: var(--white);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    text-decoration: none;
-    transition: background 0.2s ease, border-color 0.2s ease;
-    backdrop-filter: blur(8px);
-  }
-  .back-home:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.3);
-  }
 
   .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--orange); transition: width 0.4s ease; z-index: 200; }
 
@@ -150,6 +127,13 @@
   .feature-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
 
   /* ===== SLIDE 7 — SCOUT ===== */
+  #slide-data { background: linear-gradient(135deg, #0d0d0d, #0a1a0a); padding: 60px 80px; flex-direction: column; align-items: flex-start; }
+  .data-blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; width: 100%; margin: 32px 0; }
+  .data-block { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 32px 28px; display: flex; flex-direction: column; gap: 14px; }
+  .data-block-emoji { font-size: 36px; }
+  .data-block-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; color: #e8e8e8; }
+  .data-block-desc { font-family: 'Barlow', sans-serif; font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+  .data-closing { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 3vw, 38px); letter-spacing: 2px; color: var(--orange); margin-top: 8px; }
   #slide-7 { background: linear-gradient(135deg, var(--darker), #001a2e); padding: 80px; flex-direction: column; align-items: flex-start; }
   .timeline { width: 100%; margin-top: 48px; position: relative; }
   .timeline::before { content: ''; position: absolute; left: 80px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--orange), var(--blue)); }
@@ -245,10 +229,9 @@
 </head>
 <body>
 
-<a class="back-home" href="https://www.janperutka.com">← Back to janperutka.com</a>
 <div class="cursor" id="cursor"></div>
 <div class="progress-bar" id="progressBar"></div>
-<div class="slide-counter" id="slideCounter">01 / 12</div>
+<div class="slide-counter" id="slideCounter">01 / 13</div>
 <div class="nav" id="navDots"></div>
 <div class="nav-arrows">
   <button class="nav-btn" onclick="prevSlide()">←</button>
@@ -444,7 +427,32 @@
     </div>
   </div>
 
-  <!-- SLIDE 7: SCOUT DATABASE -->
+  <!-- SLIDE 7: DATA IS THE REAL ASSET -->
+  <div class="slide" id="slide-data">
+    <div class="slide-label animate-in">Long-term value</div>
+    <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,62px)">Data is the<br><span style="color:var(--orange)">real asset.</span></div>
+    <p class="slide-perex animate-in" style="max-width:760px; margin-top:8px; font-size:17px; color:rgba(255,255,255,0.65); line-height:1.7;">Every trip. Every match. Every evaluation. Over time, this becomes something no federation has — a complete picture of player development across years.</p>
+    <div class="data-blocks animate-in">
+      <div class="data-block">
+        <div class="data-block-emoji">🗂️</div>
+        <div class="data-block-title">Trip history</div>
+        <p class="data-block-desc">Every destination, budget, result — searchable, comparable, ready for reports.</p>
+      </div>
+      <div class="data-block">
+        <div class="data-block-emoji">📊</div>
+        <div class="data-block-title">Player evaluations</div>
+        <p class="data-block-desc">Match performance and behaviour rated after every tournament. Trends visible across a full season.</p>
+      </div>
+      <div class="data-block">
+        <div class="data-block-emoji">📈</div>
+        <div class="data-block-title">Federation intelligence</div>
+        <p class="data-block-desc">Which players improve on international trips? Which tournaments deliver results? Answers that used to require years of manual work.</p>
+      </div>
+    </div>
+    <div class="data-closing animate-in">The longer you use it, the more valuable it gets.</div>
+  </div>
+
+  <!-- SLIDE 8: SCOUT DATABASE -->
   <div class="slide" id="slide-7">
     <div class="slide-label animate-in">Long-term vision</div>
     <div class="slide-title animate-in" style="font-size:clamp(35px,5vw,68px)">Opponent database<br><span style="color:var(--orange)">that builds itself.</span></div>
