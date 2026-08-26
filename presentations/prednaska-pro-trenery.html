@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Přednáška pro trenéry — Statistické programy</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a1628;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  /* SLIDESHOW */
+  .slideshow {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .slide.active { display: flex; }
+
+  /* IMAGE SLIDES */
+  .slide-img {
+    background: #000;
+    flex-direction: column;
+  }
+  .slide-img img {
+    max-width: 100%;
+    max-height: 100vh;
+    object-fit: contain;
+    display: block;
+  }
+  .slide-img .label {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    padding: 5px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* TEXT SLIDES */
+  .slide-text {
+    background: #0a1628;
+    flex-direction: column;
+    padding: 60px 80px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .slide-text .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #3ecfb2;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .slide-text h2 {
+    font-size: clamp(26px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 32px;
+  }
+
+  .divider {
+    width: 48px;
+    height: 3px;
+    background: #3ecfb2;
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  .program-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .program-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 28px;
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid #3ecfb2;
+    border-radius: 0 10px 10px 0;
+  }
+  .program-item .num {
+    color: #3ecfb2;
+    font-weight: 700;
+    font-size: 22px;
+    min-width: 32px;
+  }
+  .program-item .name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #3ecfb2;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .group-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3ecfb2;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .group-label.mt {
+    margin-top: 28px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 48px;
+    width: 100%;
+  }
+
+  .one-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .one-col.narrow {
+    max-width: 480px;
+  }
+
+  .drill-groups {
+    display: flex;
+    gap: 56px;
+    width: 100%;
+    align-items: flex-start;
+  }
+  .drill-groups .group-rozehravka {
+    flex: 0 0 240px;
+  }
+  .drill-groups .group-standard {
+    flex: 1;
+  }
+
+  .drill-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 16px;
+    color: rgba(255,255,255,0.85);
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    line-height: 1.4;
+  }
+  .drill-item .num {
+    color: #3ecfb2;
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 22px;
+  }
+
+  .drill-item a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(255,255,255,0.3);
+  }
+  .drill-item a:hover {
+    color: #3ecfb2;
+    border-bottom-color: #3ecfb2;
+  }
+
+  .output-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .output-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid #3ecfb2;
+    border-radius: 0 10px 10px 0;
+  }
+  .output-item .icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .output-item .text h3 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .output-item .text p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.5;
+  }
+
+  .slide-text.centered {
+    align-items: center;
+    text-align: center;
+  }
+
+  .qr-code {
+    width: 240px;
+    height: 240px;
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+
+  .qr-hint {
+    margin-top: 20px;
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .slide-text.compact h2 {
+    margin-bottom: 16px;
+  }
+  .slide-text.compact .divider {
+    margin-bottom: 16px;
+  }
+  .slide-text.compact .group-label {
+    margin-bottom: 8px;
+  }
+  .slide-text.compact .group-label.mt {
+    margin-top: 16px;
+  }
+  .slide-text.compact .drill-item {
+    padding: 4px 0;
+  }
+
+  .corner-qr {
+    position: absolute;
+    top: 40px;
+    right: 56px;
+    text-align: center;
+  }
+  .corner-qr img {
+    width: 84px;
+    height: 84px;
+    background: #fff;
+    padding: 6px;
+    border-radius: 8px;
+    display: block;
+  }
+  .corner-qr span {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* NAVIGATION */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.2); }
+
+  .nav-counter {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.05em;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: #3ecfb2;
+    transition: width 0.3s ease;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="slideshow" id="slideshow">
+
+  <!-- Slide 1: O mně -->
+  <div class="slide slide-text active">
+    <div class="corner-qr">
+      <img src="img-prednaska-pro-trenery/qr-prezentace.png" alt="QR na celou prezentaci">
+      <span>Celá prezentace</span>
+    </div>
+    <div class="eyebrow">O mně</div>
+    <h2>Jan Perůtka</h2>
+    <div class="divider"></div>
+    <div class="one-col narrow">
+      <div class="drill-item">Mgr. Trenérství a management sportu</div>
+      <div class="drill-item">Trenér 1. třídy</div>
+      <div class="drill-item">Akreditovaný mentální kouč</div>
+      <div class="drill-item">AI implementátor</div>
+    </div>
+    <div class="group-label mt">Absolvované kurzy</div>
+    <div class="one-col narrow">
+      <div class="drill-item">Future AI Leader 2024, 2025</div>
+      <div class="drill-item">Craig O'Shannessy</div>
+      <div class="drill-item">Mark Kovacs — Tennis Serve Specialist</div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Statistické programy -->
+  <div class="slide slide-text">
+    <h2>Nástroje pro sběr a analýzu dat</h2>
+    <div class="divider"></div>
+    <div class="program-list">
+      <div class="program-item"><span class="num">1</span><span class="name">ProTracker</span></div>
+      <div class="program-item"><span class="num">2</span><span class="name">Dartfish</span></div>
+      <div class="program-item"><span class="num">3</span><span class="name">SwingVision</span></div>
+      <div class="program-item"><span class="num">4</span><span class="name">Wingfield</span></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Rozdělení kurtu -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/ABC (1).png" alt="Rozdělení kurtu">
+    <div class="label">Rozdělení kurtu · zóny DD–AA</div>
+  </div>
+
+  <!-- Slide 4: Ukázka cvičení na rozehrávku — Střed -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/1. Střed 4 min.jpg" alt="Rozehrávka — Střed">
+    <div class="label">Rozehrávka · Střed</div>
+  </div>
+
+  <!-- Slide 5: Ukázka cvičení na rozehrávku — FH kříž -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/5. FH kříž placement.jpg" alt="Rozehrávka — FH kříž">
+    <div class="label">Rozehrávka · FH kříž</div>
+  </div>
+
+  <!-- Slide 6: Hot zone -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/hot-zone-crop.png" alt="Hot zone — pokrytí kurtu">
+    <div class="label">Hot zone · pokrytí kurtu</div>
+  </div>
+
+  <!-- Slide 7: Rozehrávka + standardizovaná cvičení -->
+  <div class="slide slide-text">
+    <div class="eyebrow">Tenisová testovací baterie ČTS</div>
+    <h2>Rozehrávka a testovací cvičení</h2>
+    <div class="divider"></div>
+
+    <div class="drill-groups">
+      <div class="group-rozehravka">
+        <div class="group-label">Rozehrávka</div>
+        <div class="one-col">
+          <div class="drill-item"><span class="num">1</span> Střed</div>
+          <div class="drill-item"><span class="num">2</span> FH kříž</div>
+          <div class="drill-item"><span class="num">3</span> BH kříž</div>
+        </div>
+      </div>
+      <div class="group-standard">
+        <div class="group-label">9 standardizovaných cvičení</div>
+        <div class="two-col">
+          <div class="drill-item"><span class="num">1</span> Obranné 2:1 do FH</div>
+          <div class="drill-item"><span class="num">6</span> Útočné 1:1 z FH</div>
+          <div class="drill-item"><span class="num">2</span> Útočné 2:1 z FH</div>
+          <div class="drill-item"><span class="num">7</span> Obranné 1:1 do BH</div>
+          <div class="drill-item"><span class="num">3</span> Obranné 2:1 do BH</div>
+          <div class="drill-item"><span class="num">8</span> Útočné 1:1 z BH</div>
+          <div class="drill-item"><span class="num">4</span> Útočné 2:1 do FH</div>
+          <div class="drill-item"><span class="num">9</span> 1. a 2. servis — 6 pokusů do každé zóny 1–6</div>
+          <div class="drill-item"><span class="num">5</span> Obranné 1:1 do FH</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Co data říkají -->
+  <div class="slide slide-text">
+    <div class="eyebrow">Výstup pro hráče a trenéra</div>
+    <h2>Co data říkají</h2>
+    <div class="divider"></div>
+    <div class="output-list">
+      <div class="output-item">
+        <div class="icon">🏆</div>
+        <div class="text">
+          <h3>Benchmarking s TOP hráči z ČR</h3>
+          <p>Hráč okamžitě vidí, kde stojí vůči nejlepším ve své věkové kategorii</p>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="icon">🔍</div>
+        <div class="text">
+          <h3>Silné a slabé stránky</h3>
+          <p>Přehled výsledků z každého cvičení — co funguje, na co se zaměřit</p>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="icon">🎾</div>
+        <div class="text">
+          <h3>Analýza servisu</h3>
+          <p>Přesnost a rychlost 1. a 2. servisu do zón 1–6</p>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="icon">💬</div>
+        <div class="text">
+          <h3>Slovní hodnocení trenéra</h3>
+          <p>Osobní zpětná vazba a doporučení, na čem dál pracovat</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Aplikace pro hráče a trenéry -->
+  <div class="slide slide-text">
+    <div class="eyebrow">Aplikace pro hráče a trenéry</div>
+    <h2>Profil hráče na jednom místě</h2>
+    <div class="divider"></div>
+    <div class="output-list">
+      <div class="output-item">
+        <div class="icon">👤</div>
+        <div class="text">
+          <h3>Profil hráče</h3>
+          <p>Dlouhodobé sledování vývoje v čase</p>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="icon">📥</div>
+        <div class="text">
+          <h3>Data z libovolného nástroje</h3>
+          <p>Nahrajete statistiky z Wingfieldu, SwingVision, Dartfish nebo ProTrackeru</p>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="icon">🌍</div>
+        <div class="text">
+          <h3>Celková analýza a benchmarking</h3>
+          <p>Aplikace data vyhodnotí a porovná s hráči po celém světě</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Dashboard — Moji hráči -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/madstats-profil-1.png" alt="Dashboard — Moji hráči">
+    <div class="label">Dashboard · Moji hráči</div>
+  </div>
+
+  <!-- Slide 11: Nahrání Wingfield exportu -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/madstats-profil-2.png" alt="Nahrání Wingfield exportu">
+    <div class="label">Nahrání dat · export Wingfield</div>
+  </div>
+
+  <!-- Slide 12: Profil hráče — statistiky -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/madstats-profil-3.png" alt="Profil hráče — statistiky">
+    <div class="label">Profil hráče · statistiky</div>
+  </div>
+
+  <!-- Slide 13: Profil hráče — další statistiky -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/madstats-profil-4.png" alt="Profil hráče — další statistiky">
+    <div class="label">Profil hráče · statistiky</div>
+  </div>
+
+  <!-- Slide 14: Profil hráče — vývoj v čase -->
+  <div class="slide slide-img">
+    <img src="img-prednaska-pro-trenery/madstats-profil-5.png" alt="Profil hráče — vývoj v čase">
+    <div class="label">Profil hráče · vývoj v čase</div>
+  </div>
+
+  <!-- Slide 15: Doporučené zdroje -->
+  <div class="slide slide-text compact">
+    <div class="eyebrow">Na závěr</div>
+    <h2>Doporučené zdroje</h2>
+    <div class="divider"></div>
+
+    <div class="group-label">Kurzy a odborníci</div>
+    <div class="one-col">
+      <div class="drill-item"><a href="https://drimalka.com/fail" target="_blank">Future AI Leader</a></div>
+      <div class="drill-item"><a href="https://braingametennis.com/" target="_blank">Craig O'Shannessy</a></div>
+      <div class="drill-item"><a href="https://kovacsinstitute.com/drmarkkovacs.html" target="_blank">Mark Kovacs</a></div>
+    </div>
+
+    <div class="group-label mt">Mentální koučink</div>
+    <div class="one-col">
+      <div class="drill-item"><a href="https://eschola.cz/" target="_blank">eSchola.cz</a> — rozvoj mentálního koučinku, pro sebe i svěřence</div>
+    </div>
+
+    <div class="group-label mt">Doporučené knihy</div>
+    <div class="one-col">
+      <div class="drill-item">Sport je bolest — Michal Novotný</div>
+      <div class="drill-item">Houževnatost — Angela Duckworth</div>
+      <div class="drill-item">Nastavení mysli — Carol Dweck</div>
+      <div class="drill-item">Emoční inteligence — Daniel Goleman</div>
+    </div>
+
+    <div class="group-label mt">Kontakt</div>
+    <div class="one-col">
+      <div class="drill-item"><a href="https://janperutka.com" target="_blank">janperutka.com</a></div>
+      <div class="drill-item"><a href="https://www.linkedin.com/in/jan-perutka/" target="_blank">LinkedIn</a></div>
+    </div>
+  </div>
+
+  <!-- Slide 16: QR kód na dotazník -->
+  <div class="slide slide-text centered">
+    <div class="eyebrow">Zpětná vazba</div>
+    <h2>Ohodnoťte přednášku</h2>
+    <div class="divider"></div>
+    <img src="img-prednaska-pro-trenery/qr-dotaznik.png" alt="QR kód na dotazník" class="qr-code">
+    <p class="qr-hint">Naskenujte telefonem a vyplňte krátký dotazník</p>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prev" onclick="changeSlide(-1)">‹</button>
+  <span class="nav-counter" id="counter">1 / 16</span>
+  <button class="nav-btn" id="next" onclick="changeSlide(1)">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  let current = 0;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+  }
+
+  function changeSlide(dir) {
+    showSlide(current + dir);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      changeSlide(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      changeSlide(-1);
+    }
+  });
+
+  // Click anywhere on image slides to advance
+  document.querySelectorAll('.slide-img').forEach(slide => {
+    slide.addEventListener('click', () => changeSlide(1));
+  });
+
+  // Init progress
+  progress.style.width = `${(1 / slides.length) * 100}%`;
+</script>
+</body>
+</html>
