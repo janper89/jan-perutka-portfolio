@@ -13,14 +13,18 @@
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     overflow: hidden;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* SLIDESHOW */
   .slideshow {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     position: relative;
   }
 
@@ -336,6 +340,99 @@
     transition: width 0.3s ease;
     z-index: 100;
   }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .slide-text {
+      padding: 28px 20px;
+    }
+    .slide-text h2 {
+      font-size: clamp(20px, 6.5vw, 30px);
+      margin-bottom: 20px;
+    }
+    .divider {
+      margin-bottom: 18px;
+    }
+    .corner-qr {
+      top: 14px;
+      right: 14px;
+    }
+    .corner-qr img {
+      width: 48px;
+      height: 48px;
+      padding: 4px;
+      border-radius: 6px;
+    }
+    .corner-qr span {
+      font-size: 8px;
+      margin-top: 4px;
+    }
+    .drill-groups {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .drill-groups .group-rozehravka {
+      flex: none;
+      width: 100%;
+    }
+    .two-col {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+    .one-col.narrow {
+      max-width: 100%;
+    }
+    .program-item {
+      padding: 16px 18px;
+      gap: 16px;
+    }
+    .program-item .name {
+      font-size: 18px;
+    }
+    .output-item {
+      padding: 16px 18px;
+      gap: 14px;
+    }
+    .output-item .icon {
+      font-size: 22px;
+    }
+    .output-item .text h3 {
+      font-size: 16px;
+    }
+    .output-item .text p {
+      font-size: 13px;
+    }
+    .drill-item {
+      font-size: 14px;
+    }
+    .qr-code {
+      width: 170px;
+      height: 170px;
+      padding: 12px;
+    }
+    .qr-hint {
+      font-size: 13px;
+      padding: 0 12px;
+      text-align: center;
+    }
+    .nav {
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      gap: 12px;
+    }
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+    .slide-img .label {
+      font-size: 11px;
+      padding: 4px 12px;
+      bottom: 12px;
+      max-width: 90vw;
+      white-space: normal;
+      text-align: center;
+    }
+  }
 </style>
 </head>
 <body>
@@ -611,13 +708,31 @@
     }
   });
 
-  // Click anywhere on image slides to advance
-  document.querySelectorAll('.slide-img').forEach(slide => {
-    slide.addEventListener('click', () => changeSlide(1));
-  });
-
   // Init progress
   progress.style.width = `${(1 / slides.length) * 100}%`;
+
+  // Touch swipe navigation (mobile)
+  let touchStartX = 0, touchStartY = 0, touchHandled = false;
+  const swimEl = document.getElementById('slideshow');
+  swimEl.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+    touchHandled = false;
+  }, { passive: true });
+  swimEl.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      touchHandled = true;
+      changeSlide(dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
+  document.querySelectorAll('.slide-img').forEach(slide => {
+    slide.addEventListener('click', () => {
+      if (touchHandled) { touchHandled = false; return; }
+      changeSlide(1);
+    });
+  });
 </script>
 </body>
 </html>
