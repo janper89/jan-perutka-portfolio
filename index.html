@@ -483,6 +483,149 @@
       display: block;
     }
 
+    /* ── PHOTO FOLD (solo → 50 coaches) ── */
+    .photo-fold {
+      display: block;
+      width: 100%;
+      margin: 0 auto 2.6rem;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-align: center;
+      color: inherit;
+      font-family: inherit;
+    }
+    .photo-fold:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 8px;
+      border-radius: 12px;
+    }
+    .photo-fold-stage {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 18px 48px 16px;
+      overflow: visible;
+    }
+    .photo-fold-stack {
+      position: relative;
+      display: block;
+      flex: 0 0 auto;
+      width: min(300px, 64vw);
+      aspect-ratio: 3 / 4;
+      transition: width 0.55s cubic-bezier(.22,.8,.24,1), aspect-ratio 0.55s cubic-bezier(.22,.8,.24,1);
+    }
+    .photo-fold[aria-expanded="true"] .photo-fold-stack {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+    }
+    .photo-fold-front,
+    .photo-fold-back {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.42);
+      display: block;
+    }
+    .photo-fold-back {
+      z-index: 0;
+      object-position: center 32%;
+      transform: translate(22%, 8%) rotate(4deg);
+      filter: brightness(0.78) saturate(0.92);
+      transition: transform 0.55s cubic-bezier(.22,.8,.24,1), filter 0.4s ease, opacity 0.4s ease;
+    }
+    .photo-fold-front {
+      z-index: 2;
+      object-position: center 42%;
+      transition: opacity 0.4s ease, transform 0.55s cubic-bezier(.22,.8,.24,1);
+    }
+    .photo-fold:hover:not([aria-expanded="true"]) .photo-fold-back {
+      transform: translate(26%, 8%) rotate(5deg);
+      filter: brightness(0.9);
+    }
+    .photo-fold:hover:not([aria-expanded="true"]) .photo-fold-front {
+      transform: translateY(-3px);
+    }
+    .photo-fold[aria-expanded="true"] .photo-fold-back {
+      transform: none;
+      filter: none;
+      z-index: 3;
+    }
+    .photo-fold[aria-expanded="true"] .photo-fold-front {
+      opacity: 0;
+      transform: translateX(-10%) scale(0.96);
+      pointer-events: none;
+    }
+    .photo-fold-pin {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      z-index: 4;
+      width: 18px;
+      height: 18px;
+      margin-left: -9px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0,230,118,0.4), inset 0 -2px 0 rgba(0,0,0,0.2);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .photo-fold-pin::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 14px;
+      width: 2px;
+      height: 14px;
+      background: linear-gradient(#cfd8dc, #90a4ae);
+      transform: translateX(-50%);
+      border-radius: 1px;
+    }
+    .photo-fold[aria-expanded="true"] .photo-fold-pin {
+      opacity: 0;
+      transform: scale(0.6);
+      pointer-events: none;
+    }
+    .photo-fold-hint {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .photo-fold-hint em {
+      color: var(--green);
+      font-style: normal;
+    }
+    .photo-fold-hint-open { display: none; }
+    .photo-fold[aria-expanded="true"] .photo-fold-hint-closed { display: none; }
+    .photo-fold[aria-expanded="true"] .photo-fold-hint-open { display: block; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .photo-fold-stack,
+      .photo-fold-front,
+      .photo-fold-back,
+      .photo-fold-pin {
+        transition: none;
+      }
+    }
+    @media (max-width: 768px) {
+      .photo-fold-stage { padding: 10px 22px 6px; }
+      .photo-fold-back { transform: translate(16%, 7%) rotate(3.5deg); }
+      .photo-fold:hover:not([aria-expanded="true"]) .photo-fold-back {
+        transform: translate(18%, 7%) rotate(4deg);
+      }
+      .photo-fold[aria-expanded="true"] .photo-fold-stack {
+        aspect-ratio: 4 / 3;
+      }
+    }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -601,6 +744,43 @@
   <section class="gallery-section">
     <div class="gallery-wrap">
       <div class="section-title gallery-title" data-en="Gallery" data-cs="Galerie" data-pl="Galeria" data-de="Galerie">Gallery</div>
+      <button
+        class="photo-fold"
+        id="photo-fold"
+        type="button"
+        aria-expanded="false"
+        aria-label="Show group photo of 50 coaches"
+      >
+        <span class="photo-fold-stage">
+          <span class="photo-fold-stack">
+            <img
+              class="photo-fold-back"
+              src="images/gallery/coaches-group.jpg"
+              alt="Group of around 50 tennis coaches on a clay court"
+              width="1024"
+              height="768"
+            >
+            <img
+              class="photo-fold-front"
+              src="images/gallery/jan-on-court.jpg"
+              alt="Jan Perutka on a clay court"
+              width="768"
+              height="1024"
+            >
+            <span class="photo-fold-pin" aria-hidden="true"></span>
+          </span>
+        </span>
+        <span class="photo-fold-hint photo-fold-hint-closed"
+              data-en="Click to unfold · <em>50 coaches</em>"
+              data-cs="Rozklikni · <em>50 trenérů</em>"
+              data-pl="Kliknij · <em>50 trenerów</em>"
+              data-de="Aufklappen · <em>50 Trainer</em>">Click to unfold · <em>50 coaches</em></span>
+        <span class="photo-fold-hint photo-fold-hint-open"
+              data-en="That’s me — with <em>50 coaches</em>. Click to fold back."
+              data-cs="To jsem já — s <em>50 trenéry</em>. Klikni pro zpět."
+              data-pl="To ja — z <em>50 trenerami</em>. Kliknij, aby złożyć."
+              data-de="Das bin ich — mit <em>50 Trainern</em>. Klick zum Zurückklappen.">That’s me — with <em>50 coaches</em>. Click to fold back.</span>
+      </button>
       <div class="gallery-grid">
         <img class="gallery-img" src="images/gallery/winter-cup-gold.jpg" alt="Winter Cup — Gold medal" loading="lazy">
         <img class="gallery-img" src="images/gallery/coaching-clay.jpg" alt="Coaching on clay court" loading="lazy">
@@ -831,6 +1011,7 @@
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
       });
+      syncPhotoFoldLabel();
     }
 
     // Smooth reveal on scroll
@@ -849,6 +1030,28 @@
       el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
       observer.observe(el);
     });
+
+    const photoFold = document.getElementById('photo-fold');
+    const photoFoldLabels = {
+      en: { closed: 'Show group photo of 50 coaches', open: 'Fold back to the photo of Jan on court' },
+      cs: { closed: 'Zobrazit skupinovou fotku 50 trenérů', open: 'Složit zpět na fotku Jana na kurtu' },
+      pl: { closed: 'Pokaż zdjęcie grupowe 50 trenerów', open: 'Złóż z powrotem do zdjęcia Jana na korcie' },
+      de: { closed: 'Gruppenfoto mit 50 Trainern zeigen', open: 'Zurück zur Aufnahme von Jan auf dem Platz' }
+    };
+    function syncPhotoFoldLabel() {
+      if (!photoFold) return;
+      const open = photoFold.getAttribute('aria-expanded') === 'true';
+      const pack = photoFoldLabels[currentLang] || photoFoldLabels.en;
+      photoFold.setAttribute('aria-label', open ? pack.open : pack.closed);
+    }
+    if (photoFold) {
+      photoFold.addEventListener('click', () => {
+        const open = photoFold.getAttribute('aria-expanded') === 'true';
+        photoFold.setAttribute('aria-expanded', String(!open));
+        syncPhotoFoldLabel();
+        photoFold.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
   </script>
 </body>
 </html>
