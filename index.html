@@ -437,6 +437,59 @@
     .collab-item { display: flex; align-items: center; }
     .collab-name { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
     .collab-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); }
+    .collab-note { font-size: 13px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; text-align: center; padding: 0 16px; }
+    .collab-note::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); flex-shrink: 0; }
+
+    .card-traction {
+      display: flex; align-items: center; gap: 0.45rem;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── RECEIPT DEMO (illustrative only, no app access) ── */
+    .rdemo {
+      margin-top: 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 0.35rem;
+      user-select: none;
+      -webkit-user-select: none;
+      pointer-events: none;
+    }
+    .rdemo-step {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.55rem 0.5rem;
+      font-size: 0.66rem;
+      line-height: 1.45;
+      color: var(--muted);
+      animation: rdemoPulse 6s infinite;
+    }
+    .rdemo-step:nth-of-type(2) { animation-delay: 2s; }
+    .rdemo-step:nth-of-type(3) { animation-delay: 4s; }
+    .rdemo-head {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text); margin-bottom: 0.3rem;
+    }
+    .rdemo-receipt { font-family: 'Courier New', monospace; }
+    .rdemo-ok { color: var(--green); }
+    .rdemo-arrow { align-self: center; color: var(--green); font-size: 0.8rem; }
+    .rdemo-caption { margin-top: 0.5rem; font-size: 0.66rem; color: var(--muted); font-style: italic; }
+    .card-video { display: block; width: 100%; aspect-ratio: 16 / 9; margin-top: 1.2rem; border: 1px solid var(--border); border-radius: 8px; background: #000; }
+    .card-video-caption { margin-top: 0.5rem; font-size: 0.66rem; color: var(--muted); }
+    @keyframes rdemoPulse {
+      0%, 30% { border-color: rgba(0,230,118,0.55); box-shadow: 0 0 0 1px rgba(0,230,118,0.15); }
+      34%, 100% { border-color: var(--border); box-shadow: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { .rdemo-step { animation: none; } }
+    @media (max-width: 420px) {
+      .rdemo { grid-template-columns: 1fr; }
+      .rdemo-arrow { transform: rotate(90deg); justify-self: center; }
+    }
 
     .bio-sentence {
       padding: 48px 0;
@@ -729,6 +782,7 @@
         <span class="collab-name">Český tenisový svaz</span>
       </div>
     </div>
+    <div class="collab-note" data-en="In active dialogue with tennis federations across Europe" data-cs="V aktivním jednání s tenisovými svazy napříč Evropou" data-pl="W aktywnym dialogu z federacjami tenisowymi w całej Europie" data-de="Im aktiven Austausch mit Tennisverbänden in ganz Europa">In active dialogue with tennis federations across Europe</div>
   </section>
 
   <section class="bio-sentence">
@@ -853,9 +907,50 @@
             <span class="tag">Budget</span>
             <span class="tag">Web App</span>
           </div>
+          <div class="card-traction">🌍 <span data-en="Growing interest from federations across Europe" data-cs="Rostoucí zájem svazů napříč Evropou" data-pl="Rosnące zainteresowanie federacji w całej Europie" data-de="Wachsendes Interesse von Verbänden in ganz Europa">Growing interest from federations across Europe</span></div>
           <span class="status-pill status-live" data-en="MVP Ready" data-cs="MVP připraveno" data-pl="MVP gotowe" data-de="MVP bereit">MVP Ready</span>
           <a href="presentations/federation-trip-manager.html" target="_blank" class="card-link">
             <span data-en="View Presentation →" data-cs="Zobrazit prezentaci →" data-pl="Zobacz prezentację →" data-de="Präsentation ansehen →">View Presentation →</span>
+          </a>
+        </div>
+        <div class="card">
+          <span class="card-icon">🧾</span>
+          <div class="card-title">Tripbook</div>
+          <div class="card-meta" data-en="NATIONAL TEAM · AI OCR" data-cs="REPREZENTACE · AI OCR" data-pl="KADRA NARODOWA · AI OCR" data-de="NATIONALTEAM · KI-OCR">NATIONAL TEAM · AI OCR</div>
+          <p class="card-desc" data-en="Expense reporting app for national team coaches on tournament trips. Snap a receipt — AI reads the date, amount, currency and category, converts it at the official exchange rate and exports the finished report straight into the federation's own template. Hours of paperwork after every trip become minutes." data-cs="Aplikace pro vyúčtování výjezdů reprezentačních trenérů. Vyfotíš účtenku — AI přečte datum, částku, měnu i kategorii, přepočítá ji oficiálním kurzem a hotové vyúčtování vyexportuje přímo do šablony svazu. Z hodin papírování po každém výjezdu jsou minuty." data-pl="Aplikacja do rozliczeń wyjazdów dla trenerów kadry narodowej. Robisz zdjęcie paragonu — AI odczytuje datę, kwotę, walutę i kategorię, przelicza według oficjalnego kursu i eksportuje gotowe rozliczenie bezpośrednio do szablonu federacji. Godziny papierkowej roboty po każdym wyjeździe zamieniają się w minuty." data-de="App für die Reisekostenabrechnung von Nationaltrainern. Beleg fotografieren — die KI liest Datum, Betrag, Währung und Kategorie, rechnet zum offiziellen Wechselkurs um und exportiert die fertige Abrechnung direkt in die Vorlage des Verbands. Aus Stunden Papierkram nach jeder Reise werden Minuten.">
+            Expense reporting app for national team coaches on tournament trips. Snap a receipt — AI reads the date, amount, currency and category, converts it at the official exchange rate and exports the finished report straight into the federation's own template. Hours of paperwork after every trip become minutes.
+          </p>
+          <div class="rdemo" aria-hidden="true">
+            <div class="rdemo-step rdemo-receipt">
+              <div class="rdemo-head">📷 <span data-en="Snap" data-cs="Foto" data-pl="Zdjęcie" data-de="Foto">Snap</span></div>
+              RESTAURANT<br>14.09.2026<br>38,50 €
+            </div>
+            <span class="rdemo-arrow">→</span>
+            <div class="rdemo-step">
+              <div class="rdemo-head">🤖 <span data-en="AI reads" data-cs="AI čte" data-pl="AI czyta" data-de="KI liest">AI reads</span></div>
+              <span data-en="Meals" data-cs="Stravné" data-pl="Posiłki" data-de="Verpflegung">Meals</span> <span class="rdemo-ok">✓</span><br>EUR 38.50 <span class="rdemo-ok">✓</span><br>14.09. <span class="rdemo-ok">✓</span>
+            </div>
+            <span class="rdemo-arrow">→</span>
+            <div class="rdemo-step">
+              <div class="rdemo-head">📊 <span data-en="Report" data-cs="Vyúčtování" data-pl="Raport" data-de="Bericht">Report</span></div>
+              ≈ 936 CZK<br><span data-en="official rate" data-cs="kurz ČNB" data-pl="kurs oficjalny" data-de="offizieller Kurs">official rate</span><br><span class="rdemo-ok" data-en="exported ✓" data-cs="exportováno ✓" data-pl="wyeksportowano ✓" data-de="exportiert ✓">exported ✓</span>
+            </div>
+          </div>
+          <div class="rdemo-caption" data-en="Illustrative preview — sample data." data-cs="Ilustrativní ukázka — vzorová data." data-pl="Podgląd poglądowy — przykładowe dane." data-de="Illustrative Vorschau — Beispieldaten.">Illustrative preview — sample data.</div>
+          <video class="card-video" controls playsinline preload="none" poster="images/tripbook-poster.jpg">
+            <source src="videos/tripbook.mp4" type="video/mp4">
+          </video>
+          <div class="card-video-caption" data-en="1-minute video: the app in use (Tripbook)." data-cs="Minutové video: appka v praxi (Tripbook)." data-pl="Minutowy film: aplikacja w użyciu (Tripbook)." data-de="1-Minuten-Video: die App im Einsatz (Tripbook).">1-minute video: the app in use (Tripbook).</div>
+          <div class="card-tags">
+            <span class="tag">React PWA</span>
+            <span class="tag">Claude Vision</span>
+            <span class="tag">Offline-first</span>
+            <span class="tag">Federation</span>
+            <span class="tag">Finance</span>
+          </div>
+          <span class="status-pill status-live" data-en="Live · Invite only" data-cs="V provozu · jen na pozvání" data-pl="Działa · tylko na zaproszenie" data-de="Live · nur auf Einladung">Live · Invite only</span>
+          <a href="#contact" class="card-link">
+            <span data-en="Request a demo →" data-cs="Požádat o ukázku →" data-pl="Poproś o demo →" data-de="Demo anfragen →">Request a demo →</span>
           </a>
         </div>
         <div class="card">
