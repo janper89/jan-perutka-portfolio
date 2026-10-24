@@ -705,6 +705,19 @@
       .gallery-wrap { padding: 0 1.5rem; }
       .gallery-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── HERO: malý pruh s novinkou ── */
+    .hero-new {
+      display: inline-flex; align-items: center; gap: 0.7rem; margin: 1.3rem 0 1.5rem; padding: 0.35rem 1rem 0.35rem 0.4rem;
+      border: 1px solid var(--border); border-radius: 999px; background: rgba(0, 230, 118, 0.06);
+      color: var(--text); text-decoration: none; font-size: 0.85rem; transition: border-color 0.2s, background 0.2s;
+    }
+    .hero-new:hover { border-color: var(--green-dark); background: rgba(0, 230, 118, 0.12); }
+    .hero-new-tag {
+      background: var(--green); color: #04130a; font-weight: 700; font-size: 0.68rem; letter-spacing: 1.5px;
+      text-transform: uppercase; border-radius: 999px; padding: 0.2rem 0.65rem;
+    }
+    #turnajovy-plan { scroll-margin-top: 90px; }
   </style>
 </head>
 <body>
@@ -750,6 +763,10 @@
       <p class="hero-tagline" data-en="I build <strong>data tools and federation software</strong> for tennis — professional-grade tools built for real coaching budgets, by someone who actually coaches." data-cs="Stavím <strong>datové nástroje a svazový software</strong> pro tenis — profesionální řešení postavená pro reálné trenérské rozpočty, od někoho, kdo tenis opravdu trénuje." data-pl="Tworzę <strong>narzędzia danych i oprogramowanie federacyjne</strong> dla tenisa — profesjonalne rozwiązania stworzone pod realne budżety trenerskie, przez osobę, która naprawdę trenuje." data-de="Ich entwickle <strong>Daten-Tools und Verbandssoftware</strong> für Tennis — professionelle Lösungen für reale Trainerbudgets, entwickelt von jemandem, der selbst wirklich coacht.">
         I build <strong>data tools and federation software</strong> for tennis — professional-grade tools built for real coaching budgets, by someone who actually coaches.
       </p>
+      <a href="#turnajovy-plan" class="hero-new">
+        <span class="hero-new-tag" data-en="New" data-cs="Nové" data-pl="Nowe" data-de="Neu">New</span>
+        <span data-en="Tournament Plan — live demo →" data-cs="Turnajový plán — živá ukázka →" data-pl="Plan turniejowy — demo na żywo →" data-de="Turnierplan — Live-Demo →">Tournament Plan — live demo →</span>
+      </a>
       <div class="hero-cta">
         <a href="#projects" class="btn btn-primary" data-en="See My Work" data-cs="Moje projekty" data-pl="Zobacz moje projekty" data-de="Meine Projekte ansehen">See My Work</a>
         <a href="#contact" class="btn btn-outline" data-en="Get in Touch" data-cs="Kontakt" data-pl="Skontaktuj się" data-de="Kontakt aufnehmen">Get in Touch</a>
@@ -770,6 +787,7 @@
       </div>
     </div>
   </section>
+
 
   <section class="collab-strip">
     <div class="collab-label" data-en="Working with" data-cs="Spolupráce" data-pl="Współpraca" data-de="Zusammenarbeit">Working with</div>
@@ -883,6 +901,57 @@
       </p>
     </div>
 
+    <!-- PLAYERS, PARENTS & COACHES -->
+    <div class="category">
+      <div class="category-title">
+        <h3 data-en="Parents &amp; Coaches" data-cs="Rodiče a trenéři" data-pl="Rodzice i trenerzy" data-de="Eltern &amp; Trainer">Parents &amp; Coaches</h3>
+        <div class="category-line"></div>
+        <div class="category-badge" data-en="Clubs &amp; Families" data-cs="Kluby a rodiny" data-pl="Kluby i rodziny" data-de="Vereine &amp; Familien">Clubs &amp; Families</div>
+      </div>
+      <div class="cards-grid">
+        <div class="card">
+          <span class="card-icon">🏛️</span>
+          <div class="card-title">Tennis Planner</div>
+          <p class="card-desc" data-en="Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players." data-cs="Platforma pro turnajové a zápasové plánování navržená pro pracovní postupy České tenisové federace. Spravuje skupiny hráčů, přiřazení kurtů a automaticky generuje optimalizované rozvrhy zápasů. Využít ji mohou také kluby, které organizují společné turnajové výjezdy pro své hráče." data-pl="Platforma do planowania turniejów i meczów zbudowana pod procesy Czeskiej Federacji Tenisowej. Zarządza pulami zawodników, przydziałem kortów i automatycznie generuje zoptymalizowane harmonogramy meczów. Może być także używana przez kluby organizujące wspólne wyjazdy turniejowe dla swoich zawodników." data-de="Plattform für Turnier- und Spielplanung, entwickelt für die Abläufe des Tschechischen Tennisverbands. Sie verwaltet Spielerpools, Platzzuweisungen und erstellt automatisch optimierte Spielpläne. Sie kann auch von Vereinen genutzt werden, die gemeinsame Turnierreisen für ihre Spieler organisieren.">
+            Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Scheduling</span>
+            <span class="tag">Federation</span>
+            <span class="tag">Web App</span>
+          </div>
+          <a href="https://tennis-planner-puce.vercel.app" target="_blank" class="card-link">
+            <span data-en="Live Demo →" data-cs="Živé demo →" data-pl="Demo na żywo →" data-de="Live-Demo →">Live Demo →</span>
+          </a>
+          <a href="presentations/tennis-planner.html" class="card-link" target="_blank">View Presentation →</a>
+        </div>
+        <div class="card" id="turnajovy-plan">
+          <span class="card-icon">🗓️</span>
+          <div class="card-title" data-en="Tournament Plan" data-cs="Turnajový plán" data-pl="Plan turniejowy" data-de="Turnierplan">Tournament Plan</div>
+          <div class="card-meta" data-en="PLAYERS · PARENTS · COACHES" data-cs="HRÁČI · RODIČE · TRENÉŘI" data-pl="ZAWODNICY · RODZICE · TRENERZY" data-de="SPIELER · ELTERN · TRAINER">PLAYERS · PARENTS · COACHES</div>
+          <p class="card-desc" data-en="Season planning for junior players. Recommends ITF Juniors and Tennis Europe tournaments from the player's results and level, with estimated cost, distance and the real entry and withdrawal deadlines. Parents get a private phone app (no account, Czech and English, works offline, syncs across devices); the choices and reasons they share feed back into better recommendations. A separate product from Tennis Planner." data-cs="Plánování sezóny juniorských hráčů. Z výsledků a úrovně hráče doporučuje turnaje ITF Juniors a Tennis Europe, s odhadem nákladů, vzdáleností a skutečnými termíny přihlášek a odhlášek. Rodiče dostanou soukromou aplikaci do telefonu (bez účtu, česky i anglicky, funguje offline, synchronizuje se mezi zařízeními); výběr a důvody, které sdílejí, zlepšují další doporučení. Samostatný produkt, nejde o Tennis Planner." data-pl="Planowanie sezonu zawodników juniorskich. Na podstawie wyników i poziomu zawodnika rekomenduje turnieje ITF Juniors i Tennis Europe, z szacowanym kosztem, odległością i prawdziwymi terminami zgłoszeń i wycofań. Rodzice dostają prywatną aplikację na telefon (bez konta, po czesku i angielsku, działa offline, synchronizuje się między urządzeniami); ich wybory i powody poprawiają kolejne rekomendacje. Osobny produkt, to nie Tennis Planner." data-de="Saisonplanung für Nachwuchsspieler. Empfiehlt aus Ergebnissen und Niveau des Spielers Turniere von ITF Juniors und Tennis Europe, mit geschätzten Kosten, Entfernung und den echten Melde- und Abmeldefristen. Eltern erhalten eine private Handy-App (ohne Konto, Tschechisch und Englisch, offline nutzbar, geräteübergreifend synchron); geteilte Auswahl und Gründe verbessern die nächsten Empfehlungen. Ein eigenständiges Produkt, nicht Tennis Planner.">
+            Season planning for junior players. Recommends ITF Juniors and Tennis Europe tournaments from the player's results and level, with estimated cost, distance and the real entry and withdrawal deadlines. Parents get a private phone app (no account, Czech and English, works offline, syncs across devices); the choices and reasons they share feed back into better recommendations. A separate product from Tennis Planner.
+          </p>
+          <div class="card-tags">
+            <span class="tag">PWA</span>
+            <span class="tag">ITF Juniors</span>
+            <span class="tag">Tennis Europe</span>
+            <span class="tag">Parents</span>
+            <span class="tag">Planning</span>
+            <span class="tag">AI-built</span>
+          </div>
+          <div class="card-traction">🎾 <span data-en="Running as a pilot with junior players and their parents in the Czech Republic" data-cs="Běží jako pilot s juniorskými hráči a jejich rodiči v České republice" data-pl="Działa jako pilotaż z zawodnikami juniorskimi i ich rodzicami w Czechach" data-de="Läuft als Pilot mit Nachwuchsspielern und deren Eltern in Tschechien">Running as a pilot with junior players and their parents in the Czech Republic</span></div>
+          <span class="status-pill status-live" data-en="Live pilot" data-cs="Živý pilot" data-pl="Pilotaż na żywo" data-de="Live-Pilot">Live pilot</span>
+          <a href="turnajovy-plan/demo/" target="_blank" class="card-link">
+            <span data-en="Open the live demo →" data-cs="Otevřít živou ukázku →" data-pl="Otwórz demo na żywo →" data-de="Live-Demo öffnen →">Open the live demo →</span>
+          </a>
+          <a href="#contact" class="card-link">
+            <span data-en="Pilot it with your club →" data-cs="Vyzkoušet pro váš klub →" data-pl="Pilotaż w Twoim klubie →" data-de="Pilot in Ihrem Verein →">Pilot it with your club →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- FEDERATION -->
     <div class="category">
       <div class="category-title">
@@ -952,22 +1021,6 @@
           <a href="#contact" class="card-link">
             <span data-en="Request a demo →" data-cs="Požádat o ukázku →" data-pl="Poproś o demo →" data-de="Demo anfragen →">Request a demo →</span>
           </a>
-        </div>
-        <div class="card">
-          <span class="card-icon">🏛️</span>
-          <div class="card-title">Tennis Planner</div>
-          <p class="card-desc" data-en="Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players." data-cs="Platforma pro turnajové a zápasové plánování navržená pro pracovní postupy České tenisové federace. Spravuje skupiny hráčů, přiřazení kurtů a automaticky generuje optimalizované rozvrhy zápasů. Využít ji mohou také kluby, které organizují společné turnajové výjezdy pro své hráče." data-pl="Platforma do planowania turniejów i meczów zbudowana pod procesy Czeskiej Federacji Tenisowej. Zarządza pulami zawodników, przydziałem kortów i automatycznie generuje zoptymalizowane harmonogramy meczów. Może być także używana przez kluby organizujące wspólne wyjazdy turniejowe dla swoich zawodników." data-de="Plattform für Turnier- und Spielplanung, entwickelt für die Abläufe des Tschechischen Tennisverbands. Sie verwaltet Spielerpools, Platzzuweisungen und erstellt automatisch optimierte Spielpläne. Sie kann auch von Vereinen genutzt werden, die gemeinsame Turnierreisen für ihre Spieler organisieren.">
-            Tournament and match scheduling platform built for Czech Tennis Federation workflows. Manages player pools, court assignments, and generates optimized match schedules automatically. It can also be used by clubs organizing shared tournament trips for their players.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Scheduling</span>
-            <span class="tag">Federation</span>
-            <span class="tag">Web App</span>
-          </div>
-          <a href="https://tennis-planner-puce.vercel.app" target="_blank" class="card-link">
-            <span data-en="Live Demo →" data-cs="Živé demo →" data-pl="Demo na żywo →" data-de="Live-Demo →">Live Demo →</span>
-          </a>
-          <a href="presentations/tennis-planner.html" class="card-link" target="_blank">View Presentation →</a>
         </div>
       </div>
     </div>

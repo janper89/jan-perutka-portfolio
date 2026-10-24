@@ -1,0 +1,2669 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turnajový plán — živá ukázka</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 0; font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f6f8; color: #16181d; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 20px 16px 48px; }
+h1 { font-size: 26px; margin: 0 0 4px; }
+h2 { font-size: 19px; margin: 32px 0 12px; }
+.sub { color: #5c6370; margin: 0 0 20px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.card { background: #fff; border: 1px solid #e3e5ea; border-radius: 10px; padding: 12px 14px; }
+.card .label { font-size: 13px; color: #5c6370; }
+.card .value { font-size: 24px; font-weight: 650; }
+.card .note { font-size: 12px; color: #80868f; }
+table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e5ea;
+  border-radius: 10px; overflow: hidden; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #eef0f3; }
+th { background: #fafbfc; font-weight: 600; color: #4b515c; }
+tr:last-child td { border-bottom: none; }
+.plan { list-style: none; margin: 0; padding: 0; }
+.group { margin-bottom: 22px; }
+.group-head { display: flex; align-items: baseline; gap: 10px; }
+.group-head h3 { font-size: 17px; margin: 0 0 6px; }
+.count { font-size: 13px; color: #80868f; }
+.deadline { margin: 0 0 8px; font-size: 13px; color: #8a5d00; background: #fff8e8;
+  border: 1px solid #f2e2bd; border-radius: 8px; padding: 6px 10px; }
+.plan > li { background: #fff; border: 1px solid #e3e5ea; border-radius: 10px; padding: 14px;
+  margin-bottom: 10px; }
+.plan > li.chosen { border-color: #1f6b35; box-shadow: 0 0 0 1px #1f6b35 inset; }
+.plan > li.is-entered { border-color: #c8d4ea; box-shadow: 0 0 0 1px #c8d4ea inset; }
+.plan > li.is-rejected { opacity: .7; border-style: dashed; }
+.plan > li.is-rejected .why,
+.plan > li.is-rejected .chip.entered,
+.plan > li.is-rejected .chip.go { display: none; }
+.plan > li.is-rejected .chip.no { background: #9b2c22; color: #fff; border-color: #9b2c22; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 2px; }
+.chip { font: inherit; font-size: 13px; font-weight: 600; border-radius: 999px; padding: 7px 13px;
+  border: 1px solid #d9dde4; background: #fff; color: #37507e; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; }
+.chip input { width: 16px; height: 16px; accent-color: #37507e; }
+.chip.go { color: #1f6b35; border-color: #bcdcc6; }
+.chip.no { color: #9b2c22; border-color: #f0cdc8; }
+.chip:disabled, .chip input:disabled { opacity: .45; cursor: not-allowed; }
+.plan > li.chosen .chip.go { background: #1f6b35; color: #fff; border-color: #1f6b35; }
+.state-note { font-size: 13px; color: #4b515c; }
+.done-btn { margin-left: auto; }
+.collapsed-row { display: none; align-items: center; gap: 10px; font-size: 14px; color: #80868f; }
+.plan > li.is-collapsed { padding-top: 8px; padding-bottom: 8px; opacity: .8; }
+.plan > li.is-collapsed > *:not(.collapsed-row) { display: none; }
+.plan > li.is-collapsed > .collapsed-row { display: flex; }
+.collapsed-row .undo-collapse { font: inherit; font-size: 13px; color: #37507e; background: none; border: none;
+  text-decoration: underline; cursor: pointer; padding: 0; margin-left: auto; }
+.undo-hint { display: none; font-size: 12px; color: #80868f; align-self: center; }
+.plan > li.is-rejected .undo-hint { display: inline; }
+.tag.cost { background: #eef1f5; color: #37507e; font-weight: 600; }
+.summary { background: #fff; border: 1px solid #e3e5ea; border-radius: 10px; padding: 10px 14px;
+  margin: 0 0 14px; font-size: 14px; }
+.hint { font-size: 13px; color: #5c6370; margin: 0 0 12px; }
+.weeks { list-style: none; padding: 0; margin: 0 0 24px; }
+.week { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #e8eaee; }
+.week:last-child { border-bottom: none; }
+.week-label { flex: 0 0 128px; font-size: 13px; color: #5c6370; padding-top: 4px; }
+.week-body { flex: 1 1 auto; min-width: 0; }
+.week-item { background: #fff; border: 1px solid #e3e5ea; border-radius: 8px; padding: 8px 11px;
+  font-size: 14px; margin-bottom: 6px; }
+.week-item:last-child { margin-bottom: 0; }
+.week-item.tournament { border-left: 4px solid #1f6b35; }
+.week-item.prep { border-left: 4px solid #37507e; }
+.week-item.rest { border-left: 4px solid #c9ccd2; }
+.week-item.suggestion { border-style: dashed; background: #fafbfc; }
+.week-item.empty { border: none; background: none; color: #a2a8b0; padding-left: 0; }
+.week-type { display: block; font-size: 12px; color: #80868f; }
+[hidden] { display: none !important; }
+.te-ages { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.chip.te-age.on { background: #37507e; color: #fff; border-color: #37507e; }
+.te-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
+.chip.te-add.in { background: #1f6b35; color: #fff; border-color: #1f6b35; }
+table { display: block; max-width: 100%; overflow-x: auto; }
+.fab { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 40;
+  display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 600;
+  background: #37507e; color: #fff; border: none; border-radius: 999px; padding: 13px 18px;
+  box-shadow: 0 4px 14px rgba(20, 30, 60, .3); cursor: pointer; }
+.fab svg { width: 20px; height: 20px; flex: none; }
+body { padding-bottom: 84px; }
+.fb-sheet { position: fixed; inset: 0; z-index: 60; background: rgba(15, 20, 35, .45);
+  display: flex; align-items: flex-end; justify-content: center; }
+.fb-card { background: #fff; width: 100%; max-width: 520px; border-radius: 16px 16px 0 0;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); max-height: 92vh; overflow-y: auto; }
+.fb-card h2 { margin: 0 0 6px; }
+.fb-kinds { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.chip.fb-kind.on { background: #37507e; color: #fff; border-color: #37507e; }
+.fb-card textarea { width: 100%; font: inherit; font-size: 16px; padding: 10px; border: 1px solid #c9ccd2;
+  border-radius: 10px; box-sizing: border-box; resize: vertical; min-height: 110px; }
+.fb-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+.fb-actions .primary { background: #1f6b35; color: #fff; border-color: #1f6b35; }
+@media (min-width: 640px) { .fb-sheet { align-items: center; } .fb-card { border-radius: 16px; } }
+.consent { border-top: 1px solid #e8eaee; margin-top: 24px; padding-top: 16px; }
+.consent-row { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; margin: 10px 0; }
+.consent-row input { width: 22px; height: 22px; margin-top: 1px; accent-color: #37507e; }
+.demo-banner { background: #fff7e0; border: 1px solid #f0d98a; border-radius: 10px; padding: 10px 12px; font-size: 14px; color: #6b5311; margin: 0 0 14px; }
+.langbar { text-align: right; font-size: 13px; margin: 0 0 8px; }
+.langbar a { color: #37507e; }
+.week-item.own { position: relative; padding-right: 36px; }
+.own-del { position: absolute; top: 4px; right: 6px; border: none; background: none; color: #80868f;
+  font-size: 22px; line-height: 1; cursor: pointer; padding: 2px 6px; }
+.week-add { font: inherit; font-size: 13px; color: #37507e; background: none; border: none;
+  padding: 6px 0 0; cursor: pointer; text-decoration: underline; }
+.week.blocked .week-label::after { content: ' · bez turnaje'; font-weight: 400; color: #9b2c22; }
+.week-form { background: #fff; border: 1px solid #c9ccd2; border-radius: 10px; padding: 12px; margin-top: 8px;
+  display: grid; gap: 10px; }
+.week-form label { display: grid; gap: 4px; font-size: 13px; color: #5c6370; }
+.week-form select, .week-form input { font: inherit; font-size: 16px; padding: 8px; border: 1px solid #c9ccd2;
+  border-radius: 8px; background: #fff; color: #16181d; }
+.week-form .row { display: flex; gap: 8px; }
+.week-form .row label { flex: 1 1 0; min-width: 0; }
+.tag.te-conflict { background: #fdecea; color: #9b2c22; }
+.group.blocked > .plan, .group.blocked > .reset, .group.blocked > .deadline,
+.group.blocked .state-note { display: none; }
+.blocked-note { font-size: 13px; color: #9b2c22; margin: 0 0 10px; }
+@media (max-width: 520px) {
+  .week { flex-direction: column; gap: 4px; }
+  .week-label { flex: none; font-weight: 600; color: #16181d; }
+}
+.reason { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  font-size: 14px; }
+.reason select, .reason input, .cond input[type=text] { font: inherit; font-size: 14px;
+  padding: 7px 10px; border: 1px solid #d9dde4; border-radius: 8px; background: #fff; }
+.reason input, .cond input[type=text] { flex: 1 1 220px; min-width: 0; }
+.conds { list-style: none; padding: 0; margin: 0 0 20px; }
+.conds > li { background: #fff; border: 1px solid #e3e5ea; border-radius: 10px; padding: 14px;
+  margin-bottom: 10px; }
+.cond-codes { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.cond-codes .chip { font-weight: 500; padding: 6px 11px; }
+.send { margin: 24px 0 8px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+#send { font: inherit; font-weight: 650; background: #1f6b35; color: #fff; border: none;
+  border-radius: 10px; padding: 12px 18px; cursor: pointer; }
+#send-note { font-size: 13px; color: #1f6b35; }
+.reset { font: inherit; font-size: 13px; color: #4b515c; background: #fff; border: 1px solid #d9dde4;
+  border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.plan .head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.plan .date { font-weight: 650; }
+.plan .where { color: #4b515c; }
+.tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef1f5; color: #434a56; }
+.tag.up { background: #fde8e6; color: #9b2c22; }
+.tag.middle { background: #e3f1e6; color: #1f6b35; }
+.tag.down { background: #e9edf5; color: #37507e; }
+.tag.paid { background: #fff3d6; color: #8a5d00; }
+.why { margin: 8px 0 0; padding: 0; list-style: none; color: #4b515c; font-size: 14px; }
+.why li { padding-left: 14px; position: relative; }
+.why li::before { content: "·"; position: absolute; left: 4px; }
+.win { color: #1f6b35; font-weight: 600; }
+.loss { color: #9b2c22; }
+footer { margin-top: 40px; color: #80868f; font-size: 12px; }
+@media (max-width: 520px) {
+  .wrap { padding: 16px 12px 36px; }
+  th:nth-child(5), td:nth-child(5) { display: none; }
+}
+</style>
+</head>
+<body><div class="wrap">
+<div class="langbar"><a href="../" hreflang="en" lang="en">English</a></div>
+<section>
+    <p class="demo-banner">Ukázková data: fiktivní hráč a skutečné kalendáře turnajů. To, co zadáte, se nikam neodesílá.</p>
+    <h1>Demo Player</h1>
+    <p class="sub">Úroveň podle trenéra: nahoru J200, J300 · střed J100 · dolů J60, J30</p>
+
+    <div class="cards">
+      <div class="card"><div class="label">WTN</div><div class="value">10.4</div><div class="note">spolehlivost 100 %</div></div>
+      <div class="card"><div class="label">Žebříček ITF</div><div class="value">312</div><div class="note">nejlepší 280</div></div>
+      <div class="card"><div class="label">Zápasy (12 měsíců)</div><div class="value">0–0</div><div class="note">0 turnajů</div></div>
+      <div class="card"><div class="label">Body ITF</div><div class="value">0</div><div class="note">ze započítaných turnajů</div></div>
+    </div>
+
+    <h2>Plán po týdnech</h2>
+    <p class="hint">3 z 19 týdnů má naplánovanou činnost.
+    U volných týdnů je návrh z kalendáře — potvrdit se dá níž v doporučeném plánu.
+    Dovolenou, školu nebo přípravu zadáte tlačítkem „+ Přidat“ u týdne. V týdnu s dovolenou
+    nebo školou se návrhy turnajů skryjí.</p>
+    <ul class="weeks"><li class="week" data-monday="2026-10-19" data-label="19.–25. 10. 2026"><div class="week-label">19.–25. 10. 2026</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week filled" data-monday="2026-10-26" data-label="26. 10. – 1. 11. 2026"><div class="week-label">26. 10. – 1. 11. 2026</div>
+          <div class="week-body"><div class="week-item prep">
+              <strong>Fyzická příprava</strong> 
+            </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-11-02" data-label="2.–8. 11. 2026"><div class="week-label">2.–8. 11. 2026</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-11-09" data-label="9.–15. 11. 2026"><div class="week-label">9.–15. 11. 2026</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-11-16" data-label="16.–22. 11. 2026"><div class="week-label">16.–22. 11. 2026</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J100 Stabekk</strong> (NOR)
+             · 31 000–46 500 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week filled" data-monday="2026-11-23" data-label="23.–29. 11. 2026"><div class="week-label">23.–29. 11. 2026</div>
+          <div class="week-body"><div class="week-item rest">
+              <strong>Dovolená</strong> 
+            </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week filled" data-monday="2026-11-30" data-label="30. 11. – 6. 12. 2026"><div class="week-label">30. 11. – 6. 12. 2026</div>
+          <div class="week-body"><div class="week-item rest">
+              <strong>Dovolená</strong> 
+            </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-12-07" data-label="7.–13. 12. 2026"><div class="week-label">7.–13. 12. 2026</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J100 Aizkraukle</strong> (LAT)
+             · 20 500–30 500 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-12-14" data-label="14.–20. 12. 2026"><div class="week-label">14.–20. 12. 2026</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-12-21" data-label="21.–27. 12. 2026"><div class="week-label">21.–27. 12. 2026</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2026-12-28" data-label="28. 12. – 3. 1. 2027"><div class="week-label">28. 12. – 3. 1. 2027</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J60 Arlon</strong> (BEL)
+             · 20 500–30 500 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-01-04" data-label="4.–10. 1. 2027"><div class="week-label">4.–10. 1. 2027</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J100 Bromma</strong> (SWE)
+             · 22 500–33 500 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-01-11" data-label="11.–17. 1. 2027"><div class="week-label">11.–17. 1. 2027</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J300 Traralgon</strong> (AUS)
+             · 53 000–79 500 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-01-18" data-label="18.–24. 1. 2027"><div class="week-label">18.–24. 1. 2027</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J300 San José</strong> (CRC)
+             · 45 000–67 500 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-01-25" data-label="25.–31. 1. 2027"><div class="week-label">25.–31. 1. 2027</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+            <span class="week-type">Volno</span>
+            <strong>J100 Manacor</strong> (ESP)
+             · 31 000–47 000 Kč
+            <span class="hint">— návrh z kalendáře</span>
+          </div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-02-01" data-label="1.–7. 2. 2027"><div class="week-label">1.–7. 2. 2027</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-02-08" data-label="8.–14. 2. 2027"><div class="week-label">8.–14. 2. 2027</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-02-15" data-label="15.–21. 2. 2027"><div class="week-label">15.–21. 2. 2027</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li>
+<li class="week" data-monday="2027-02-22" data-label="22.–28. 2. 2027"><div class="week-label">22.–28. 2. 2027</div>
+        <div class="week-body"><div class="week-item empty">Volno</div><button type="button" class="week-add">+ Přidat</button></div></li></ul>
+    <div class="week-form" id="week-form" hidden>
+  <label>Co se v týdnu děje
+    <select id="wf-typ">
+      <option value="dovolena">Dovolená</option>
+      <option value="skola">Škola</option>
+      <option value="fyzicka">Fyzická příprava</option>
+      <option value="tenis">Tenisová příprava</option>
+      <option value="jine">Jiné</option>
+    </select>
+  </label>
+  <div class="row">
+    <label>Od <input type="date" id="wf-od"></label>
+    <label>Do <input type="date" id="wf-do"></label>
+  </div>
+  <p class="hint">Na jediný den zadejte stejné datum v obou polích.</p>
+  <label>Poznámka (nepovinná)
+    <input type="text" id="wf-poznamka" maxlength="120">
+  </label>
+  <div class="row">
+    <button type="button" class="chip go" id="wf-save">Uložit</button>
+    <button type="button" class="chip" id="wf-cancel">Zrušit</button>
+  </div>
+</div>
+
+    <h2>Doporučený plán</h2>
+    <p class="summary" hidden></p>
+    <section class="group" data-date="2026-11-16">
+        <div class="group-head">
+          <h3>16. 11. 2026</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek za 3 dny a 14 hodin (27. 10. 2026 v 15:00)</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 3. 11. 2026 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-NOR-2026-002" data-index="0"
+            data-category="J100" data-city="Stabekk" data-nation="NOR"
+            data-start="2026-11-16" data-km="1353"
+            data-basket="middle" data-format="KO"
+            data-cost-min="31000" data-cost-max="46500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Stabekk</strong> (NOR) · 1353 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 10 032 Kč · ubytovani 16 905 Kč · strava 9 720 Kč · startovne 2 205 Kč · ubytování v okolí · palivo 9 762, mytne 270">31 000–46 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li><li>obsazení loni střední (medián žebříčku 447, 2 hráčů do top 100, 19 hodnocených)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-CYP-2026-003" data-index="1"
+            data-category="J100" data-city="Limassol" data-nation="CYP"
+            data-start="2026-11-16" data-km="2264"
+            data-basket="middle" data-format="KO"
+            data-cost-min="34000" data-cost-max="50500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Limassol</strong> (CYP) · 2264 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 20 481 Kč · ubytovani 12 863 Kč · strava 6 720 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 16 981, mistni 3 500">34 000–50 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J200-USA-2026-006" data-index="2"
+            data-category="J200" data-city="Delray" data-nation="USA"
+            data-start="2026-11-16" data-km="8117"
+            data-basket="up" data-format="KO"
+            data-cost-min="51500" data-cost-max="77000" hidden>
+            <div class="head">
+              <span class="where"><strong>J200 Delray</strong> (USA) · 8117 km (přes 2500 km), odhad podle země</span>
+              <span class="tag up">nahoru</span>  
+              <span class="tag cost" title="doprava 33 357 Kč · ubytovani 18 008 Kč · strava 10 080 Kč · startovne 2 695 Kč · ubytování v okolí · letenky 29 857, mistni 3 500">51 500–77 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš nahoru (J200)</li><li>v plánu tenhle koš chybí (30 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J300-MEX-2026-001" data-index="3"
+            data-category="J300" data-city="Guadalajara" data-nation="MEX"
+            data-start="2026-11-16" data-km="10066"
+            data-basket="up" data-format="KO"
+            data-cost-min="40500" data-cost-max="61000" hidden>
+            <div class="head">
+              <span class="where"><strong>J300 Guadalajara</strong> (MEX) · 10066 km (přes 2500 km)</span>
+              <span class="tag up">nahoru</span>  
+              <span class="tag cost" title="doprava 37 145 Kč · ubytovani 6 248 Kč · strava 4 320 Kč · startovne 3 185 Kč · ubytování v okolí · letenky 34 145, mistni 3 000">40 500–61 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš nahoru (J300)</li><li>v plánu tenhle koš chybí (30 % pod cílem)</li><li>obsazení loni velmi silné (medián žebříčku 99, 8 hráčů do top 100, 15 hodnocených)</li><li>nejslabší obsazení z 2 změřených turnajů téže kategorie</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J60-SLO-2026-006" data-index="4"
+            data-category="J60" data-city="Maribor" data-nation="SLO"
+            data-start="2026-11-16" data-km="443"
+            data-basket="down" data-format="KO"
+            data-cost-min="15500" data-cost-max="23000" hidden>
+            <div class="head">
+              <span class="where"><strong>J60 Maribor</strong> (SLO) · 443 km (do 1000 km), odhad podle země</span>
+              <span class="tag down">dolů</span>  
+              <span class="tag cost" title="doprava 3 240 Kč · ubytovani 7 718 Kč · strava 6 552 Kč · startovne 1 715 Kč · ubytování v okolí · palivo 2 620, mytne 620">15 500–23 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš dolů (J60)</li><li>v plánu tenhle koš chybí (15 % pod cílem)</li><li>blízká destinace (SLO)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2026-11-23">
+        <div class="group-head">
+          <h3>23. 11. 2026</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 3. 11. 2026 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 10. 11. 2026 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-FRA-2026-003" data-index="0"
+            data-category="J100" data-city="Saint Gregoire" data-nation="FRA"
+            data-start="2026-11-23" data-km="1028"
+            data-basket="middle" data-format="KO"
+            data-cost-min="25000" data-cost-max="37000" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Saint Gregoire</strong> (FRA) · 1028 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 8 694 Kč · ubytovani 12 495 Kč · strava 7 632 Kč · startovne 2 205 Kč · ubytování v okolí · palivo 6 615, mytne 2 079">25 000–37 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-IND-2026-001" data-index="1"
+            data-category="J100" data-city="New Delhi" data-nation="IND"
+            data-start="2026-11-23" data-km="6362"
+            data-basket="middle" data-format="KO"
+            data-cost-min="30000" data-cost-max="45500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 New Delhi</strong> (IND) · 6362 km (přes 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 28 996 Kč · ubytovani 4 043 Kč · strava 2 520 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 25 996, mistni 3 000">30 000–45 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-BOT-2026-002" data-index="2"
+            data-category="J100" data-city="Gaborone" data-nation="BOT"
+            data-start="2026-11-23" data-km="8070"
+            data-basket="middle" data-format="KO"
+            data-cost-min="41500" data-cost-max="62000" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Gaborone</strong> (BOT) · 8070 km (přes 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 32 754 Kč · ubytovani 11 025 Kč · strava 5 760 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 29 754, mistni 3 000">41 500–62 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-PER-2026-002" data-index="3"
+            data-category="J100" data-city="Chiclayo" data-nation="PER"
+            data-start="2026-11-23" data-km="10889"
+            data-basket="middle" data-format="KO"
+            data-cost-min="46500" data-cost-max="69500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Chiclayo</strong> (PER) · 10889 km (přes 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 38 956 Kč · ubytovani 11 025 Kč · strava 5 760 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 35 956, mistni 3 000">46 500–69 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J200-NOR-2026-001" data-index="4"
+            data-category="J200" data-city="Oslo" data-nation="NOR"
+            data-start="2026-11-23" data-km="1353"
+            data-basket="up" data-format="KO"
+            data-cost-min="28000" data-cost-max="42000" hidden>
+            <div class="head">
+              <span class="where"><strong>J200 Oslo</strong> (NOR) · 1353 km (do 2500 km), odhad podle země</span>
+              <span class="tag up">nahoru</span>  
+              <span class="tag cost" title="doprava 10 032 Kč · ubytovani 14 088 Kč · strava 8 100 Kč · startovne 2 695 Kč · ubytování v okolí · palivo 9 762, mytne 270">28 000–42 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš nahoru (J200)</li><li>v plánu tenhle koš chybí (30 % pod cílem)</li><li>obsazení loni velmi silné (medián žebříčku 81, 8 hráčů do top 100, 14 hodnocených)</li><li>nejsilnější obsazení z 3 změřených turnajů téže kategorie</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J60-HUN-2026-003" data-index="5"
+            data-category="J60" data-city="Dunakeszi" data-nation="HUN"
+            data-start="2026-11-23" data-km="534"
+            data-basket="down" data-format="KO"
+            data-cost-min="14000" data-cost-max="21000" hidden>
+            <div class="head">
+              <span class="where"><strong>J60 Dunakeszi</strong> (HUN) · 534 km (do 1000 km), odhad podle země</span>
+              <span class="tag down">dolů</span>  
+              <span class="tag cost" title="doprava 3 665 Kč · ubytovani 6 860 Kč · strava 5 124 Kč · startovne 1 715 Kč · ubytování v okolí · palivo 2 985, mytne 680">14 000–21 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš dolů (J60)</li><li>v plánu tenhle koš chybí (15 % pod cílem)</li><li>blízká destinace (HUN)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2026-11-30">
+        <div class="group-head">
+          <h3>30. 11. 2026</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 10. 11. 2026 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 17. 11. 2026 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-LAT-2026-003" data-index="0"
+            data-category="J100" data-city="Aizkraukle" data-nation="LAT"
+            data-start="2026-11-30" data-km="1037"
+            data-basket="middle" data-format="KO"
+            data-cost-min="20500" data-cost-max="30500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Aizkraukle</strong> (LAT) · 1037 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 6 539 Kč · ubytovani 11 025 Kč · strava 5 760 Kč · startovne 2 205 Kč · ubytování v okolí · palivo 6 269, mytne 270">20 500–30 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-GBR-2026-003" data-index="1"
+            data-category="J100" data-city="Loughborough" data-nation="GBR"
+            data-start="2026-11-30" data-km="1202"
+            data-basket="middle" data-format="KO"
+            data-cost-min="22000" data-cost-max="33500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Loughborough</strong> (GBR) · 1202 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 8 083 Kč · ubytovani 11 025 Kč · strava 6 480 Kč · startovne 2 205 Kč · ubytování v okolí · palivo 7 813, mytne 270">22 000–33 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-TUR-2026-009" data-index="2"
+            data-category="J100" data-city="Antalya" data-nation="TUR"
+            data-start="2026-11-30" data-km="2032"
+            data-basket="middle" data-format="KO"
+            data-cost-min="27000" data-cost-max="40500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Antalya</strong> (TUR) · 2032 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 19 970 Kč · ubytovani 6 431 Kč · strava 5 040 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 16 470, mistni 3 500">27 000–40 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J100-IND-2026-002" data-index="3"
+            data-category="J100" data-city="Pune" data-nation="IND"
+            data-start="2026-11-30" data-km="6362"
+            data-basket="middle" data-format="KO"
+            data-cost-min="30000" data-cost-max="45500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Pune</strong> (IND) · 6362 km (přes 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 28 996 Kč · ubytovani 4 043 Kč · strava 2 520 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 25 996, mistni 3 000">30 000–45 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J300-USA-2026-005" data-index="4"
+            data-category="J300" data-city="Bradenton" data-nation="USA"
+            data-start="2026-11-30" data-km="8117"
+            data-basket="up" data-format="KO"
+            data-cost-min="51500" data-cost-max="77500" hidden>
+            <div class="head">
+              <span class="where"><strong>J300 Bradenton</strong> (USA) · 8117 km (přes 2500 km), odhad podle země</span>
+              <span class="tag up">nahoru</span>  
+              <span class="tag cost" title="doprava 33 357 Kč · ubytovani 18 008 Kč · strava 10 080 Kč · startovne 3 185 Kč · ubytování v okolí · letenky 29 857, mistni 3 500">51 500–77 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš nahoru (J300)</li><li>v plánu tenhle koš chybí (30 % pod cílem)</li><li>obsazení loni velmi silné (medián žebříčku 61, 9 hráčů do top 100, 11 hodnocených)</li><li>nejsilnější obsazení z 2 změřených turnajů téže kategorie</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2026-12-07">
+        <div class="group-head">
+          <h3>7. 12. 2026</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 17. 11. 2026 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 24. 11. 2026 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-LAT-2026-004" data-index="0"
+            data-category="J100" data-city="Aizkraukle" data-nation="LAT"
+            data-start="2026-12-07" data-km="1037"
+            data-basket="middle" data-format="KO"
+            data-cost-min="20500" data-cost-max="30500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Aizkraukle</strong> (LAT) · 1037 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 6 539 Kč · ubytovani 11 025 Kč · strava 5 760 Kč · startovne 2 205 Kč · ubytování v okolí · palivo 6 269, mytne 270">20 500–30 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2027-01-04">
+        <div class="group-head">
+          <h3>4. 1. 2027</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 15. 12. 2026 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 22. 12. 2026 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J200-SVK-2027-001" data-index="0"
+            data-category="J200" data-city="Kosice" data-nation="SVK"
+            data-start="2027-01-04" data-km="398"
+            data-basket="up" data-format="KO"
+            data-cost-min="14000" data-cost-max="21000" hidden>
+            <div class="head">
+              <span class="where"><strong>J200 Kosice</strong> (SVK) · 398 km (do 400 km), odhad podle země</span>
+              <span class="tag up">nahoru</span>  
+              <span class="tag cost" title="doprava 2 976 Kč · ubytovani 5 880 Kč · strava 5 832 Kč · startovne 2 695 Kč · ubytování v okolí · palivo 2 406, mytne 570">14 000–21 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš nahoru (J200)</li><li>v plánu tenhle koš chybí (30 % pod cílem)</li><li>blízká destinace (SVK)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J60-GER-2027-001" data-index="1"
+            data-category="J60" data-city="Frankfurt" data-nation="GER"
+            data-start="2027-01-04" data-km="329"
+            data-basket="down" data-format="KO"
+            data-cost-min="18500" data-cost-max="27500" hidden>
+            <div class="head">
+              <span class="where"><strong>J60 Frankfurt</strong> (GER) · 329 km (do 400 km), odhad podle země</span>
+              <span class="tag down">dolů</span>  
+              <span class="tag cost" title="doprava 2 451 Kč · ubytovani 10 290 Kč · strava 8 484 Kč · startovne 1 715 Kč · ubytování v okolí · palivo 2 181, mytne 270">18 500–27 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš dolů (J60)</li><li>v plánu tenhle koš chybí (15 % pod cílem)</li><li>blízká destinace (GER)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2027-01-06">
+        <div class="group-head">
+          <h3>6. 1. 2027</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 15. 12. 2026 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 22. 12. 2026 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-SWE-2027-001" data-index="0"
+            data-category="J100" data-city="Bromma" data-nation="SWE"
+            data-start="2027-01-06" data-km="1326"
+            data-basket="middle" data-format="KO"
+            data-cost-min="22500" data-cost-max="33500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Bromma</strong> (SWE) · 1326 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 9 148 Kč · ubytovani 9 800 Kč · strava 6 840 Kč · startovne 2 205 Kč · ubytování v okolí · palivo 8 878, mytne 270">22 500–33 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2027-01-18">
+        <div class="group-head">
+          <h3>18. 1. 2027</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 29. 12. 2026 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 5. 1. 2027 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J300-CRC-2027-001" data-index="0"
+            data-category="J300" data-city="San José" data-nation="CRC"
+            data-start="2027-01-18" data-km="9749"
+            data-basket="up" data-format="KO"
+            data-cost-min="45000" data-cost-max="67500" hidden>
+            <div class="head">
+              <span class="where"><strong>J300 San José</strong> (CRC) · 9749 km (přes 2500 km), odhad podle země</span>
+              <span class="tag up">nahoru</span>  
+              <span class="tag cost" title="doprava 36 448 Kč · ubytovani 11 025 Kč · strava 5 760 Kč · startovne 3 185 Kč · ubytování v okolí · letenky 33 448, mistni 3 000">45 000–67 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš nahoru (J300)</li><li>v plánu tenhle koš chybí (30 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J30-SVK-2027-001" data-index="1"
+            data-category="J30" data-city="Trnava" data-nation="SVK"
+            data-start="2027-01-18" data-km="398"
+            data-basket="down" data-format="RRKO"
+            data-cost-min="14500" data-cost-max="21500" hidden>
+            <div class="head">
+              <span class="where"><strong>J30 Trnava</strong> (SVK) · 398 km (do 400 km), odhad podle země</span>
+              <span class="tag down">dolů</span> <span class="tag">skupiny</span> 
+              <span class="tag cost" title="doprava 2 976 Kč · ubytovani 6 860 Kč · strava 6 804 Kč · startovne 1 470 Kč · ubytování v okolí · palivo 2 406, mytne 570">14 500–21 500 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš dolů (J30)</li><li>v plánu tenhle koš chybí (15 % pod cílem)</li><li>blízká destinace (SVK)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+<section class="group" data-date="2027-01-25">
+        <div class="group-head">
+          <h3>25. 1. 2027</h3>
+          <span class="count">termín</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>uzávěrka přihlášek 5. 1. 2027 v 15:00</strong> — přihlásit se dá až na tři turnaje. Pak odhlásit do 12. 1. 2027 v 15:00, do té doby nech jen jeden.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-ESP-2027-001" data-index="0"
+            data-category="J100" data-city="Manacor" data-nation="ESP"
+            data-start="2027-01-25" data-km="1823"
+            data-basket="middle" data-format="KO"
+            data-cost-min="31000" data-cost-max="47000" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Manacor</strong> (ESP) · 1823 km (do 2500 km), odhad podle země</span>
+              <span class="tag middle">střed</span>  
+              <span class="tag cost" title="doprava 19 511 Kč · ubytovani 10 290 Kč · strava 7 056 Kč · startovne 2 205 Kč · ubytování v okolí · letenky 16 011, mistni 3 500">31 000–47 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš střed (J100)</li><li>v plánu tenhle koš chybí (55 % pod cílem)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J30-AUT-2027-002" data-index="1"
+            data-category="J30" data-city="Bad Waltersdorf" data-nation="AUT"
+            data-start="2027-01-25" data-km="287"
+            data-basket="down" data-format="RRKO"
+            data-cost-min="20000" data-cost-max="30000" hidden>
+            <div class="head">
+              <span class="where"><strong>J30 Bad Waltersdorf</strong> (AUT) · 287 km (do 400 km), odhad podle země</span>
+              <span class="tag down">dolů</span> <span class="tag">skupiny</span> 
+              <span class="tag cost" title="doprava 2 407 Kč · ubytovani 12 495 Kč · strava 8 748 Kč · startovne 1 470 Kč · ubytování v okolí · palivo 1 847, mytne 560">20 000–30 000 Kč</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Přihlášeno</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">Pojedeme</button>
+              <button type="button" class="chip no" data-role="rejected">Určitě nepojedeme</button>
+              <span class="undo-hint">znovu kliknutím vrátíš</span>
+            </div>
+            <ul class="why"><li>koš dolů (J30)</li><li>v plánu tenhle koš chybí (15 % pod cílem)</li><li>blízká destinace (AUT)</li></ul>
+            <div class="reason" hidden>
+              <label>Proč? <select data-role="reason-code">
+                <option value="">— vyber důvod —</option>
+                <option value="cost_distance">Vzdálenost nebo cena</option><option value="school">Škola</option><option value="injury">Zranění nebo nemoc</option><option value="training_block">Tréninkový blok</option><option value="needs_wins">Potřebuje odehrát zápasy</option><option value="needs_points">Potřebuje body</option><option value="level_too_high">Příliš silné obsazení</option><option value="level_too_low">Příliš slabé obsazení</option><option value="surface">Povrch</option><option value="federation_nomination">Nominace svazu</option><option value="family">Rodinné důvody</option><option value="joint_trip">Jede se společný výjezd</option><option value="other">Jiné</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Poznámka (nepovinná)">
+              <button type="button" class="chip done-btn">Hotovo</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Zrušit výběr v termínu</button>
+      </section>
+
+    <section class="block" id="te-block" data-default-age="16">
+    <h2>Tennis Europe</h2>
+    <p class="muted">Jiný seznam než ITF: bez bodového doporučení a bez našich termínů přihlášek —
+    termín je na stránce turnaje. Turnaj, na který se pojede, zařadíte do týdenního plánu tlačítkem „+ Do plánu“.</p>
+    
+    <div class="te-ages"><button type="button" class="chip te-age" data-age="14">U14 (49)</button><button type="button" class="chip te-age" data-age="16">U16 (21)</button></div>
+    <ul class="plan te-list"><li class="te" data-te-key="TE-C509EFEA-2369-4B1C-8BA2-CA0527C4187B" data-ages="16"
+          data-start="2026-10-26" data-end="2026-10-31" data-name="Vilar International">
+        <div class="option-head"><strong>Vilar International</strong>
+          <span class="muted">26. 10. 2026–31. 10. 2026</span></div>
+        <div class="muted">Aizkraukle, Latvia · Carpet · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C509EFEA-2369-4B1C-8BA2-CA0527C4187B" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-304541B6-24C6-45A9-806E-633242627228" data-ages="14,16"
+          data-start="2026-10-26" data-end="2026-11-01" data-name="Bad Waltersdorf Open 2026 - indoors">
+        <div class="option-head"><strong>Bad Waltersdorf Open 2026 - indoors</strong>
+          <span class="muted">26. 10. 2026–1. 11. 2026</span></div>
+        <div class="muted">Bad Waltersdorf, Austria · Carpet · Category 3 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=304541B6-24C6-45A9-806E-633242627228" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-50558A07-DEB3-4750-AE1A-95C515C51D4F" data-ages="14"
+          data-start="2026-10-26" data-end="2026-10-30" data-name="TE14 IRELAND 8">
+        <div class="option-head"><strong>TE14 IRELAND 8</strong>
+          <span class="muted">26. 10. 2026–30. 10. 2026</span></div>
+        <div class="muted">Wicklow, Ireland · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=50558A07-DEB3-4750-AE1A-95C515C51D4F" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-0EDF3889-7C03-4427-B261-E5C54EC3B579" data-ages="14"
+          data-start="2026-10-26" data-end="2026-10-31" data-name="Haskovo Cup 14&amp;U">
+        <div class="option-head"><strong>Haskovo Cup 14&amp;U</strong>
+          <span class="muted">26. 10. 2026–31. 10. 2026</span></div>
+        <div class="muted">Haskovo, Bulgaria · Clay · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=0EDF3889-7C03-4427-B261-E5C54EC3B579" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-0CDDA0F3-2067-4322-938E-0B90DEAFD490" data-ages="14"
+          data-start="2026-10-26" data-end="2026-11-01" data-name="SIROKI BRIJEG OPEN 14&amp;U 2026">
+        <div class="option-head"><strong>SIROKI BRIJEG OPEN 14&amp;U 2026</strong>
+          <span class="muted">26. 10. 2026–1. 11. 2026</span></div>
+        <div class="muted">SIROKI BRIJEG, Bosnia and Herzegovina · Acryllic · Category 3</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=0CDDA0F3-2067-4322-938E-0B90DEAFD490" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-1595C1E2-4A15-4B56-B17B-B11CD58AC463" data-ages="14"
+          data-start="2026-10-26" data-end="2026-11-01" data-name="VS Tennis Academy U14 Villingen Open">
+        <div class="option-head"><strong>VS Tennis Academy U14 Villingen Open</strong>
+          <span class="muted">26. 10. 2026–1. 11. 2026</span></div>
+        <div class="muted">Villingen-Schwenningen, Germany · Acryllic · Category 3 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1595C1E2-4A15-4B56-B17B-B11CD58AC463" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-9A39B4BB-3E09-49C8-98ED-8749F96C1DE8" data-ages="16"
+          data-start="2026-10-27" data-end="2026-11-01" data-name="XVII Vilas Tennis Academy Trophy U16">
+        <div class="option-head"><strong>XVII Vilas Tennis Academy Trophy U16</strong>
+          <span class="muted">27. 10. 2026–1. 11. 2026</span></div>
+        <div class="muted">Palmanova - Calvia, Spain · Clay · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=9A39B4BB-3E09-49C8-98ED-8749F96C1DE8" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-7BAD7817-EEC9-4A70-843B-10173A065042" data-ages="14"
+          data-start="2026-10-27" data-end="2026-11-01" data-name="HNTA Open">
+        <div class="option-head"><strong>HNTA Open</strong>
+          <span class="muted">27. 10. 2026–1. 11. 2026</span></div>
+        <div class="muted">Szabolcsveresmart, Hungary · Acryllic · Category 2 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7BAD7817-EEC9-4A70-843B-10173A065042" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-4F42640A-EF8A-4BD9-A603-9FCE5F22ABF8" data-ages="14"
+          data-start="2026-11-02" data-end="2026-11-07" data-name="Kalymnos Cup 2026">
+        <div class="option-head"><strong>Kalymnos Cup 2026</strong>
+          <span class="muted">2. 11. 2026–7. 11. 2026</span></div>
+        <div class="muted">Kalymnos, Greece · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=4F42640A-EF8A-4BD9-A603-9FCE5F22ABF8" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-8D96D7A4-AD04-4FAA-977A-EC491BEA6CFF" data-ages="14"
+          data-start="2026-11-02" data-end="2026-11-08" data-name="ATIK CUP">
+        <div class="option-head"><strong>ATIK CUP</strong>
+          <span class="muted">2. 11. 2026–8. 11. 2026</span></div>
+        <div class="muted">Antalya, Turkiye · Asphalt · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=8D96D7A4-AD04-4FAA-977A-EC491BEA6CFF" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-898B957C-89DB-415D-B1D1-3A390A283DFA" data-ages="14"
+          data-start="2026-11-02" data-end="2026-11-08" data-name="Lexus Junior International Liverpool">
+        <div class="option-head"><strong>Lexus Junior International Liverpool</strong>
+          <span class="muted">2. 11. 2026–8. 11. 2026</span></div>
+        <div class="muted">Liverpool, Great Britain · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=898B957C-89DB-415D-B1D1-3A390A283DFA" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-9D8C8CD6-8183-4CD6-BBC1-ACA9E07269A8" data-ages="14"
+          data-start="2026-11-02" data-end="2026-11-08" data-name="TE 14 - HAIFA (closed event)">
+        <div class="option-head"><strong>TE 14 - HAIFA (closed event)</strong>
+          <span class="muted">2. 11. 2026–8. 11. 2026</span></div>
+        <div class="muted">Haifa, Israel · Acryllic · Category 2</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=9D8C8CD6-8183-4CD6-BBC1-ACA9E07269A8" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-1DBCE8FB-549D-4DB1-AA1C-1F6FC2B88B86" data-ages="14"
+          data-start="2026-11-04" data-end="2026-11-08" data-name="Kozerki Cup">
+        <div class="option-head"><strong>Kozerki Cup</strong>
+          <span class="muted">4. 11. 2026–8. 11. 2026</span></div>
+        <div class="muted">Grodzisk Mazowiecki, Poland · Acryllic · Category 3 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1DBCE8FB-549D-4DB1-AA1C-1F6FC2B88B86" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-7145CCA6-0D64-4FDA-A917-25AE37414E79" data-ages="16"
+          data-start="2026-11-09" data-end="2026-11-14" data-name="Yokohama Open U16 - Main Draw RR to Elimination">
+        <div class="option-head"><strong>Yokohama Open U16 - Main Draw RR to Elimination</strong>
+          <span class="muted">9. 11. 2026–14. 11. 2026</span></div>
+        <div class="muted">DRAMA, Greece · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7145CCA6-0D64-4FDA-A917-25AE37414E79" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C9E62A61-DF10-4787-88EA-39D5F1BBDFD6" data-ages="16"
+          data-start="2026-11-09" data-end="2026-11-15" data-name="CATALONIA OPEN - ARA LLEIDA">
+        <div class="option-head"><strong>CATALONIA OPEN - ARA LLEIDA</strong>
+          <span class="muted">9. 11. 2026–15. 11. 2026</span></div>
+        <div class="muted">Lleida, Spain · Clay · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C9E62A61-DF10-4787-88EA-39D5F1BBDFD6" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-3C314032-7ADD-43CF-9352-292306B0FF70" data-ages="14"
+          data-start="2026-11-09" data-end="2026-11-14" data-name="JC FERRERO TENNIS EUROPE U14">
+        <div class="option-head"><strong>JC FERRERO TENNIS EUROPE U14</strong>
+          <span class="muted">9. 11. 2026–14. 11. 2026</span></div>
+        <div class="muted">Villena, Spain · Other · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=3C314032-7ADD-43CF-9352-292306B0FF70" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-903480F6-55DB-4501-B014-F13DD75DCC96" data-ages="14"
+          data-start="2026-11-09" data-end="2026-11-15" data-name="TE 14- TEL AVIV ROKAH ST (closed event)">
+        <div class="option-head"><strong>TE 14- TEL AVIV ROKAH ST (closed event)</strong>
+          <span class="muted">9. 11. 2026–15. 11. 2026</span></div>
+        <div class="muted">Tel-Aviv Yafo, Israel · Acryllic · Category 2</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=903480F6-55DB-4501-B014-F13DD75DCC96" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-FB63A060-4F70-4195-B1D7-D8E6E48B3F57" data-ages="14"
+          data-start="2026-11-10" data-end="2026-11-15" data-name="Mecholupy Indoor Open 2026 14U">
+        <div class="option-head"><strong>Mecholupy Indoor Open 2026 14U</strong>
+          <span class="muted">10. 11. 2026–15. 11. 2026</span></div>
+        <div class="muted">Prague, Czechia · Carpet · Category 2 · do 400 km</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=FB63A060-4F70-4195-B1D7-D8E6E48B3F57" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C9BF81D2-4FEB-4A5D-B408-F6ED8124E5F0" data-ages="16"
+          data-start="2026-11-16" data-end="2026-11-21" data-name="JC FERRERO TENNIS EUROPE U16">
+        <div class="option-head"><strong>JC FERRERO TENNIS EUROPE U16</strong>
+          <span class="muted">16. 11. 2026–21. 11. 2026</span></div>
+        <div class="muted">Villena, Spain · Other · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C9BF81D2-4FEB-4A5D-B408-F6ED8124E5F0" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-809ACCA0-07CC-4D36-8BBB-4DAA6F2A872B" data-ages="14"
+          data-start="2026-11-16" data-end="2026-11-22" data-name="ATDSK CUP">
+        <div class="option-head"><strong>ATDSK CUP</strong>
+          <span class="muted">16. 11. 2026–22. 11. 2026</span></div>
+        <div class="muted">ADANA, Turkiye · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=809ACCA0-07CC-4D36-8BBB-4DAA6F2A872B" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-545EC954-97A2-4934-9D6B-BC33CA6C321F" data-ages="14"
+          data-start="2026-11-17" data-end="2026-11-22" data-name="Liberec Indoor Cup 2026 14U">
+        <div class="option-head"><strong>Liberec Indoor Cup 2026 14U</strong>
+          <span class="muted">17. 11. 2026–22. 11. 2026</span></div>
+        <div class="muted">Liberec, Czechia · Concrete · Category 3 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=545EC954-97A2-4934-9D6B-BC33CA6C321F" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-39F54649-C86B-4EBB-A288-BB1D0C6F8612" data-ages="16"
+          data-start="2026-11-23" data-end="2026-11-29" data-name="TE U16 Cyprus Tennis Federation">
+        <div class="option-head"><strong>TE U16 Cyprus Tennis Federation</strong>
+          <span class="muted">23. 11. 2026–29. 11. 2026</span></div>
+        <div class="muted">Nicosia, Cyprus · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=39F54649-C86B-4EBB-A288-BB1D0C6F8612" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-0F2AD7AA-150E-46F4-A4F6-BFE6AC0BB5FB" data-ages="14"
+          data-start="2026-11-23" data-end="2026-11-29" data-name="Norrköping Elite Hotels Junior Open">
+        <div class="option-head"><strong>Norrköping Elite Hotels Junior Open</strong>
+          <span class="muted">23. 11. 2026–29. 11. 2026</span></div>
+        <div class="muted">Norrköping, Sweden · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=0F2AD7AA-150E-46F4-A4F6-BFE6AC0BB5FB" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-BEFDDD6E-A55E-420C-9A6F-B2B7D5DA3EC3" data-ages="14"
+          data-start="2026-11-23" data-end="2026-11-29" data-name="Olimpija Open">
+        <div class="option-head"><strong>Olimpija Open</strong>
+          <span class="muted">23. 11. 2026–29. 11. 2026</span></div>
+        <div class="muted">Osijek, Croatia · Acryllic · Category 3 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=BEFDDD6E-A55E-420C-9A6F-B2B7D5DA3EC3" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-2BF870B2-F147-411A-9BF7-C68DD148696C" data-ages="14"
+          data-start="2026-11-23" data-end="2026-11-29" data-name="Soul Cup">
+        <div class="option-head"><strong>Soul Cup</strong>
+          <span class="muted">23. 11. 2026–29. 11. 2026</span></div>
+        <div class="muted">İSTANBUL, Turkiye · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=2BF870B2-F147-411A-9BF7-C68DD148696C" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-911CA6E0-86F0-4B36-977E-DBF549F67D49" data-ages="14"
+          data-start="2026-11-24" data-end="2026-11-29" data-name="Vierumäki Cup 7 - Main Draw RR to Elimination">
+        <div class="option-head"><strong>Vierumäki Cup 7 - Main Draw RR to Elimination</strong>
+          <span class="muted">24. 11. 2026–29. 11. 2026</span></div>
+        <div class="muted">Vierumäki, Finland · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=911CA6E0-86F0-4B36-977E-DBF549F67D49" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-23AE0F0E-0063-44C6-BB79-0A2DAB4197C3" data-ages="14,16"
+          data-start="2026-11-30" data-end="2026-12-06" data-name="Bad Waltersdorf Open 2026 - indoors">
+        <div class="option-head"><strong>Bad Waltersdorf Open 2026 - indoors</strong>
+          <span class="muted">30. 11. 2026–6. 12. 2026</span></div>
+        <div class="muted">Bad Waltersdorf, Austria · Carpet · Category 3 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=23AE0F0E-0063-44C6-BB79-0A2DAB4197C3" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-2AE1CF5A-5579-44EE-8C0E-E076BF423EA8" data-ages="14"
+          data-start="2026-11-30" data-end="2026-12-06" data-name="Gothenburg Open">
+        <div class="option-head"><strong>Gothenburg Open</strong>
+          <span class="muted">30. 11. 2026–6. 12. 2026</span></div>
+        <div class="muted">Göteborg, Sweden · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=2AE1CF5A-5579-44EE-8C0E-E076BF423EA8" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-E7605B93-DBC2-4136-B442-D4978A471F26" data-ages="16"
+          data-start="2026-12-07" data-end="2026-12-13" data-name="Intaro Junior Trophy">
+        <div class="option-head"><strong>Intaro Junior Trophy</strong>
+          <span class="muted">7. 12. 2026–13. 12. 2026</span></div>
+        <div class="muted">Targu Mures, Romania · Acryllic · Category 3</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=E7605B93-DBC2-4136-B442-D4978A471F26" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-E3F72CE2-CE23-47DC-B38F-93BAC21782D3" data-ages="14"
+          data-start="2026-12-07" data-end="2026-12-13" data-name="TENNIS EUROPE PLATJA D'ARO 365">
+        <div class="option-head"><strong>TENNIS EUROPE PLATJA D'ARO 365</strong>
+          <span class="muted">7. 12. 2026–13. 12. 2026</span></div>
+        <div class="muted">Platja d'Aro - Girona, Spain · Clay · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=E3F72CE2-CE23-47DC-B38F-93BAC21782D3" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C335112C-D17E-4B09-B35B-E8632826413B" data-ages="14"
+          data-start="2026-12-09" data-end="2026-12-13" data-name="Malling Tennis Europe U14">
+        <div class="option-head"><strong>Malling Tennis Europe U14</strong>
+          <span class="muted">9. 12. 2026–13. 12. 2026</span></div>
+        <div class="muted">Oslo, Norway · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C335112C-D17E-4B09-B35B-E8632826413B" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-3C1CD1F8-C436-4BD1-93A8-0072F2A83ADB" data-ages="16"
+          data-start="2027-01-04" data-end="2027-01-10" data-name="Horni Mecholupy Open 2027">
+        <div class="option-head"><strong>Horni Mecholupy Open 2027</strong>
+          <span class="muted">4. 1. 2027–10. 1. 2027</span></div>
+        <div class="muted">Praha, Czechia · Carpet · Category 2 · do 400 km</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=3C1CD1F8-C436-4BD1-93A8-0072F2A83ADB" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-1239C4BB-D785-4FA3-B7D7-68CAB4936584" data-ages="14"
+          data-start="2027-01-04" data-end="2027-01-10" data-name="Tennis Europe de Marcq-en-Baroeul">
+        <div class="option-head"><strong>Tennis Europe de Marcq-en-Baroeul</strong>
+          <span class="muted">4. 1. 2027–10. 1. 2027</span></div>
+        <div class="muted">MARCQ EN BAROEUL, France · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1239C4BB-D785-4FA3-B7D7-68CAB4936584" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-27C55385-B300-4C22-9AAE-92CCD5606307" data-ages="14"
+          data-start="2027-01-04" data-end="2027-01-10" data-name="TENNIS POINT 2027">
+        <div class="option-head"><strong>TENNIS POINT 2027</strong>
+          <span class="muted">4. 1. 2027–10. 1. 2027</span></div>
+        <div class="muted">BEOGRAD, Serbia · Clay · Category 3</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=27C55385-B300-4C22-9AAE-92CCD5606307" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-962F4165-1087-42DF-8773-91714B53E399" data-ages="14"
+          data-start="2027-01-05" data-end="2027-01-10" data-name="Narva Cup">
+        <div class="option-head"><strong>Narva Cup</strong>
+          <span class="muted">5. 1. 2027–10. 1. 2027</span></div>
+        <div class="muted">Narva, Estonia · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=962F4165-1087-42DF-8773-91714B53E399" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-79E325D4-48ED-4F5E-8E22-9293FA11C76E" data-ages="14"
+          data-start="2027-01-06" data-end="2027-01-10" data-name="Scandic Open Helsingborg">
+        <div class="option-head"><strong>Scandic Open Helsingborg</strong>
+          <span class="muted">6. 1. 2027–10. 1. 2027</span></div>
+        <div class="muted">Helsingborg, Sweden · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=79E325D4-48ED-4F5E-8E22-9293FA11C76E" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-E7C98E06-359D-4388-99B2-3907559DFA84" data-ages="16"
+          data-start="2027-01-11" data-end="2027-01-17" data-name="Versowood Cup - Main Draw RR to Elimination">
+        <div class="option-head"><strong>Versowood Cup - Main Draw RR to Elimination</strong>
+          <span class="muted">11. 1. 2027–17. 1. 2027</span></div>
+        <div class="muted">Vierumäki, Finland · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=E7C98E06-359D-4388-99B2-3907559DFA84" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-2E89ECCC-DA2A-4C47-8B00-96ABDA5C606F" data-ages="14"
+          data-start="2027-01-11" data-end="2027-01-16" data-name="Tennis Europe Bar-Le-Duc Grand Est U14">
+        <div class="option-head"><strong>Tennis Europe Bar-Le-Duc Grand Est U14</strong>
+          <span class="muted">11. 1. 2027–16. 1. 2027</span></div>
+        <div class="muted">BAR-LE-DUC, France · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=2E89ECCC-DA2A-4C47-8B00-96ABDA5C606F" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C48CE978-E0B1-451E-BBFD-2B2ABCC22117" data-ages="14"
+          data-start="2027-01-11" data-end="2027-01-17" data-name="Breclav Open 2027">
+        <div class="option-head"><strong>Breclav Open 2027</strong>
+          <span class="muted">11. 1. 2027–17. 1. 2027</span></div>
+        <div class="muted">Breclav, Czechia · Concrete · Category 2 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C48CE978-E0B1-451E-BBFD-2B2ABCC22117" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-F98B9914-2296-40FC-B8D5-0335C8566435" data-ages="14"
+          data-start="2027-01-11" data-end="2027-01-17" data-name="Malling Tennis Europe U14 Oslo">
+        <div class="option-head"><strong>Malling Tennis Europe U14 Oslo</strong>
+          <span class="muted">11. 1. 2027–17. 1. 2027</span></div>
+        <div class="muted">Oslo, Norway · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=F98B9914-2296-40FC-B8D5-0335C8566435" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-2A0DB284-B538-4157-AC4C-5DF7A970E75A" data-ages="14"
+          data-start="2027-01-11" data-end="2027-01-17" data-name="Siauliai Open U14">
+        <div class="option-head"><strong>Siauliai Open U14</strong>
+          <span class="muted">11. 1. 2027–17. 1. 2027</span></div>
+        <div class="muted">Šiauliai, Lithuania · Acryllic · Category 2 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=2A0DB284-B538-4157-AC4C-5DF7A970E75A" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-D688BE2A-F2F0-42D5-A3C5-F90A6FF3D58A" data-ages="14"
+          data-start="2027-01-17" data-end="2027-01-22" data-name="Lexus Junior International Bolton">
+        <div class="option-head"><strong>Lexus Junior International Bolton</strong>
+          <span class="muted">17. 1. 2027–22. 1. 2027</span></div>
+        <div class="muted">Bolton, Great Britain · Acryllic · Category 1 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=D688BE2A-F2F0-42D5-A3C5-F90A6FF3D58A" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-B2F0AEFF-1814-4213-92E9-003CACC6D24D" data-ages="16"
+          data-start="2027-01-18" data-end="2027-01-24" data-name="TE U16 Baghdatis Academy G3">
+        <div class="option-head"><strong>TE U16 Baghdatis Academy G3</strong>
+          <span class="muted">18. 1. 2027–24. 1. 2027</span></div>
+        <div class="muted">Limassol, Cyprus · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=B2F0AEFF-1814-4213-92E9-003CACC6D24D" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C5D14A37-CBF0-4708-81E9-8D0214262923" data-ages="16"
+          data-start="2027-01-18" data-end="2027-01-24" data-name="Tennis Europe U16 Stavanger">
+        <div class="option-head"><strong>Tennis Europe U16 Stavanger</strong>
+          <span class="muted">18. 1. 2027–24. 1. 2027</span></div>
+        <div class="muted">Stavanger, Norway · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C5D14A37-CBF0-4708-81E9-8D0214262923" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-F19F8B85-1936-4968-88A5-263610E87C2B" data-ages="14"
+          data-start="2027-01-18" data-end="2027-01-24" data-name="Aizkraukle 01">
+        <div class="option-head"><strong>Aizkraukle 01</strong>
+          <span class="muted">18. 1. 2027–24. 1. 2027</span></div>
+        <div class="muted">Aizkraukle, Latvia · Carpet · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=F19F8B85-1936-4968-88A5-263610E87C2B" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-4E7B4634-3C28-44ED-9568-12EA24279575" data-ages="16"
+          data-start="2027-01-25" data-end="2027-01-31" data-name="Aizkraukle 02">
+        <div class="option-head"><strong>Aizkraukle 02</strong>
+          <span class="muted">25. 1. 2027–31. 1. 2027</span></div>
+        <div class="muted">Aizkraukle, Latvia · Carpet · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=4E7B4634-3C28-44ED-9568-12EA24279575" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-D9EB7B19-54F4-45FD-A22A-C8217213E8AC" data-ages="16"
+          data-start="2027-01-25" data-end="2027-01-31" data-name="TE U16 Herodotou Tennis Academy G2">
+        <div class="option-head"><strong>TE U16 Herodotou Tennis Academy G2</strong>
+          <span class="muted">25. 1. 2027–31. 1. 2027</span></div>
+        <div class="muted">Meneou Larnaka, Cyprus · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=D9EB7B19-54F4-45FD-A22A-C8217213E8AC" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C694D9F4-430E-4B97-B3C0-95BBA717AD8D" data-ages="14"
+          data-start="2027-01-25" data-end="2027-01-31" data-name="45ème PETITS AS Le Mondial WILSON">
+        <div class="option-head"><strong>45ème PETITS AS Le Mondial WILSON</strong>
+          <span class="muted">25. 1. 2027–31. 1. 2027</span></div>
+        <div class="muted">Tarbes, France · Acryllic · Super Category · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C694D9F4-430E-4B97-B3C0-95BBA717AD8D" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-CE77AE3A-A2BF-41A5-8449-04408A254FE7" data-ages="16"
+          data-start="2027-02-08" data-end="2027-02-14" data-name="Siauliai Open by Toyota U16">
+        <div class="option-head"><strong>Siauliai Open by Toyota U16</strong>
+          <span class="muted">8. 2. 2027–14. 2. 2027</span></div>
+        <div class="muted">Šiauliai, Lithuania · Acryllic · Category 2 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=CE77AE3A-A2BF-41A5-8449-04408A254FE7" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-F2D89908-A3E1-4932-B6F4-D43D59611CED" data-ages="14"
+          data-start="2027-02-08" data-end="2027-02-14" data-name="Lexus Junior International Liverpool">
+        <div class="option-head"><strong>Lexus Junior International Liverpool</strong>
+          <span class="muted">8. 2. 2027–14. 2. 2027</span></div>
+        <div class="muted">Main Draw - Wavertree Sports Park, Wellington Road, Great Britain · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=F2D89908-A3E1-4932-B6F4-D43D59611CED" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-7B7D467D-C340-43DD-A241-05268B8548C6" data-ages="14"
+          data-start="2027-02-08" data-end="2027-02-14" data-name="TE - 14 Ireland 1">
+        <div class="option-head"><strong>TE - 14 Ireland 1</strong>
+          <span class="muted">8. 2. 2027–14. 2. 2027</span></div>
+        <div class="muted">Dublin 9, Ireland · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7B7D467D-C340-43DD-A241-05268B8548C6" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-2944D59B-E31C-4C04-A827-AA143F2296E9" data-ages="16"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="Olimpija Open">
+        <div class="option-head"><strong>Olimpija Open</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Osijek, Croatia · Acryllic · Category 3 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=2944D59B-E31C-4C04-A827-AA143F2296E9" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-54334E7D-5D7C-4504-820D-4DAE1A5121AE" data-ages="16"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="U16 Tennis Space Academy Cup 1">
+        <div class="option-head"><strong>U16 Tennis Space Academy Cup 1</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Kaunas, Lithuania · Artificial Clay · Category 3 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=54334E7D-5D7C-4504-820D-4DAE1A5121AE" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-70973A5F-93CD-41BA-8A91-B06B24F59AEC" data-ages="14"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="De Wildenhorst Tennis Europe Junior Tour 2027">
+        <div class="option-head"><strong>De Wildenhorst Tennis Europe Junior Tour 2027</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Badhoevedorp, Netherlands · Carpet · Category 3 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=70973A5F-93CD-41BA-8A91-B06B24F59AEC" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-63B0A3C8-151C-47DE-849E-CAF71041C4F5" data-ages="14"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="International Championships of Romania U14">
+        <div class="option-head"><strong>International Championships of Romania U14</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Bucharest, Romania · Clay · Category 2</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=63B0A3C8-151C-47DE-849E-CAF71041C4F5" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-E10E352D-796A-47ED-B17F-5270A160A609" data-ages="14"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="TEJT 2 U14 &quot; Baseline Open U14 2027&quot;">
+        <div class="option-head"><strong>TEJT 2 U14 &quot; Baseline Open U14 2027&quot;</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Banska Bystrica, Slovakia · Acryllic · Category 2 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=E10E352D-796A-47ED-B17F-5270A160A609" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-0B0ACE06-9530-462C-9644-5396D783E003" data-ages="14"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="Tsaghkadzor Winter Cup 1">
+        <div class="option-head"><strong>Tsaghkadzor Winter Cup 1</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Tsaghkadzor, Armenia · Acryllic · Category 3 · přes 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=0B0ACE06-9530-462C-9644-5396D783E003" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-906E3387-C95A-454D-9C2A-D38BEE37DB34" data-ages="14"
+          data-start="2027-02-15" data-end="2027-02-21" data-name="Versowood Cup 2 - Main Draw RR to Elimination">
+        <div class="option-head"><strong>Versowood Cup 2 - Main Draw RR to Elimination</strong>
+          <span class="muted">15. 2. 2027–21. 2. 2027</span></div>
+        <div class="muted">Vierumäki, Finland · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=906E3387-C95A-454D-9C2A-D38BEE37DB34" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-A8F465A3-4713-4774-9976-635CBCE5BE4F" data-ages="14"
+          data-start="2027-02-16" data-end="2027-02-20" data-name="Lidköping Open">
+        <div class="option-head"><strong>Lidköping Open</strong>
+          <span class="muted">16. 2. 2027–20. 2. 2027</span></div>
+        <div class="muted">Lidköping, Sweden · Acryllic · Category 3 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=A8F465A3-4713-4774-9976-635CBCE5BE4F" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-A80C01F1-F5AB-45D6-BFF1-9D1D5ADF6650" data-ages="14,16"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="Bad Waltersdorf Series 1">
+        <div class="option-head"><strong>Bad Waltersdorf Series 1</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Bad Waltersdorf, Austria · Carpet · Category 3 · do 400 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=A80C01F1-F5AB-45D6-BFF1-9D1D5ADF6650" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-7E106EC9-F459-4B52-80D9-29AEDD71E954" data-ages="16"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="CIRCUITO INTERNACIONALES Comunidad Valenciana SUB16 - Main Draw RR to Elimination">
+        <div class="option-head"><strong>CIRCUITO INTERNACIONALES Comunidad Valenciana SUB16 - Main Draw RR to Elimination</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Torrent (Valencia), Spain · Clay · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7E106EC9-F459-4B52-80D9-29AEDD71E954" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-F8D64769-FED2-4DE9-8AF8-2EF175AD344E" data-ages="16"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="DCP Tennis Europe U16">
+        <div class="option-head"><strong>DCP Tennis Europe U16</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Thessaloniki, Greece · Clay · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=F8D64769-FED2-4DE9-8AF8-2EF175AD344E" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-F71677A8-D161-42DD-9F85-C2B28A2D279E" data-ages="14"
+          data-start="2027-02-22" data-end="2027-02-26" data-name="Svedala Open">
+        <div class="option-head"><strong>Svedala Open</strong>
+          <span class="muted">22. 2. 2027–26. 2. 2027</span></div>
+        <div class="muted">Svedala, Sweden · Acryllic · Category 2 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=F71677A8-D161-42DD-9F85-C2B28A2D279E" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-7A2FC9C8-FD64-4C81-A396-8501BA60940D" data-ages="14"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="Robey FOCUS tennis academy open 2027">
+        <div class="option-head"><strong>Robey FOCUS tennis academy open 2027</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Rotterdam, Netherlands · Acryllic · Category 2 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7A2FC9C8-FD64-4C81-A396-8501BA60940D" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-6FF7D82B-0158-4CC7-BAF6-7DCA8FD81194" data-ages="14"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="Sobota Cup 2027">
+        <div class="option-head"><strong>Sobota Cup 2027</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Sobota/Rokietnica, Poland · Acryllic · Category 3 · do 1000 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=6FF7D82B-0158-4CC7-BAF6-7DCA8FD81194" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-42BE4EB9-D71E-46A8-A0E9-88C30AA3CBC5" data-ages="14"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="Tim Essonne">
+        <div class="option-head"><strong>Tim Essonne</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Sainte-Geneviève-des-Bois, France · Acryllic · Category 1 · do 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=42BE4EB9-D71E-46A8-A0E9-88C30AA3CBC5" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-7309E00B-E18E-4929-913E-B4FDF7DFA59B" data-ages="14"
+          data-start="2027-02-22" data-end="2027-02-28" data-name="Tsaghkadzor Winter Cup 2">
+        <div class="option-head"><strong>Tsaghkadzor Winter Cup 2</strong>
+          <span class="muted">22. 2. 2027–28. 2. 2027</span></div>
+        <div class="muted">Tsaghkadzor, Armenia · Acryllic · Category 3 · přes 2500 km (odhad podle země)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Do plánu</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7309E00B-E18E-4929-913E-B4FDF7DFA59B" target="_blank" rel="noopener">Stránka turnaje a přihlášky</a>
+        </div>
+      </li></ul>
+  </section>
+
+    
+
+    <h2>Poslední výsledky</h2>
+    <table>
+    <thead><tr><th>Datum</th><th>Turnaj</th><th>V–P</th><th>Dosaženo</th><th>Body</th><th>WTN soupeřů</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </section>
+<div class="send">
+  <button type="button" id="send">Odeslat zpětnou vazbu trenérovi</button>
+  <span class="hint" id="send-note"></span>
+</div>
+<footer>
+  Data z ITF ke dni 24. 10. 2026 · kalendář 186 turnajů na 4 měsíce dopředu ·
+  doporučení respektuje uzávěrku přihlášek podle regulí ITF a vzdálenost od místa
+  Prague.<br>
+  V jednom termínu jsou až tři možnosti; po zakliknutí „Pojedeme" ostatní zmizí.
+  Výběr se drží jen v tomhle prohlížeči — natrvalo se bude ukládat, až bude hotové
+  odesílání plánu zpět.<br><br>
+  Tento přehled byl vytvořen ve spolupráci s AI. Mohou se v něm vyskytnout nepřesnosti.
+</footer>
+</div><script>
+var HRAC = "Demo Player";
+var S = {"locale":"cs-CZ","lang":"cs","dow":["ne","po","út","st","čt","pá","so"],"conflict":"Kolize: ","syncPulled":"Načteny změny z jiného zařízení, ","fbButton":"Zpětná vazba","fbTitle":"Napište nám připomínku","fbIntro":"Co se vám nelíbí, co chybí nebo co nefunguje? Stačí pár slov, přečte to trenér.","fbKinds":{"chyba":"Chyba","napad":"Nápad","otazka":"Otázka","jine":"Jiné"},"fbSend":"Odeslat","fbSendMail":"Odeslat e-mailem","fbCancel":"Zavřít","fbMail":"Nejde odeslat? Napsat e-mailem","fbSubject":"Připomínka k plánu — ","fbEmpty":"Napište prosím pár slov.","fbSending":"Odesílám…","fbThanks":"Děkujeme, připomínka je odeslána.","fbFail":"Odeslání se nepodařilo. Zkuste to znovu, nebo pošlete e-mailem.","consentTitle":"Sdílení s trenérem","consentText":"Aby se doporučení turnajů dalo zlepšovat, může se váš výběr turnajů, důvody odmítnutí, poznámky, podmínky na turnajích a zadané týdny (dovolená, škola, příprava) automaticky odesílat trenérovi Janu Perutkovi. Neodesílá se jméno ani kontakt, jen údaje o turnajích a soukromý odkaz této stránky. Se zapnutým odesíláním se váš výběr a zadané dny synchronizují i mezi vašimi zařízeními (stačí otevřít stejný odkaz). Odesílání je dobrovolné a je vypnuté, dokud ho nezapnete. Když ho vypnete, odeslaná data se smažou. Údaje slouží jen k vylepšení plánu a nikomu dalšímu se nepředávají.","consentLabel":"Souhlasím s odesíláním trenérovi","syncOff":"Odesílání je vypnuté.","syncWait":"Odesílám…","syncOk":"Odesláno ","syncOffline":"Čeká na připojení, odešle se později.","syncFail":"Odeslání se nepodařilo, zkusí se znovu při další změně.","deleted":"Vypnuto, odeslaná data jsou smazána.","deletePending":"Vypnuto, smazání odeslaných dat proběhne po připojení.","months":null,"curPrefix":"","curSuffix":" Kč","going":"Vybráno: ","entered":"Přihlášeno: ","of":" z ","reportHead":" — zpětná vazba k plánu (","weeksTitle":"Týdny zadané rodičem:","goingLabel":"POJEDEME","notGoingLabel":"NEPOJEDEME","reason":" · důvod: ","conditionsTitle":"Podmínky na turnajích:","costTitle":"Odhad nákladů za vybrané turnaje: ","costExcl":" (bez svazových výjezdů)","copied":"Zkopírováno do schránky, otevírám e-mail.","opening":"Otevírám e-mail.","subject":"Turnajový plán — ","tournament":["turnaj","turnaje","turnajů"],"selected":"Vybráno ","allPaid":" · vše hradí svaz","costEst":" · odhad nákladů ","fedNote":" (svazové výjezdy se nepočítají)","added":"Zadáno · ","delTitle":"Smazat celé zadání","delLabel":"Smazat zadání","blockedPre":"V tomto týdnu je zadáno: ","blockedPost":" — návrhy turnajů jsou skryté.","rejected":"Odmítnuto: ","rejectedMark":"✕ ","undoCollapse":"vrátit","teAdd":"+ Do plánu","teIn":"V plánu ✓","types":{"dovolena":"Dovolená","skola":"Škola","fyzicka":"Fyzická příprava","tenis":"Tenisová příprava","jine":"Jiné","te":"Turnaj Tennis Europe"}};
+var BUILD = "2026-10-24";
+var EMAIL = "jperutka@proton.me";
+/**
+ * Slučování záznamů rodiče z více zařízení (synchronizace). Stejný soubor běží na serveru
+ * (Vercel funkce) i ve stránce — proto je psaný jako starší JavaScript bez šablonových řetězců,
+ * `report.js` ho vkládá do stránky celý.
+ *
+ * Záznam (doc):
+ *   state:    { <klíč turnaje>: { v: 'going' | 'rejected' | 'entered' | 'none', t: ISO čas } }
+ *   feedback: { <klíč>: { d: { duvod, poznamka, hotovo, ... } | null, t } }   (null = smazáno)
+ *   weeks:    [ { id, od, do, typ, te?, poznamka?, dny, t } ]                    (živé položky)
+ *   tombs:    { <id týdne>: ISO čas smazání }
+ *
+ * Pravidlo: u každé položky vyhrává novější změna (`t`), při shodě rozhoduje stabilní porovnání
+ * obsahu, takže výsledek nezávisí na pořadí slučování (komutativní, idempotentní).
+ * Smazaný týden se pamatuje v `tombs`; položka se vrátí jen když vznikla později než smazání.
+ */
+var PlanMerge = (function () {
+  function emptyDoc() {
+    return { state: {}, feedback: {}, weeks: [], tombs: {} };
+  }
+
+  function normalize(doc) {
+    var d = doc && typeof doc === 'object' ? doc : {};
+    return {
+      state: d.state && typeof d.state === 'object' ? d.state : {},
+      feedback: d.feedback && typeof d.feedback === 'object' ? d.feedback : {},
+      weeks: Array.isArray(d.weeks) ? d.weeks : [],
+      tombs: d.tombs && typeof d.tombs === 'object' ? d.tombs : {}
+    };
+  }
+
+  // Stabilní řetězec bez ohledu na pořadí klíčů, pro porovnání a pro rozhodnutí při shodě času.
+  function canonical(value) {
+    if (value === null || typeof value !== 'object') return JSON.stringify(value === undefined ? null : value);
+    if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
+    return '{' + Object.keys(value).sort().map(function (k) { return JSON.stringify(k) + ':' + canonical(value[k]); }).join(',') + '}';
+  }
+
+  function newer(a, b) {
+    var ta = (a && a.t) || '';
+    var tb = (b && b.t) || '';
+    if (ta !== tb) return ta > tb ? a : b;
+    return canonical(a) >= canonical(b) ? a : b;
+  }
+
+  function mergeMap(x, y) {
+    var out = {};
+    var keys = {};
+    Object.keys(x).forEach(function (k) { keys[k] = true; });
+    Object.keys(y).forEach(function (k) { keys[k] = true; });
+    Object.keys(keys).forEach(function (k) {
+      if (!x[k]) out[k] = y[k];
+      else if (!y[k]) out[k] = x[k];
+      else out[k] = newer(x[k], y[k]);
+    });
+    return out;
+  }
+
+  function mergeDocs(a, b) {
+    var x = normalize(a);
+    var y = normalize(b);
+
+    var tombs = {};
+    [x.tombs, y.tombs].forEach(function (map) {
+      Object.keys(map).forEach(function (id) {
+        if (!tombs[id] || map[id] > tombs[id]) tombs[id] = map[id];
+      });
+    });
+
+    var byId = {};
+    x.weeks.concat(y.weeks).forEach(function (w) {
+      if (!w || !w.id) return;
+      byId[w.id] = byId[w.id] ? newer(byId[w.id], w) : w;
+    });
+    var weeks = Object.keys(byId)
+      .filter(function (id) { return !(tombs[id] && tombs[id] >= (byId[id].t || '')); })
+      .map(function (id) { return byId[id]; })
+      .sort(function (p, q) { return (p.od || '') < (q.od || '') ? -1 : (p.od || '') > (q.od || '') ? 1 : (p.id < q.id ? -1 : 1); });
+
+    return { state: mergeMap(x.state, y.state), feedback: mergeMap(x.feedback, y.feedback), weeks: weeks, tombs: tombs };
+  }
+
+  function sameDoc(a, b) {
+    return canonical(mergeDocs(a, a)) === canonical(mergeDocs(b, b));
+  }
+
+  return { emptyDoc: emptyDoc, normalize: normalize, mergeDocs: mergeDocs, canonical: canonical, sameDoc: sameDoc };
+})();
+
+if (typeof module !== 'undefined' && module.exports) module.exports = PlanMerge;
+
+/*
+ * Stavy turnaje v termínu: přihlášeno (může být až tři), pojedeme (ostatní zmizí),
+ * nepojedeme (zmizí a místo něj se nabídne další z kalendáře).
+ * Drží se v prohlížeči rodiče; natrvalo se bude ukládat, až bude hotové odesílání plánu.
+ */
+(function () {
+  var KEY = 'plan-stavy:' + HRAC;
+  var MAX_VISIBLE = 3;
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+
+  // Záznam pro synchronizaci mezi zařízeními: u každé položky čas poslední změny.
+  var DOC_KEY = 'plan-doc:' + HRAC;
+  var doc = PlanMerge.emptyDoc();
+  try { doc = PlanMerge.normalize(JSON.parse(localStorage.getItem(DOC_KEY) || 'null')); } catch (e) {}
+
+  function nowIso() { return new Date().toISOString(); }
+
+  // Porovná pracovní data s posledním záznamem a změněné položky označí časem.
+  function stamp() {
+    var t = nowIso();
+    Object.keys(state).forEach(function (k) {
+      if (!doc.state[k] || doc.state[k].v !== state[k]) doc.state[k] = { v: state[k], t: t };
+    });
+    Object.keys(doc.state).forEach(function (k) {
+      if (!(k in state) && doc.state[k].v !== 'none') doc.state[k] = { v: 'none', t: t };
+    });
+    if (typeof feedback === 'object' && feedback) {
+      Object.keys(feedback).forEach(function (k) {
+        var json = JSON.stringify(feedback[k]);
+        if (!doc.feedback[k] || JSON.stringify(doc.feedback[k].d) !== json) doc.feedback[k] = { d: JSON.parse(json), t: t };
+      });
+      Object.keys(doc.feedback).forEach(function (k) {
+        if (!(k in feedback) && doc.feedback[k].d !== null) doc.feedback[k] = { d: null, t: t };
+      });
+    }
+    if (Array.isArray(ownWeeks)) {
+      ownWeeks.forEach(function (w) { if (!w.t) w.t = t; });
+      doc.weeks = ownWeeks;
+    }
+    try { localStorage.setItem(DOC_KEY, JSON.stringify(doc)); } catch (e) {}
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    stamp();
+    scheduleSync();
+  }
+
+  function apply(group) {
+    var options = [].slice.call(group.querySelectorAll('.option'));
+    var going = options.filter(function (li) { return state[li.dataset.key] === 'going'; })[0];
+    var entered = options.filter(function (li) { return state[li.dataset.key] === 'entered'; });
+    var shown = 0;
+
+    options.forEach(function (li) {
+      var s = state[li.dataset.key] || 'none';
+      li.classList.toggle('chosen', s === 'going');
+      li.classList.toggle('is-entered', s === 'entered');
+      syncReason(li);
+
+      var box = li.querySelector('[data-role=entered]');
+      if (box) {
+        box.checked = s === 'entered';
+        // Přihlásit se dá nejvýš na tři turnaje v jednom termínu.
+        box.disabled = s !== 'entered' && entered.length >= MAX_VISIBLE;
+      }
+
+      li.classList.toggle('is-rejected', s === 'rejected');
+      syncCollapsed(li, s === 'rejected');
+
+      if (going) {
+        li.hidden = li !== going;
+        return;
+      }
+      // Odmítnutý turnaj zůstane vidět (jinak není kam napsat důvod), ale místo
+      // v termínu uvolní dalšímu v pořadí.
+      if (s === 'rejected') { li.hidden = false; return; }
+
+      // Odmítnutý turnaj uvolní místo dalšímu v pořadí.
+      li.hidden = shown >= MAX_VISIBLE;
+      if (!li.hidden) shown += 1;
+    });
+
+    var rejectedCount = options.filter(function (li) { return state[li.dataset.key] === 'rejected'; }).length;
+    var note = group.querySelector('.state-note');
+    if (note) {
+      var base = going
+        ? S.going + going.querySelector('strong').textContent
+        : entered.length
+        ? S.entered + entered.length + S.of + MAX_VISIBLE
+        : '';
+      note.textContent = base + (rejectedCount ? (base ? ' · ' : '') + S.rejected + rejectedCount : '');
+    }
+
+    group.querySelector('.reset').hidden = !going && !entered.length &&
+      !options.some(function (li) { return state[li.dataset.key] === 'rejected'; });
+  }
+
+  // Odmítnutý turnaj se po „Hotovo“ sbalí na jeden řádek; důvod zůstává uložený.
+  function syncCollapsed(li, rejected) {
+    var f = feedback[li.dataset.key];
+    if (!rejected && f && f.hotovo) { delete f.hotovo; saveFeedback(); }
+    var collapsed = rejected && !!(f && f.hotovo);
+    li.classList.toggle('is-collapsed', collapsed);
+    var row = li.querySelector('.collapsed-row');
+    if (!collapsed) { if (row) row.remove(); return; }
+
+    var select = li.querySelector('[data-role=reason-code]');
+    var why = select && select.value ? select.options[select.selectedIndex].text : '';
+    var noteText = f.poznamka ? f.poznamka : '';
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'collapsed-row';
+      var label = document.createElement('span');
+      label.className = 'collapsed-label';
+      var undo = document.createElement('button');
+      undo.type = 'button';
+      undo.className = 'undo-collapse';
+      undo.textContent = S.undoCollapse;
+      row.appendChild(label);
+      row.appendChild(undo);
+      li.appendChild(row);
+    }
+    row.querySelector('.collapsed-label').textContent =
+      S.rejectedMark + li.querySelector('strong').textContent + (why ? ' — ' + why : '') + (noteText ? ' · ' + noteText : '');
+  }
+
+  var FEEDBACK = 'plan-zpetna-vazba:' + HRAC;
+  var feedback = {};
+  try { feedback = JSON.parse(localStorage.getItem(FEEDBACK) || '{}'); } catch (e) {}
+
+  function saveFeedback() {
+    try { localStorage.setItem(FEEDBACK, JSON.stringify(feedback)); } catch (e) {}
+    stamp();
+    scheduleSync();
+  }
+
+  // Důvod se ptá tam, kde se rodič odchyluje od doporučení: odmítnutí nebo volba turnaje.
+  function syncReason(li) {
+    var box = li.querySelector('.reason');
+    if (!box) return;
+    var s = state[li.dataset.key] || 'none';
+    box.hidden = !(s === 'rejected' || s === 'going');
+
+    var saved = feedback[li.dataset.key] || {};
+    var code = box.querySelector('[data-role=reason-code]');
+    var note = box.querySelector('[data-role=reason-note]');
+    if (code && saved.duvod) code.value = saved.duvod;
+    if (note && saved.poznamka) note.value = saved.poznamka;
+  }
+
+  document.addEventListener('change', function (e) {
+    var li = e.target.closest('.option');
+    if (li && e.target.matches('[data-role=reason-code]')) {
+      feedback[li.dataset.key] = feedback[li.dataset.key] || {};
+      feedback[li.dataset.key].duvod = e.target.value;
+      feedback[li.dataset.key].stav = state[li.dataset.key] || 'none';
+      feedback[li.dataset.key].turnaj = li.querySelector('strong').textContent;
+      saveFeedback();
+    }
+    var cond = e.target.closest('.cond');
+    if (cond && e.target.matches('[data-role=cond]')) {
+      var key = 'podminky|' + cond.dataset.key;
+      feedback[key] = feedback[key] || { turnaj: cond.dataset.key, podminky: [] };
+      var list = feedback[key].podminky.filter(function (v) { return v !== e.target.value; });
+      if (e.target.checked) list.push(e.target.value);
+      feedback[key].podminky = list;
+      saveFeedback();
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    var li = e.target.closest('.option');
+    if (li && e.target.matches('[data-role=reason-note]')) {
+      feedback[li.dataset.key] = feedback[li.dataset.key] || {};
+      feedback[li.dataset.key].poznamka = e.target.value;
+      saveFeedback();
+    }
+    var cond = e.target.closest('.cond');
+    if (cond && e.target.matches('[data-role=cond-note]')) {
+      var key = 'podminky|' + cond.dataset.key;
+      feedback[key] = feedback[key] || { turnaj: cond.dataset.key, podminky: [] };
+      feedback[key].poznamka = e.target.value;
+      saveFeedback();
+    }
+  });
+
+  function buildReport() {
+    var lines = [HRAC + S.reportHead + new Date().toLocaleDateString(S.locale) + ')', ''];
+
+    var tydny = ownWeeks.slice().sort(function (a, b) { return a.od < b.od ? -1 : 1; });
+    if (tydny.length) {
+      lines.push(S.weeksTitle);
+      tydny.forEach(function (w) {
+        var t = TYPY_TYDNE[w.typ] || TYPY_TYDNE.jine;
+        lines.push('- ' + t.label + ': ' + rangeText(w) + (w.poznamka ? ' — ' + w.poznamka : ''));
+      });
+      lines.push('');
+    }
+
+    document.querySelectorAll('.option').forEach(function (li) {
+      if (li.closest('.group.blocked')) return;
+      var s = state[li.dataset.key];
+      if (!s || s === 'none' || s === 'entered') return;
+      var f = feedback[li.dataset.key] || {};
+      var popis = s === 'going' ? S.goingLabel : S.notGoingLabel;
+      var duvod = f.duvod ? S.reason + f.duvod : '';
+      var pozn = f.poznamka ? ' · ' + f.poznamka : '';
+      lines.push(popis + ': ' + li.querySelector('strong').textContent + duvod + pozn);
+    });
+
+    var podminky = Object.keys(feedback).filter(function (k) { return k.indexOf('podminky|') === 0; });
+    if (podminky.length) {
+      lines.push('', S.conditionsTitle);
+      podminky.forEach(function (k) {
+        var f = feedback[k];
+        if (!(f.podminky || []).length && !f.poznamka) return;
+        lines.push('- ' + f.turnaj + ': ' + (f.podminky || []).join(', ') + (f.poznamka ? ' — ' + f.poznamka : ''));
+      });
+    }
+
+    var vybrane = [].slice.call(document.querySelectorAll('.option')).filter(function (li) {
+      return state[li.dataset.key] === 'going' && !li.closest('.group.blocked');
+    });
+    if (vybrane.length) {
+      var min = 0, max = 0;
+      vybrane.forEach(function (li) {
+        min += parseInt(li.dataset.costMin || '0', 10) || 0;
+        max += parseInt(li.dataset.costMax || '0', 10) || 0;
+      });
+      lines.push('', S.costTitle + money(min, max) + S.costExcl);
+    }
+
+    return lines.join('\n');
+  }
+
+  var sendButton = document.getElementById('send');
+  if (sendButton) {
+    sendButton.addEventListener('click', function () {
+      var text = buildReport();
+      var note = document.getElementById('send-note');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          note.textContent = S.copied;
+        }, function () {
+          note.textContent = S.opening;
+        });
+      }
+      window.location.href = 'mailto:' + EMAIL + '?subject=' +
+        encodeURIComponent(S.subject + HRAC) + '&body=' + encodeURIComponent(text);
+    });
+  }
+
+  function summarize() {
+    var box = document.querySelector('.summary');
+    if (!box) return;
+    var chosen = [].slice.call(document.querySelectorAll('.option')).filter(function (li) {
+      return state[li.dataset.key] === 'going' && !li.closest('.group.blocked');
+    });
+    if (!chosen.length) { box.hidden = true; return; }
+
+    var min = 0, max = 0;
+    chosen.forEach(function (li) {
+      min += parseInt(li.dataset.costMin || '0', 10) || 0;
+      max += parseInt(li.dataset.costMax || '0', 10) || 0;
+    });
+    box.hidden = false;
+    var n = chosen.length;
+    var slovo = S.tournament[n === 1 ? 0 : n < 5 ? 1 : 2];
+    box.textContent = max === 0
+      ? S.selected + n + ' ' + slovo + S.allPaid
+      : S.selected + n + ' ' + slovo + S.costEst + money(min, max) + S.fedNote;
+  }
+
+  document.querySelectorAll('.group').forEach(function (group) {
+    apply(group);
+
+    group.addEventListener('click', function (e) {
+      var button = e.target.closest('button[data-role]');
+      if (!button) return;
+      var li = button.closest('.option');
+      var role = button.dataset.role;
+      state[li.dataset.key] = state[li.dataset.key] === role ? 'none' : role;
+      save();
+      apply(group);
+      summarize();
+    });
+
+    group.addEventListener('change', function (e) {
+      if (!e.target.matches('[data-role=entered]')) return;
+      var li = e.target.closest('.option');
+      state[li.dataset.key] = e.target.checked ? 'entered' : 'none';
+      save();
+      apply(group);
+      summarize();
+    });
+
+    group.addEventListener('click', function (e) {
+      var done = e.target.closest('.done-btn');
+      var undoBtn = e.target.closest('.undo-collapse');
+      if (!done && !undoBtn) return;
+      var li = e.target.closest('.option');
+      feedback[li.dataset.key] = feedback[li.dataset.key] || {};
+      feedback[li.dataset.key].hotovo = !!done;
+      feedback[li.dataset.key].turnaj = li.querySelector('strong').textContent;
+      feedback[li.dataset.key].stav = state[li.dataset.key] || 'none';
+      saveFeedback();
+      apply(group);
+    });
+
+    group.querySelector('.reset').addEventListener('click', function () {
+      group.querySelectorAll('.option').forEach(function (li) { delete state[li.dataset.key]; });
+      save();
+      apply(group);
+      summarize();
+    });
+  });
+
+  function fillConds() {
+    document.querySelectorAll('.cond').forEach(function (cond) {
+      var f = feedback['podminky|' + cond.dataset.key] || {};
+      cond.querySelectorAll('[data-role=cond]').forEach(function (box) {
+        box.checked = (f.podminky || []).indexOf(box.value) >= 0;
+      });
+      var note = cond.querySelector('[data-role=cond-note]');
+      if (note) note.value = f.poznamka || '';
+    });
+  }
+  fillConds();
+
+
+  /* ---- týdny zadané rodičem: dovolená, škola, příprava ---- */
+  var WEEKS_KEY = 'plan-tydny:' + HRAC;
+  var TYPY_TYDNE = {
+    dovolena: { label: S.types.dovolena, blokuje: true, barva: 'rest' },
+    skola: { label: S.types.skola, blokuje: true, barva: 'rest' },
+    fyzicka: { label: S.types.fyzicka, blokuje: false, barva: 'prep' },
+    tenis: { label: S.types.tenis, blokuje: false, barva: 'prep' },
+    jine: { label: S.types.jine, blokuje: false, barva: 'rest' },
+    te: { label: S.types.te, blokuje: true, barva: 'tournament' }
+  };
+  var ownWeeks = [];
+  try { ownWeeks = JSON.parse(localStorage.getItem(WEEKS_KEY) || '[]'); } catch (e) {}
+  if (!Array.isArray(ownWeeks)) ownWeeks = [];
+  // Starší zadání jsou po týdnech (od a do jsou pondělí): převede se na dny, do = neděle.
+  ownWeeks = ownWeeks.map(function (w) {
+    if (w.dny) return w;
+    var c = {};
+    Object.keys(w).forEach(function (k) { c[k] = w[k]; });
+    c['do'] = addDaysIso(w['do'] || w.od, 6);
+    c.dny = true;
+    c.t = w.t || nowIso();
+    return c;
+  });
+
+  function saveWeeks() {
+    try { localStorage.setItem(WEEKS_KEY, JSON.stringify(ownWeeks)); } catch (e) {}
+    stamp();
+    scheduleSync();
+  }
+
+  // Smazané zadání se pamatuje (náhrobek), aby se po synchronizaci z druhého zařízení nevrátilo.
+  function removeWeeks(match) {
+    var t = nowIso();
+    ownWeeks = ownWeeks.filter(function (w) {
+      if (!match(w)) return true;
+      doc.tombs[w.id] = t;
+      return false;
+    });
+  }
+
+  function money(min, max) {
+    return S.curPrefix + min.toLocaleString(S.locale) + '–' + max.toLocaleString(S.locale) + S.curSuffix;
+  }
+
+  function isoToDate(iso) { return new Date(iso + 'T00:00:00Z'); }
+  function addDaysIso(iso, n) {
+    var d = isoToDate(iso);
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  function mondayOf(iso) {
+    var d = isoToDate(iso);
+    if (isNaN(d.getTime())) return '';
+    return addDaysIso(iso, -((d.getUTCDay() + 6) % 7));
+  }
+  function czDay(iso) {
+    var p = iso.split('-');
+    return S.months ? Number(p[2]) + ' ' + S.months[Number(p[1]) - 1] : Number(p[2]) + '. ' + Number(p[1]) + '.';
+  }
+  function dayText(iso) { return S.dow[isoToDate(iso).getUTCDay()] + ' ' + czDay(iso); }
+  function rangeText(w) { return w.od === w['do'] ? dayText(w.od) : dayText(w.od) + '–' + dayText(w['do']); }
+
+  function syncWeeks() {
+    var blockedBy = {};
+
+    document.querySelectorAll('.week[data-monday]').forEach(function (li) {
+      var monday = li.dataset.monday;
+      var body = li.querySelector('.week-body');
+      var addBtn = li.querySelector('.week-add');
+      body.querySelectorAll('.week-item.own').forEach(function (n) { n.remove(); });
+
+      var blocking = [];
+      ownWeeks.forEach(function (w) {
+        if (!(w.od <= addDaysIso(monday, 6) && w['do'] >= monday)) return;
+        var t = TYPY_TYDNE[w.typ] || TYPY_TYDNE.jine;
+        var item = document.createElement('div');
+        item.className = 'week-item own ' + t.barva;
+        var type = document.createElement('span');
+        type.className = 'week-type';
+        type.textContent = S.added + t.label + ' · ' + rangeText(w);
+        var name = document.createElement('strong');
+        name.textContent = w.poznamka || t.label;
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'own-del';
+        del.dataset.id = w.id;
+        del.title = S.delTitle;
+        del.setAttribute('aria-label', S.delLabel);
+        del.textContent = '×';
+        item.appendChild(type);
+        item.appendChild(name);
+        item.appendChild(del);
+        body.insertBefore(item, addBtn);
+        if (t.blokuje) blocking.push(t.label);
+      });
+
+      li.classList.toggle('blocked', blocking.length > 0);
+      li.querySelectorAll('[data-suggestion]').forEach(function (n) { n.hidden = blocking.length > 0; });
+      if (blocking.length) blockedBy[monday] = blocking.join(', ');
+    });
+
+    document.querySelectorAll('.group').forEach(function (group) {
+      var why = blockedBy[mondayOf(group.dataset.date || '')];
+      group.classList.toggle('blocked', !!why);
+      var note = group.querySelector('.blocked-note');
+      if (why && !note) {
+        note = document.createElement('p');
+        note.className = 'blocked-note';
+        group.insertBefore(note, group.firstChild);
+      }
+      if (note) {
+        note.hidden = !why;
+        if (why) note.textContent = S.blockedPre + why + S.blockedPost;
+      }
+    });
+
+    summarize();
+  }
+
+  var weekForm = document.getElementById('week-form');
+
+  function openWeekForm(li) {
+    var monday = li.dataset.monday;
+    document.getElementById('wf-od').value = monday;
+    document.getElementById('wf-do').value = addDaysIso(monday, 6);
+    document.getElementById('wf-poznamka').value = '';
+    weekForm.dataset.monday = monday;
+    li.querySelector('.week-body').appendChild(weekForm);
+    weekForm.hidden = false;
+  }
+
+  if (weekForm) {
+    document.addEventListener('click', function (e) {
+      var add = e.target.closest('.week-add');
+      if (add) { openWeekForm(add.closest('.week')); return; }
+
+      var del = e.target.closest('.own-del');
+      if (del) {
+        removeWeeks(function (w) { return w.id === del.dataset.id; });
+        saveWeeks();
+        syncWeeks();
+        return;
+      }
+
+      if (e.target.id === 'wf-cancel') { weekForm.hidden = true; return; }
+
+      if (e.target.id === 'wf-save') {
+        var od = document.getElementById('wf-od').value || weekForm.dataset.monday;
+        var doW = document.getElementById('wf-do').value || od;
+        ownWeeks.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          od: od,
+          'do': doW < od ? od : doW,
+          dny: true,
+          typ: document.getElementById('wf-typ').value,
+          poznamka: document.getElementById('wf-poznamka').value.trim(),
+          t: nowIso()
+        });
+        saveWeeks();
+        weekForm.hidden = true;
+        syncWeeks();
+      }
+    });
+  }
+
+
+  /* ---- Tennis Europe: věková skupina a zařazení turnaje do týdenního plánu ---- */
+  var teBlock = document.getElementById('te-block');
+  var TE_AGE_KEY = 'plan-te-vek:' + HRAC;
+
+  function teInPlan(key) {
+    return ownWeeks.some(function (w) { return w.te === key; });
+  }
+
+  function teApply() {
+    if (!teBlock) return;
+    var age = null;
+    try { age = localStorage.getItem(TE_AGE_KEY); } catch (e) {}
+    var chips = [].slice.call(teBlock.querySelectorAll('.te-age'));
+    if (!chips.some(function (c) { return c.dataset.age === age; })) age = teBlock.dataset.defaultAge;
+    chips.forEach(function (c) { c.classList.toggle('on', c.dataset.age === age); });
+    teBlock.querySelectorAll('li.te').forEach(function (li) {
+      li.hidden = li.dataset.ages.split(',').indexOf(age) < 0;
+      var btn = li.querySelector('.te-add');
+      var inPlan = teInPlan(li.dataset.teKey);
+      btn.classList.toggle('in', inPlan);
+      btn.textContent = inPlan ? S.teIn : S.teAdd;
+
+      // Kolize s dovolenou, školou nebo jiným turnajem v plánu.
+      var clash = ownWeeks.filter(function (w) {
+        var t = TYPY_TYDNE[w.typ];
+        return w.te !== li.dataset.teKey && t && t.blokuje && w.od <= li.dataset.end && w['do'] >= li.dataset.start;
+      }).map(function (w) { return TYPY_TYDNE[w.typ].label; });
+      var tag = li.querySelector('.te-conflict');
+      if (clash.length && !tag) {
+        tag = document.createElement('span');
+        tag.className = 'tag te-conflict';
+        li.querySelector('.te-actions').appendChild(tag);
+      }
+      if (tag) {
+        tag.hidden = !clash.length;
+        tag.textContent = S.conflict + clash.filter(function (x, i) { return clash.indexOf(x) === i; }).join(', ');
+      }
+    });
+  }
+
+  if (teBlock) {
+    teBlock.addEventListener('click', function (e) {
+      var chip = e.target.closest('.te-age');
+      if (chip) {
+        try { localStorage.setItem(TE_AGE_KEY, chip.dataset.age); } catch (err) {}
+        teApply();
+        return;
+      }
+      var add = e.target.closest('.te-add');
+      if (!add) return;
+      var li = add.closest('li.te');
+      var key = li.dataset.teKey;
+      if (teInPlan(key)) {
+        removeWeeks(function (w) { return w.te === key; });
+      } else {
+        ownWeeks.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          od: li.dataset.start,
+          'do': li.dataset.end,
+          dny: true,
+          typ: 'te',
+          te: key,
+          poznamka: li.dataset.name,
+          t: nowIso()
+        });
+      }
+      saveWeeks();
+      syncWeeks();
+    });
+  }
+
+  var syncWeeksBase = syncWeeks;
+  syncWeeks = function () { syncWeeksBase(); teApply(); };
+
+
+  /* ---- plovoucí tlačítko: připomínky rodičů ---- */
+  var DRAFT_KEY = 'plan-pripominka:' + HRAC;
+
+  function buildFeedbackUi() {
+    var fab = document.createElement('button');
+    fab.type = 'button';
+    fab.className = 'fab';
+    fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span></span>';
+    fab.querySelector('span').textContent = S.fbButton;
+
+    var sheet = document.createElement('div');
+    sheet.className = 'fb-sheet';
+    sheet.hidden = true;
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.innerHTML = '<div class="fb-card"><h2></h2><p class="hint fb-intro"></p><div class="fb-kinds"></div>' +
+      '<textarea rows="5" maxlength="2000"></textarea><p class="hint fb-status"></p>' +
+      '<div class="fb-actions"><button type="button" class="chip primary fb-send"></button>' +
+      '<button type="button" class="chip fb-cancel"></button><a class="fb-mail" href="#" hidden></a></div></div>';
+    sheet.querySelector('h2').textContent = S.fbTitle;
+    sheet.querySelector('.fb-intro').textContent = S.fbIntro;
+    sheet.querySelector('.fb-send').textContent = window.PLAN_SYNC ? S.fbSend : S.fbSendMail;
+    sheet.querySelector('.fb-cancel').textContent = S.fbCancel;
+    sheet.querySelector('.fb-mail').textContent = S.fbMail;
+
+    var kind = 'jine';
+    var kinds = sheet.querySelector('.fb-kinds');
+    Object.keys(S.fbKinds).forEach(function (k) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip fb-kind' + (k === kind ? ' on' : '');
+      b.dataset.kind = k;
+      b.textContent = S.fbKinds[k];
+      kinds.appendChild(b);
+    });
+
+    var area = sheet.querySelector('textarea');
+    var status = sheet.querySelector('.fb-status');
+    var mail = sheet.querySelector('.fb-mail');
+    try { area.value = localStorage.getItem(DRAFT_KEY) || ''; } catch (e) {}
+
+    function open() { sheet.hidden = false; status.textContent = ''; mail.hidden = true; setTimeout(function () { area.focus(); }, 50); }
+    function close() { sheet.hidden = true; }
+    function mailHref(text) {
+      return 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(S.fbSubject + HRAC) + '&body=' + encodeURIComponent(text);
+    }
+
+    fab.addEventListener('click', open);
+    sheet.addEventListener('click', function (e) {
+      if (e.target === sheet || e.target.closest('.fb-cancel')) { close(); return; }
+      var k = e.target.closest('.fb-kind');
+      if (k) {
+        kind = k.dataset.kind;
+        kinds.querySelectorAll('.fb-kind').forEach(function (x) { x.classList.toggle('on', x === k); });
+      }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sheet.hidden) close(); });
+    area.addEventListener('input', function () {
+      try { localStorage.setItem(DRAFT_KEY, area.value); } catch (e) {}
+    });
+
+    sheet.querySelector('.fb-send').addEventListener('click', function () {
+      var text = area.value.trim();
+      if (!text) { status.textContent = S.fbEmpty; area.focus(); return; }
+      var full = '[' + S.fbKinds[kind] + '] ' + text;
+
+      if (!window.PLAN_SYNC) { window.location.href = mailHref(full); return; }
+
+      status.textContent = S.fbSending;
+      post({ action: 'comment', comment: { text: text, kind: kind, lang: S.lang, version: BUILD, clientTs: new Date().toISOString() } })
+        .then(function (r) {
+          if (r.ok) {
+            area.value = '';
+            try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+            status.textContent = S.fbThanks;
+            setTimeout(close, 1600);
+          } else {
+            status.textContent = S.fbFail;
+            mail.href = mailHref(full);
+            mail.hidden = false;
+          }
+        }, function () {
+          status.textContent = S.fbFail;
+          mail.href = mailHref(full);
+          mail.hidden = false;
+        });
+    });
+
+    document.body.appendChild(fab);
+    document.body.appendChild(sheet);
+  }
+
+  buildFeedbackUi();
+
+  /* ---- odesílání údajů trenérovi (jen v PWA, jen po souhlasu rodiče) ---- */
+  var CONSENT_KEY = 'plan-souhlas:' + HRAC;
+  var consent = { on: false };
+  try { consent = JSON.parse(localStorage.getItem(CONSENT_KEY) || '{"on":false}'); } catch (e) {}
+  var syncTimer = null, syncing = false, dirty = false;
+  var statusEl = null;
+
+  function saveConsent() {
+    try { localStorage.setItem(CONSENT_KEY, JSON.stringify(consent)); } catch (e) {}
+  }
+
+  function setStatus(text) {
+    if (statusEl) statusEl.textContent = text;
+  }
+
+  function nowTime() {
+    return new Date().toLocaleString(S.locale, { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function post(payload) {
+    payload.token = window.PLAN_SYNC.token;
+    return fetch(window.PLAN_SYNC.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      return res.json().then(function (j) { j.ok = !!j.ok && res.ok; return j; }, function () { return { ok: false }; });
+    });
+  }
+
+  function snapshot() {
+    var decisions = [];
+    document.querySelectorAll('.option').forEach(function (li) {
+      var key = li.dataset.key;
+      var st = state[key];
+      var f = feedback[key] || {};
+      if ((!st || st === 'none') && !f.duvod && !f.poznamka) return;
+      var group = li.closest('.group');
+      var n = function (v) { return v === undefined || v === '' ? undefined : Number(v); };
+      decisions.push({
+        key: key, stav: st || 'none', duvod: f.duvod, poznamka: f.poznamka, hotovo: !!f.hotovo,
+        turnaj: li.querySelector('strong').textContent,
+        kategorie: li.dataset.category, mesto: li.dataset.city, zeme: li.dataset.nation,
+        start: li.dataset.start, termin: group ? group.dataset.date : undefined,
+        km: n(li.dataset.km), kosik: li.dataset.basket, format: li.dataset.format,
+        costMin: n(li.dataset.costMin), costMax: n(li.dataset.costMax), poradi: n(li.dataset.index)
+      });
+    });
+    var conditions = Object.keys(feedback).filter(function (k) { return k.indexOf('podminky|') === 0; })
+      .map(function (k) { return { turnaj: feedback[k].turnaj, podminky: feedback[k].podminky, poznamka: feedback[k].poznamka }; });
+    return { lang: S.lang, version: BUILD, clientTs: new Date().toISOString(), consentTs: consent.ts,
+             decisions: decisions, conditions: conditions, weeks: ownWeeks };
+  }
+
+  // Přijmout slučený záznam: pracovní data se přestaví z něj a stránka se překreslí.
+  function applyDoc(merged) {
+    doc = merged;
+    state = {};
+    Object.keys(doc.state).forEach(function (k) { if (doc.state[k].v !== 'none') state[k] = doc.state[k].v; });
+    feedback = {};
+    Object.keys(doc.feedback).forEach(function (k) { if (doc.feedback[k].d) feedback[k] = doc.feedback[k].d; });
+    ownWeeks = doc.weeks;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem(FEEDBACK, JSON.stringify(feedback));
+      localStorage.setItem(WEEKS_KEY, JSON.stringify(ownWeeks));
+      localStorage.setItem(DOC_KEY, JSON.stringify(doc));
+    } catch (e) {}
+    document.querySelectorAll('.group').forEach(apply);
+    fillConds();
+    syncWeeks();
+    summarize();
+  }
+
+  // Vrací true, když přišlo něco nového z jiného zařízení.
+  function mergeIn(remote) {
+    if (!remote) return false;
+    var merged = PlanMerge.mergeDocs(doc, remote);
+    if (PlanMerge.canonical(merged) === PlanMerge.canonical(PlanMerge.mergeDocs(doc, doc))) return false;
+    applyDoc(merged);
+    return true;
+  }
+
+  function doSync() {
+    if (!window.PLAN_SYNC || !consent || !consent.on) return;
+    if (!navigator.onLine) { setStatus(S.syncOffline); return; }
+    if (syncing) { dirty = true; return; }
+    syncing = true;
+    dirty = false;
+    stamp();
+    post({ action: 'save', consent: true, data: snapshot(), sync: doc }).then(function (r) {
+      syncing = false;
+      var pulled = r.ok && mergeIn(r.sync);
+      setStatus(r.ok ? (pulled ? S.syncPulled : S.syncOk) + nowTime() : S.syncFail);
+      if (dirty) scheduleSync();
+    }, function () {
+      syncing = false;
+      setStatus(S.syncFail);
+    });
+  }
+
+  function scheduleSync() {
+    if (!window.PLAN_SYNC || !consent || !consent.on) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(doSync, 2000);
+  }
+
+  // Načtení změn z jiných zařízení (bez zápisu); když má toto zařízení novější, odešle se to.
+  var lastPull = 0;
+  function doPull() {
+    if (!window.PLAN_SYNC || !consent || !consent.on || syncing || !navigator.onLine) return;
+    if (Date.now() - lastPull < 15000) return;
+    lastPull = Date.now();
+    post({ action: 'pull', consent: true }).then(function (r) {
+      if (!r.ok) return;
+      if (mergeIn(r.sync)) setStatus(S.syncPulled + nowTime());
+      var remoteMerged = PlanMerge.canonical(PlanMerge.mergeDocs(r.sync, r.sync));
+      if (PlanMerge.canonical(PlanMerge.mergeDocs(doc, doc)) !== remoteMerged) scheduleSync();
+    }, function () {});
+  }
+
+  // Odvolání souhlasu: odeslaná data se na serveru smažou (při chybějícím signálu až po připojení).
+  function tryDelete() {
+    if (!window.PLAN_SYNC || !consent.deletePending) return;
+    if (!navigator.onLine) { setStatus(S.deletePending); return; }
+    post({ action: 'delete' }).then(function (r) {
+      if (r.ok) { consent.deletePending = false; saveConsent(); setStatus(S.deleted); }
+      else setStatus(S.deletePending);
+    }, function () { setStatus(S.deletePending); });
+  }
+
+  function buildConsentUi() {
+    var send = document.querySelector('.send');
+    if (!window.PLAN_SYNC || !send) return;
+    var box = document.createElement('section');
+    box.className = 'block consent';
+    box.innerHTML = '<h2></h2><p class="hint consent-text"></p>' +
+      '<label class="consent-row"><input type="checkbox" id="consent-box"><span class="consent-label"></span></label>' +
+      '<p class="hint" id="consent-status"></p>';
+    box.querySelector('h2').textContent = S.consentTitle;
+    box.querySelector('.consent-text').textContent = S.consentText;
+    box.querySelector('.consent-label').textContent = S.consentLabel;
+    send.parentNode.insertBefore(box, send);
+    statusEl = box.querySelector('#consent-status');
+    var check = box.querySelector('#consent-box');
+    check.checked = !!consent.on;
+    setStatus(consent.on ? '' : (consent.deletePending ? S.deletePending : S.syncOff));
+
+    check.addEventListener('change', function () {
+      if (check.checked) {
+        consent = { on: true, ts: new Date().toISOString() };
+        saveConsent();
+        setStatus(S.syncWait);
+        doSync();
+      } else {
+        consent = { on: false, deletePending: true };
+        saveConsent();
+        clearTimeout(syncTimer);
+        tryDelete();
+      }
+    });
+  }
+
+  window.addEventListener('online', function () { tryDelete(); if (consent.on) doSync(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) doPull(); });
+  window.addEventListener('focus', doPull);
+  setInterval(function () { if (!document.hidden) doPull(); }, 180000);
+  buildConsentUi();
+  tryDelete();
+  if (consent.on) doSync();
+
+  syncWeeks();
+})();
+</script></body></html>
