@@ -111,7 +111,7 @@ body { padding-bottom: 84px; }
   font-size: 22px; line-height: 1; cursor: pointer; padding: 2px 6px; }
 .week-add { font: inherit; font-size: 13px; color: #37507e; background: none; border: none;
   padding: 6px 0 0; cursor: pointer; text-decoration: underline; }
-.week.blocked .week-label::after { content: ' · bez turnaje'; font-weight: 400; color: #9b2c22; }
+.week.blocked .week-label::after { content: ' · no tournament'; font-weight: 400; color: #9b2c22; }
 .week-form { background: #fff; border: 1px solid #c9ccd2; border-radius: 10px; padding: 12px; margin-top: 8px;
   display: grid; gap: 10px; }
 .week-form label { display: grid; gap: 4px; font-size: 13px; color: #5c6370; }
@@ -123,6 +123,16 @@ body { padding-bottom: 84px; }
 .group.blocked > .plan, .group.blocked > .reset, .group.blocked > .deadline,
 .group.blocked .state-note { display: none; }
 .blocked-note { font-size: 13px; color: #9b2c22; margin: 0 0 10px; }
+.okruh-off { display: none !important; }
+.okruhy-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; color: #4b515c; margin: 0 0 14px; }
+.okruhy-bar .chip { padding: 4px 11px; }
+.tag.circuit { background: #e9edf5; color: #37507e; font-weight: 600; }
+.circuit-card { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #d9dde4; border-radius: 12px;
+  padding: 12px; margin: 8px 0; cursor: pointer; }
+.circuit-card input { width: 22px; height: 22px; margin-top: 1px; accent-color: #37507e; flex: none; }
+.circuit-card.soon { opacity: .55; cursor: not-allowed; }
+.circuit-card .circuit-name { display: block; font-weight: 650; }
+.circuit-card .circuit-desc { display: block; font-size: 13px; color: #5c6370; }
 @media (max-width: 520px) {
   .week { flex-direction: column; gap: 4px; }
   .week-label { flex: none; font-weight: 600; color: #16181d; }
@@ -165,6 +175,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
 </head>
 <body><div class="wrap">
 <div class="langbar"><a href="cs/" hreflang="cs" lang="cs">Česky</a></div>
+<div class="okruhy-bar" id="okruhy-bar"></div>
 <section>
     <p class="demo-banner">Sample data: a fictional player and real tournament calendars. Nothing you enter is sent anywhere.</p>
     <h1>Demo Player</h1>
@@ -178,79 +189,174 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
     </div>
 
     <h2>Weekly plan</h2>
-    <p class="hint">3 of 19 weeks have planned activity. Free weeks show a suggestion from the calendar — it can be confirmed below in the recommended plan. Add a holiday, school or training with the “+ Add” button next to the week. In a week with a holiday or school, tournament suggestions are hidden.</p>
-    <ul class="weeks"><li class="week" data-monday="2026-10-19" data-label="19.–25. 10. 2026"><div class="week-label">19–25 Oct 2026</div>
+    <p class="hint">3 of 18 weeks have planned activity. Free weeks show a suggestion from the calendar — it can be confirmed below in the recommended plan. Add a holiday, school or training with the “+ Add” button next to the week. In a week with a holiday or school, tournament suggestions are hidden.</p>
+    <ul class="weeks"><li class="week" data-monday="2026-11-02" data-label="2.–8. 11. 2026"><div class="week-label">2–8 Nov 2026</div>
         <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week filled" data-monday="2026-10-26" data-label="26. 10. – 1. 11. 2026"><div class="week-label">26 Oct – 1 Nov 2026</div>
+<li class="week filled" data-monday="2026-11-09" data-label="9.–15. 11. 2026"><div class="week-label">9–15 Nov 2026</div>
           <div class="week-body"><div class="week-item prep">
               <strong>Physical training</strong> 
             </div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week" data-monday="2026-11-02" data-label="2.–8. 11. 2026"><div class="week-label">2–8 Nov 2026</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week" data-monday="2026-11-09" data-label="9.–15. 11. 2026"><div class="week-label">9–15 Nov 2026</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2026-11-16" data-label="16.–22. 11. 2026"><div class="week-label">16–22 Nov 2026</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="te">
             <span class="week-type">Free</span>
-            <strong>J100 Stabekk</strong> (NOR) · CZK 31,000–46,500
-            <span class="hint">— suggestion from the calendar</span>
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>JC FERRERO TENNIS EUROPE U16</strong> (Spain)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
           </div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week filled" data-monday="2026-11-23" data-label="23.–29. 11. 2026"><div class="week-label">23–29 Nov 2026</div>
+<li class="week" data-monday="2026-11-23" data-label="23.–29. 11. 2026"><div class="week-label">23–29 Nov 2026</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Saint Gregoire</strong> (FRA) · €1,020–1,510
+            <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>TE U16 Cyprus Tennis Federation</strong> (Cyprus)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li>
+<li class="week" data-monday="2026-11-30" data-label="30. 11. – 6. 12. 2026"><div class="week-label">30 Nov – 6 Dec 2026</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Aizkraukle</strong> (LAT) · €840–1,240
+            <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Bad Waltersdorf Open 2026 - indoors</strong> (Austria)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li>
+<li class="week filled" data-monday="2026-12-07" data-label="7.–13. 12. 2026"><div class="week-label">7–13 Dec 2026</div>
           <div class="week-body"><div class="week-item rest">
               <strong>Holiday</strong> 
             </div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week filled" data-monday="2026-11-30" data-label="30. 11. – 6. 12. 2026"><div class="week-label">30 Nov – 6 Dec 2026</div>
+<li class="week filled" data-monday="2026-12-14" data-label="14.–20. 12. 2026"><div class="week-label">14–20 Dec 2026</div>
           <div class="week-body"><div class="week-item rest">
               <strong>Holiday</strong> 
             </div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week" data-monday="2026-12-07" data-label="7.–13. 12. 2026"><div class="week-label">7–13 Dec 2026</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
-            <span class="week-type">Free</span>
-            <strong>J100 Aizkraukle</strong> (LAT) · CZK 20,500–30,500
-            <span class="hint">— suggestion from the calendar</span>
-          </div><button type="button" class="week-add">+ Add</button></div></li>
-<li class="week" data-monday="2026-12-14" data-label="14.–20. 12. 2026"><div class="week-label">14–20 Dec 2026</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2026-12-21" data-label="21.–27. 12. 2026"><div class="week-label">21–27 Dec 2026</div>
         <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2026-12-28" data-label="28. 12. – 3. 1. 2027"><div class="week-label">28 Dec – 3 Jan 2027</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
-            <span class="week-type">Free</span>
-            <strong>J60 Arlon</strong> (BEL) · CZK 20,500–30,500
-            <span class="hint">— suggestion from the calendar</span>
-          </div><button type="button" class="week-add">+ Add</button></div></li>
+        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-01-04" data-label="4.–10. 1. 2027"><div class="week-label">4–10 Jan 2027</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
             <span class="week-type">Free</span>
-            <strong>J100 Bromma</strong> (SWE) · CZK 22,500–33,500
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Bromma</strong> (SWE) · €920–1,370
             <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Horni Mecholupy Open 2027</strong> (Czechia)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
           </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-01-11" data-label="11.–17. 1. 2027"><div class="week-label">11–17 Jan 2027</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
             <span class="week-type">Free</span>
-            <strong>J300 Traralgon</strong> (AUS) · CZK 53,000–79,500
+            <span class="tag circuit">ITF</span>
+            <strong>J300 Traralgon</strong> (AUS) · €2,160–3,240
             <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Versowood Cup - Main Draw RR to Elimination</strong> (Finland)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
           </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-01-18" data-label="18.–24. 1. 2027"><div class="week-label">18–24 Jan 2027</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
             <span class="week-type">Free</span>
-            <strong>J300 San José</strong> (CRC) · CZK 45,000–67,500
+            <span class="tag circuit">ITF</span>
+            <strong>J300 San José</strong> (CRC) · €1,840–2,760
             <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>TE U16 Baghdatis Academy G3</strong> (Cyprus)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Tennis Europe U16 Stavanger</strong> (Norway)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
           </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-01-25" data-label="25.–31. 1. 2027"><div class="week-label">25–31 Jan 2027</div>
-        <div class="week-body"><div class="week-item suggestion" data-suggestion>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
             <span class="week-type">Free</span>
-            <strong>J100 Manacor</strong> (ESP) · CZK 31,000–47,000
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Manacor</strong> (ESP) · €1,270–1,920
             <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Aizkraukle 02</strong> (Latvia)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>TE U16 Herodotou Tennis Academy G2</strong> (Cyprus)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
           </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-02-01" data-label="1.–7. 2. 2027"><div class="week-label">1–7 Feb 2027</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Manacor</strong> (ESP) · €1,270–1,920
+            <span class="hint">— suggestion from the calendar</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-02-08" data-label="8.–14. 2. 2027"><div class="week-label">8–14 Feb 2027</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Launceston</strong> (AUS) · €2,120–3,200
+            <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Siauliai Open by Toyota U16</strong> (Lithuania)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-02-15" data-label="15.–21. 2. 2027"><div class="week-label">15–21 Feb 2027</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">ITF</span>
+            <strong>J100 Trnava</strong> (SVK) · €610–920
+            <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Olimpija Open</strong> (Croatia)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>U16 Tennis Space Academy Cup 1</strong> (Lithuania)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li>
 <li class="week" data-monday="2027-02-22" data-label="22.–28. 2. 2027"><div class="week-label">22–28 Feb 2027</div>
-        <div class="week-body"><div class="week-item empty">Free</div><button type="button" class="week-add">+ Add</button></div></li></ul>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="itf">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">ITF</span>
+            <strong>J200 Oberhaching</strong> (GER) · €610–920
+            <span class="hint">— suggestion from the calendar</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>Bad Waltersdorf Series 1</strong> (Austria)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><div class="week-item suggestion" data-suggestion data-okruh="te">
+            
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>CIRCUITO INTERNACIONALES Comunidad Valenciana SUB16 - Main Draw RR to Elimination</strong> (Spain)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li>
+<li class="week" data-monday="2027-03-01" data-label="1.–7. 3. 2027"><div class="week-label">1–7 Mar 2027</div>
+        <div class="week-body"><div class="week-item suggestion" data-suggestion data-okruh="te">
+            <span class="week-type">Free</span>
+            <span class="tag circuit">Tennis Europe</span>
+            <strong>EXALCO CUP</strong> (Greece)
+            <span class="hint">— can be added in the Tennis Europe block below</span>
+          </div><button type="button" class="week-add">+ Add</button></div></li></ul>
     <div class="week-form" id="week-form" hidden>
   <label>What is happening this week
     <select id="wf-typ">
@@ -275,164 +381,16 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
   </div>
 </div>
 
+    <div data-okruh="itf">
     <h2>Recommended plan</h2>
     <p class="summary" hidden></p>
-    <section class="group" data-date="2026-11-16">
-        <div class="group-head">
-          <h3>16 Nov 2026</h3>
-          <span class="count">date</span>
-          <span class="state-note"></span>
-        </div>
-        <p class="deadline"><strong>entry deadline in 3 days and 14 hours (27 Oct 2026 at 15:00 Prague time)</strong> — you can enter up to three tournaments. Then withdraw by 3 Nov 2026 at 15:00 Prague time; until then keep only one.</p>
-        <ul class="plan"><li class="option" data-key="J-J100-NOR-2026-002" data-index="0"
-            data-category="J100" data-city="Stabekk" data-nation="NOR"
-            data-start="2026-11-16" data-km="1353"
-            data-basket="middle" data-format="KO"
-            data-cost-min="31000" data-cost-max="46500" hidden>
-            <div class="head">
-              <span class="where"><strong>J100 Stabekk</strong> (NOR) · 1353 km (up to 2500 km), estimated from the country</span>
-              <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 10,032 · accommodation CZK 16,905 · food CZK 9,720 · entry fee CZK 2,205 · accommodation in the area · fuel CZK 9,762, tolls CZK 270">CZK 31,000–46,500</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li><li>last year's field medium (median ranking 447, 2 players in the top 100, 19 rated)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li>
-<li class="option" data-key="J-J100-CYP-2026-003" data-index="1"
-            data-category="J100" data-city="Limassol" data-nation="CYP"
-            data-start="2026-11-16" data-km="2264"
-            data-basket="middle" data-format="KO"
-            data-cost-min="34000" data-cost-max="50500" hidden>
-            <div class="head">
-              <span class="where"><strong>J100 Limassol</strong> (CYP) · 2264 km (up to 2500 km), estimated from the country</span>
-              <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 20,481 · accommodation CZK 12,863 · food CZK 6,720 · entry fee CZK 2,205 · accommodation in the area · flights CZK 16,981, local transport CZK 3,500">CZK 34,000–50,500</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li>
-<li class="option" data-key="J-J200-USA-2026-006" data-index="2"
-            data-category="J200" data-city="Delray" data-nation="USA"
-            data-start="2026-11-16" data-km="8117"
-            data-basket="up" data-format="KO"
-            data-cost-min="51500" data-cost-max="77000" hidden>
-            <div class="head">
-              <span class="where"><strong>J200 Delray</strong> (USA) · 8117 km (over 2500 km), estimated from the country</span>
-              <span class="tag up">up</span>  
-              <span class="tag cost" title="transport CZK 33,357 · accommodation CZK 18,008 · food CZK 10,080 · entry fee CZK 2,695 · accommodation in the area · flights CZK 29,857, local transport CZK 3,500">CZK 51,500–77,000</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: up (J200)</li><li>this basket is missing from the plan (30 % below target)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li>
-<li class="option" data-key="J-J300-MEX-2026-001" data-index="3"
-            data-category="J300" data-city="Guadalajara" data-nation="MEX"
-            data-start="2026-11-16" data-km="10066"
-            data-basket="up" data-format="KO"
-            data-cost-min="40500" data-cost-max="61000" hidden>
-            <div class="head">
-              <span class="where"><strong>J300 Guadalajara</strong> (MEX) · 10066 km (over 2500 km)</span>
-              <span class="tag up">up</span>  
-              <span class="tag cost" title="transport CZK 37,145 · accommodation CZK 6,248 · food CZK 4,320 · entry fee CZK 3,185 · accommodation in the area · flights CZK 34,145, local transport CZK 3,000">CZK 40,500–61,000</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: up (J300)</li><li>this basket is missing from the plan (30 % below target)</li><li>last year's field very strong (median ranking 99, 8 players in the top 100, 15 rated)</li><li>weakest field of 2 measured tournaments in the same category</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li>
-<li class="option" data-key="J-J60-SLO-2026-006" data-index="4"
-            data-category="J60" data-city="Maribor" data-nation="SLO"
-            data-start="2026-11-16" data-km="443"
-            data-basket="down" data-format="KO"
-            data-cost-min="15500" data-cost-max="23000" hidden>
-            <div class="head">
-              <span class="where"><strong>J60 Maribor</strong> (SLO) · 443 km (up to 1000 km), estimated from the country</span>
-              <span class="tag down">down</span>  
-              <span class="tag cost" title="transport CZK 3,240 · accommodation CZK 7,718 · food CZK 6,552 · entry fee CZK 1,715 · accommodation in the area · fuel CZK 2,620, tolls CZK 620">CZK 15,500–23,000</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: down (J60)</li><li>this basket is missing from the plan (15 % below target)</li><li>nearby destination (SLO)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li></ul>
-        <button class="reset chip" type="button" hidden>Clear selection for this date</button>
-      </section>
-<section class="group" data-date="2026-11-23">
+    <section class="group" data-date="2026-11-23">
         <div class="group-head">
           <h3>23 Nov 2026</h3>
           <span class="count">date</span>
           <span class="state-note"></span>
         </div>
-        <p class="deadline"><strong>entry deadline 3 Nov 2026 at 15:00 Prague time</strong> — you can enter up to three tournaments. Then withdraw by 10 Nov 2026 at 15:00 Prague time; until then keep only one.</p>
+        <p class="deadline"><strong>entry deadline today 15:00 — 14 hours left</strong> — you can enter up to three tournaments. Then withdraw by 10 Nov 2026 at 15:00 Prague time; until then keep only one.</p>
         <ul class="plan"><li class="option" data-key="J-J100-FRA-2026-003" data-index="0"
             data-category="J100" data-city="Saint Gregoire" data-nation="FRA"
             data-start="2026-11-23" data-km="1028"
@@ -441,7 +399,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Saint Gregoire</strong> (FRA) · 1028 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 8,694 · accommodation CZK 12,495 · food CZK 7,632 · entry fee CZK 2,205 · accommodation in the area · fuel CZK 6,615, tolls CZK 2,079">CZK 25,000–37,000</span>
+              <span class="tag cost" title="transport €350 · accommodation €510 · food €310 · entry fee €90 · accommodation in the area · fuel €270, tolls €85">€1,020–1,510</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -469,7 +427,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 New Delhi</strong> (IND) · 6362 km (over 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 28,996 · accommodation CZK 4,043 · food CZK 2,520 · entry fee CZK 2,205 · accommodation in the area · flights CZK 25,996, local transport CZK 3,000">CZK 30,000–45,500</span>
+              <span class="tag cost" title="transport €1,180 · accommodation €165 · food €105 · entry fee €90 · accommodation in the area · flights €1,060, local transport €120">€1,220–1,860</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -497,7 +455,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Gaborone</strong> (BOT) · 8070 km (over 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 32,754 · accommodation CZK 11,025 · food CZK 5,760 · entry fee CZK 2,205 · accommodation in the area · flights CZK 29,754, local transport CZK 3,000">CZK 41,500–62,000</span>
+              <span class="tag cost" title="transport €1,340 · accommodation €450 · food €240 · entry fee €90 · accommodation in the area · flights €1,210, local transport €120">€1,690–2,530</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -525,7 +483,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Chiclayo</strong> (PER) · 10889 km (over 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 38,956 · accommodation CZK 11,025 · food CZK 5,760 · entry fee CZK 2,205 · accommodation in the area · flights CZK 35,956, local transport CZK 3,000">CZK 46,500–69,500</span>
+              <span class="tag cost" title="transport €1,590 · accommodation €450 · food €240 · entry fee €90 · accommodation in the area · flights €1,470, local transport €120">€1,900–2,840</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -553,7 +511,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J200 Oslo</strong> (NOR) · 1353 km (up to 2500 km), estimated from the country</span>
               <span class="tag up">up</span>  
-              <span class="tag cost" title="transport CZK 10,032 · accommodation CZK 14,088 · food CZK 8,100 · entry fee CZK 2,695 · accommodation in the area · fuel CZK 9,762, tolls CZK 270">CZK 28,000–42,000</span>
+              <span class="tag cost" title="transport €410 · accommodation €580 · food €330 · entry fee €110 · accommodation in the area · fuel €400, tolls €10">€1,140–1,710</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -581,7 +539,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J60 Dunakeszi</strong> (HUN) · 534 km (up to 1000 km), estimated from the country</span>
               <span class="tag down">down</span>  
-              <span class="tag cost" title="transport CZK 3,665 · accommodation CZK 6,860 · food CZK 5,124 · entry fee CZK 1,715 · accommodation in the area · fuel CZK 2,985, tolls CZK 680">CZK 14,000–21,000</span>
+              <span class="tag cost" title="transport €150 · accommodation €280 · food €210 · entry fee €70 · accommodation in the area · fuel €120, tolls €30">€570–860</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -618,7 +576,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Aizkraukle</strong> (LAT) · 1037 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 6,539 · accommodation CZK 11,025 · food CZK 5,760 · entry fee CZK 2,205 · accommodation in the area · fuel CZK 6,269, tolls CZK 270">CZK 20,500–30,500</span>
+              <span class="tag cost" title="transport €270 · accommodation €450 · food €240 · entry fee €90 · accommodation in the area · fuel €260, tolls €10">€840–1,240</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -646,7 +604,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Loughborough</strong> (GBR) · 1202 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 8,083 · accommodation CZK 11,025 · food CZK 6,480 · entry fee CZK 2,205 · accommodation in the area · fuel CZK 7,813, tolls CZK 270">CZK 22,000–33,500</span>
+              <span class="tag cost" title="transport €330 · accommodation €450 · food €260 · entry fee €90 · accommodation in the area · fuel €320, tolls €10">€900–1,370</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -674,7 +632,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Antalya</strong> (TUR) · 2032 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 19,970 · accommodation CZK 6,431 · food CZK 5,040 · entry fee CZK 2,205 · accommodation in the area · flights CZK 16,470, local transport CZK 3,500">CZK 27,000–40,500</span>
+              <span class="tag cost" title="transport €820 · accommodation €260 · food €210 · entry fee €90 · accommodation in the area · flights €670, local transport €145">€1,100–1,650</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -702,7 +660,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Pune</strong> (IND) · 6362 km (over 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 28,996 · accommodation CZK 4,043 · food CZK 2,520 · entry fee CZK 2,205 · accommodation in the area · flights CZK 25,996, local transport CZK 3,000">CZK 30,000–45,500</span>
+              <span class="tag cost" title="transport €1,180 · accommodation €165 · food €105 · entry fee €90 · accommodation in the area · flights €1,060, local transport €120">€1,220–1,860</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -730,7 +688,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J300 Bradenton</strong> (USA) · 8117 km (over 2500 km), estimated from the country</span>
               <span class="tag up">up</span>  
-              <span class="tag cost" title="transport CZK 33,357 · accommodation CZK 18,008 · food CZK 10,080 · entry fee CZK 3,185 · accommodation in the area · flights CZK 29,857, local transport CZK 3,500">CZK 51,500–77,500</span>
+              <span class="tag cost" title="transport €1,360 · accommodation €740 · food €410 · entry fee €130 · accommodation in the area · flights €1,220, local transport €145">€2,100–3,160</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -767,7 +725,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Aizkraukle</strong> (LAT) · 1037 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 6,539 · accommodation CZK 11,025 · food CZK 5,760 · entry fee CZK 2,205 · accommodation in the area · fuel CZK 6,269, tolls CZK 270">CZK 20,500–30,500</span>
+              <span class="tag cost" title="transport €270 · accommodation €450 · food €240 · entry fee €90 · accommodation in the area · fuel €260, tolls €10">€840–1,240</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -778,71 +736,6 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
               <span class="undo-hint">click again to undo</span>
             </div>
             <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li></ul>
-        <button class="reset chip" type="button" hidden>Clear selection for this date</button>
-      </section>
-<section class="group" data-date="2027-01-04">
-        <div class="group-head">
-          <h3>4 Jan 2027</h3>
-          <span class="count">date</span>
-          <span class="state-note"></span>
-        </div>
-        <p class="deadline"><strong>entry deadline 15 Dec 2026 at 15:00 Prague time</strong> — you can enter up to three tournaments. Then withdraw by 22 Dec 2026 at 15:00 Prague time; until then keep only one.</p>
-        <ul class="plan"><li class="option" data-key="J-J200-SVK-2027-001" data-index="0"
-            data-category="J200" data-city="Kosice" data-nation="SVK"
-            data-start="2027-01-04" data-km="398"
-            data-basket="up" data-format="KO"
-            data-cost-min="14000" data-cost-max="21000" hidden>
-            <div class="head">
-              <span class="where"><strong>J200 Kosice</strong> (SVK) · 398 km (up to 400 km), estimated from the country</span>
-              <span class="tag up">up</span>  
-              <span class="tag cost" title="transport CZK 2,976 · accommodation CZK 5,880 · food CZK 5,832 · entry fee CZK 2,695 · accommodation in the area · fuel CZK 2,406, tolls CZK 570">CZK 14,000–21,000</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: up (J200)</li><li>this basket is missing from the plan (30 % below target)</li><li>nearby destination (SVK)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li>
-<li class="option" data-key="J-J60-GER-2027-001" data-index="1"
-            data-category="J60" data-city="Frankfurt" data-nation="GER"
-            data-start="2027-01-04" data-km="329"
-            data-basket="down" data-format="KO"
-            data-cost-min="18500" data-cost-max="27500" hidden>
-            <div class="head">
-              <span class="where"><strong>J60 Frankfurt</strong> (GER) · 329 km (up to 400 km), estimated from the country</span>
-              <span class="tag down">down</span>  
-              <span class="tag cost" title="transport CZK 2,451 · accommodation CZK 10,290 · food CZK 8,484 · entry fee CZK 1,715 · accommodation in the area · fuel CZK 2,181, tolls CZK 270">CZK 18,500–27,500</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: down (J60)</li><li>this basket is missing from the plan (15 % below target)</li><li>nearby destination (GER)</li></ul>
             <div class="reason" hidden>
               <label>Why? <select data-role="reason-code">
                 <option value="">— choose a reason —</option>
@@ -869,7 +762,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Bromma</strong> (SWE) · 1326 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 9,148 · accommodation CZK 9,800 · food CZK 6,840 · entry fee CZK 2,205 · accommodation in the area · fuel CZK 8,878, tolls CZK 270">CZK 22,500–33,500</span>
+              <span class="tag cost" title="transport €370 · accommodation €400 · food €280 · entry fee €90 · accommodation in the area · fuel €360, tolls €10">€920–1,370</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -880,71 +773,6 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
               <span class="undo-hint">click again to undo</span>
             </div>
             <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li></ul>
-        <button class="reset chip" type="button" hidden>Clear selection for this date</button>
-      </section>
-<section class="group" data-date="2027-01-18">
-        <div class="group-head">
-          <h3>18 Jan 2027</h3>
-          <span class="count">date</span>
-          <span class="state-note"></span>
-        </div>
-        <p class="deadline"><strong>entry deadline 29 Dec 2026 at 15:00 Prague time</strong> — you can enter up to three tournaments. Then withdraw by 5 Jan 2027 at 15:00 Prague time; until then keep only one.</p>
-        <ul class="plan"><li class="option" data-key="J-J300-CRC-2027-001" data-index="0"
-            data-category="J300" data-city="San José" data-nation="CRC"
-            data-start="2027-01-18" data-km="9749"
-            data-basket="up" data-format="KO"
-            data-cost-min="45000" data-cost-max="67500" hidden>
-            <div class="head">
-              <span class="where"><strong>J300 San José</strong> (CRC) · 9749 km (over 2500 km), estimated from the country</span>
-              <span class="tag up">up</span>  
-              <span class="tag cost" title="transport CZK 36,448 · accommodation CZK 11,025 · food CZK 5,760 · entry fee CZK 3,185 · accommodation in the area · flights CZK 33,448, local transport CZK 3,000">CZK 45,000–67,500</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: up (J300)</li><li>this basket is missing from the plan (30 % below target)</li></ul>
-            <div class="reason" hidden>
-              <label>Why? <select data-role="reason-code">
-                <option value="">— choose a reason —</option>
-                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
-              </select></label>
-              <input type="text" data-role="reason-note" placeholder="Note (optional)">
-              <button type="button" class="chip done-btn">Done</button>
-            </div>
-          </li>
-<li class="option" data-key="J-J30-SVK-2027-001" data-index="1"
-            data-category="J30" data-city="Trnava" data-nation="SVK"
-            data-start="2027-01-18" data-km="398"
-            data-basket="down" data-format="RRKO"
-            data-cost-min="14500" data-cost-max="21500" hidden>
-            <div class="head">
-              <span class="where"><strong>J30 Trnava</strong> (SVK) · 398 km (up to 400 km), estimated from the country</span>
-              <span class="tag down">down</span> <span class="tag">groups</span> 
-              <span class="tag cost" title="transport CZK 2,976 · accommodation CZK 6,860 · food CZK 6,804 · entry fee CZK 1,470 · accommodation in the area · fuel CZK 2,406, tolls CZK 570">CZK 14,500–21,500</span>
-            </div>
-            <div class="actions">
-              <label class="chip entered">
-                <input type="checkbox" data-role="entered"><span>Entered</span>
-              </label>
-              <button type="button" class="chip go" data-role="going">We are going</button>
-              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
-              <span class="undo-hint">click again to undo</span>
-            </div>
-            <ul class="why"><li>basket: down (J30)</li><li>this basket is missing from the plan (15 % below target)</li><li>nearby destination (SVK)</li></ul>
             <div class="reason" hidden>
               <label>Why? <select data-role="reason-code">
                 <option value="">— choose a reason —</option>
@@ -971,7 +799,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J100 Manacor</strong> (ESP) · 1823 km (up to 2500 km), estimated from the country</span>
               <span class="tag middle">middle</span>  
-              <span class="tag cost" title="transport CZK 19,511 · accommodation CZK 10,290 · food CZK 7,056 · entry fee CZK 2,205 · accommodation in the area · flights CZK 16,011, local transport CZK 3,500">CZK 31,000–47,000</span>
+              <span class="tag cost" title="transport €800 · accommodation €420 · food €290 · entry fee €90 · accommodation in the area · flights €650, local transport €145">€1,270–1,920</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -991,7 +819,35 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
               <button type="button" class="chip done-btn">Done</button>
             </div>
           </li>
-<li class="option" data-key="J-J30-AUT-2027-002" data-index="1"
+<li class="option" data-key="J-J300-COL-2027-001" data-index="1"
+            data-category="J300" data-city="BARRANQUILLA" data-nation="COL"
+            data-start="2027-01-25" data-km="9483"
+            data-basket="up" data-format="KO"
+            data-cost-min="44500" data-cost-max="67000" hidden>
+            <div class="head">
+              <span class="where"><strong>J300 BARRANQUILLA</strong> (COL) · 9483 km (over 2500 km), estimated from the country</span>
+              <span class="tag up">up</span>  
+              <span class="tag cost" title="transport €1,460 · accommodation €450 · food €240 · entry fee €130 · accommodation in the area · flights €1,340, local transport €120">€1,820–2,730</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Entered</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">We are going</button>
+              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
+              <span class="undo-hint">click again to undo</span>
+            </div>
+            <ul class="why"><li>basket: up (J300)</li><li>this basket is missing from the plan (30 % below target)</li></ul>
+            <div class="reason" hidden>
+              <label>Why? <select data-role="reason-code">
+                <option value="">— choose a reason —</option>
+                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Note (optional)">
+              <button type="button" class="chip done-btn">Done</button>
+            </div>
+          </li>
+<li class="option" data-key="J-J30-AUT-2027-002" data-index="2"
             data-category="J30" data-city="Bad Waltersdorf" data-nation="AUT"
             data-start="2027-01-25" data-km="287"
             data-basket="down" data-format="RRKO"
@@ -999,7 +855,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
             <div class="head">
               <span class="where"><strong>J30 Bad Waltersdorf</strong> (AUT) · 287 km (up to 400 km), estimated from the country</span>
               <span class="tag down">down</span> <span class="tag">groups</span> 
-              <span class="tag cost" title="transport CZK 2,407 · accommodation CZK 12,495 · food CZK 8,748 · entry fee CZK 1,470 · accommodation in the area · fuel CZK 1,847, tolls CZK 560">CZK 20,000–30,000</span>
+              <span class="tag cost" title="transport €100 · accommodation €510 · food €360 · entry fee €60 · accommodation in the area · fuel €75, tolls €25">€820–1,220</span>
             </div>
             <div class="actions">
               <label class="chip entered">
@@ -1021,143 +877,125 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
           </li></ul>
         <button class="reset chip" type="button" hidden>Clear selection for this date</button>
       </section>
+<section class="group" data-date="2027-02-01">
+        <div class="group-head">
+          <h3>1 Feb 2027</h3>
+          <span class="count">date</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>entry deadline 12 Jan 2027 at 15:00 Prague time</strong> — you can enter up to three tournaments. Then withdraw by 19 Jan 2027 at 15:00 Prague time; until then keep only one.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-ESP-2027-002" data-index="0"
+            data-category="J100" data-city="Manacor" data-nation="ESP"
+            data-start="2027-02-01" data-km="1823"
+            data-basket="middle" data-format="KO"
+            data-cost-min="31000" data-cost-max="47000" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Manacor</strong> (ESP) · 1823 km (up to 2500 km), estimated from the country</span>
+              <span class="tag middle">middle</span>  
+              <span class="tag cost" title="transport €800 · accommodation €420 · food €290 · entry fee €90 · accommodation in the area · flights €650, local transport €145">€1,270–1,920</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Entered</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">We are going</button>
+              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
+              <span class="undo-hint">click again to undo</span>
+            </div>
+            <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li></ul>
+            <div class="reason" hidden>
+              <label>Why? <select data-role="reason-code">
+                <option value="">— choose a reason —</option>
+                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Note (optional)">
+              <button type="button" class="chip done-btn">Done</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Clear selection for this date</button>
+      </section>
+<section class="group" data-date="2027-02-02">
+        <div class="group-head">
+          <h3>2 Feb 2027</h3>
+          <span class="count">date</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>entry deadline 12 Jan 2027 at 15:00 Prague time</strong> — you can enter up to three tournaments. Then withdraw by 19 Jan 2027 at 15:00 Prague time; until then keep only one.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-AUS-2027-001" data-index="0"
+            data-category="J100" data-city="Burnie" data-nation="AUS"
+            data-start="2027-02-02" data-km="14196"
+            data-basket="middle" data-format="KO"
+            data-cost-min="52000" data-cost-max="78500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Burnie</strong> (AUS) · 14196 km (over 2500 km), estimated from the country</span>
+              <span class="tag middle">middle</span>  
+              <span class="tag cost" title="transport €1,890 · accommodation €450 · food €240 · entry fee €90 · accommodation in the area · flights €1,760, local transport €120">€2,120–3,200</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Entered</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">We are going</button>
+              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
+              <span class="undo-hint">click again to undo</span>
+            </div>
+            <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li></ul>
+            <div class="reason" hidden>
+              <label>Why? <select data-role="reason-code">
+                <option value="">— choose a reason —</option>
+                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Note (optional)">
+              <button type="button" class="chip done-btn">Done</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Clear selection for this date</button>
+      </section>
+<section class="group" data-date="2027-02-15">
+        <div class="group-head">
+          <h3>15 Feb 2027</h3>
+          <span class="count">date</span>
+          <span class="state-note"></span>
+        </div>
+        <p class="deadline"><strong>entry deadline 26 Jan 2027 at 15:00 Prague time</strong> — you can enter up to three tournaments. Then withdraw by 2 Feb 2027 at 15:00 Prague time; until then keep only one.</p>
+        <ul class="plan"><li class="option" data-key="J-J100-SVK-2027-001" data-index="0"
+            data-category="J100" data-city="Trnava" data-nation="SVK"
+            data-start="2027-02-15" data-km="398"
+            data-basket="middle" data-format="KO"
+            data-cost-min="15000" data-cost-max="22500" hidden>
+            <div class="head">
+              <span class="where"><strong>J100 Trnava</strong> (SVK) · 398 km (up to 400 km), estimated from the country</span>
+              <span class="tag middle">middle</span>  
+              <span class="tag cost" title="transport €120 · accommodation €280 · food €280 · entry fee €90 · accommodation in the area · fuel €100, tolls €25">€610–920</span>
+            </div>
+            <div class="actions">
+              <label class="chip entered">
+                <input type="checkbox" data-role="entered"><span>Entered</span>
+              </label>
+              <button type="button" class="chip go" data-role="going">We are going</button>
+              <button type="button" class="chip no" data-role="rejected">Definitely not going</button>
+              <span class="undo-hint">click again to undo</span>
+            </div>
+            <ul class="why"><li>basket: middle (J100)</li><li>this basket is missing from the plan (55 % below target)</li><li>nearby destination (SVK)</li></ul>
+            <div class="reason" hidden>
+              <label>Why? <select data-role="reason-code">
+                <option value="">— choose a reason —</option>
+                <option value="cost_distance">Distance or cost</option><option value="school">School</option><option value="injury">Injury or illness</option><option value="training_block">Training block</option><option value="needs_wins">Needs to play matches</option><option value="needs_points">Needs points</option><option value="level_too_high">Field too strong</option><option value="level_too_low">Field too weak</option><option value="surface">Surface</option><option value="federation_nomination">Federation nomination</option><option value="family">Family reasons</option><option value="joint_trip">Joint trip</option><option value="other">Other</option>
+              </select></label>
+              <input type="text" data-role="reason-note" placeholder="Note (optional)">
+              <button type="button" class="chip done-btn">Done</button>
+            </div>
+          </li></ul>
+        <button class="reset chip" type="button" hidden>Clear selection for this date</button>
+      </section>
+    </div>
 
-    <section class="block" id="te-block" data-default-age="16">
+    <section class="block" id="te-block" data-okruh="te" data-default-age="16">
     <h2>Tennis Europe</h2>
     <p class="muted">A separate list from ITF: no points-based recommendation and none of our entry deadlines — the deadline is on the tournament page. Add a tournament you will play to the weekly plan with the “+ Add to plan” button.</p>
     
-    <div class="te-ages"><button type="button" class="chip te-age" data-age="14">U14 (49)</button><button type="button" class="chip te-age" data-age="16">U16 (21)</button></div>
-    <ul class="plan te-list"><li class="te" data-te-key="TE-C509EFEA-2369-4B1C-8BA2-CA0527C4187B" data-ages="16"
-          data-start="2026-10-26" data-end="2026-10-31" data-name="Vilar International">
-        <div class="option-head"><strong>Vilar International</strong>
-          <span class="muted">26 Oct 2026–31 Oct 2026</span></div>
-        <div class="muted">Aizkraukle, Latvia · Carpet · Category 3 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C509EFEA-2369-4B1C-8BA2-CA0527C4187B" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-304541B6-24C6-45A9-806E-633242627228" data-ages="14,16"
-          data-start="2026-10-26" data-end="2026-11-01" data-name="Bad Waltersdorf Open 2026 - indoors">
-        <div class="option-head"><strong>Bad Waltersdorf Open 2026 - indoors</strong>
-          <span class="muted">26 Oct 2026–1 Nov 2026</span></div>
-        <div class="muted">Bad Waltersdorf, Austria · Carpet · Category 3 · up to 400 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=304541B6-24C6-45A9-806E-633242627228" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-50558A07-DEB3-4750-AE1A-95C515C51D4F" data-ages="14"
-          data-start="2026-10-26" data-end="2026-10-30" data-name="TE14 IRELAND 8">
-        <div class="option-head"><strong>TE14 IRELAND 8</strong>
-          <span class="muted">26 Oct 2026–30 Oct 2026</span></div>
-        <div class="muted">Wicklow, Ireland · Acryllic · Category 3 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=50558A07-DEB3-4750-AE1A-95C515C51D4F" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-0EDF3889-7C03-4427-B261-E5C54EC3B579" data-ages="14"
-          data-start="2026-10-26" data-end="2026-10-31" data-name="Haskovo Cup 14&amp;U">
-        <div class="option-head"><strong>Haskovo Cup 14&amp;U</strong>
-          <span class="muted">26 Oct 2026–31 Oct 2026</span></div>
-        <div class="muted">Haskovo, Bulgaria · Clay · Category 3 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=0EDF3889-7C03-4427-B261-E5C54EC3B579" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-0CDDA0F3-2067-4322-938E-0B90DEAFD490" data-ages="14"
-          data-start="2026-10-26" data-end="2026-11-01" data-name="SIROKI BRIJEG OPEN 14&amp;U 2026">
-        <div class="option-head"><strong>SIROKI BRIJEG OPEN 14&amp;U 2026</strong>
-          <span class="muted">26 Oct 2026–1 Nov 2026</span></div>
-        <div class="muted">SIROKI BRIJEG, Bosnia and Herzegovina · Acryllic · Category 3</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=0CDDA0F3-2067-4322-938E-0B90DEAFD490" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-1595C1E2-4A15-4B56-B17B-B11CD58AC463" data-ages="14"
-          data-start="2026-10-26" data-end="2026-11-01" data-name="VS Tennis Academy U14 Villingen Open">
-        <div class="option-head"><strong>VS Tennis Academy U14 Villingen Open</strong>
-          <span class="muted">26 Oct 2026–1 Nov 2026</span></div>
-        <div class="muted">Villingen-Schwenningen, Germany · Acryllic · Category 3 · up to 400 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1595C1E2-4A15-4B56-B17B-B11CD58AC463" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-9A39B4BB-3E09-49C8-98ED-8749F96C1DE8" data-ages="16"
-          data-start="2026-10-27" data-end="2026-11-01" data-name="XVII Vilas Tennis Academy Trophy U16">
-        <div class="option-head"><strong>XVII Vilas Tennis Academy Trophy U16</strong>
-          <span class="muted">27 Oct 2026–1 Nov 2026</span></div>
-        <div class="muted">Palmanova - Calvia, Spain · Clay · Category 2 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=9A39B4BB-3E09-49C8-98ED-8749F96C1DE8" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-7BAD7817-EEC9-4A70-843B-10173A065042" data-ages="14"
-          data-start="2026-10-27" data-end="2026-11-01" data-name="HNTA Open">
-        <div class="option-head"><strong>HNTA Open</strong>
-          <span class="muted">27 Oct 2026–1 Nov 2026</span></div>
-        <div class="muted">Szabolcsveresmart, Hungary · Acryllic · Category 2 · up to 1000 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=7BAD7817-EEC9-4A70-843B-10173A065042" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-4F42640A-EF8A-4BD9-A603-9FCE5F22ABF8" data-ages="14"
-          data-start="2026-11-02" data-end="2026-11-07" data-name="Kalymnos Cup 2026">
-        <div class="option-head"><strong>Kalymnos Cup 2026</strong>
-          <span class="muted">2 Nov 2026–7 Nov 2026</span></div>
-        <div class="muted">Kalymnos, Greece · Acryllic · Category 3 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=4F42640A-EF8A-4BD9-A603-9FCE5F22ABF8" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-8D96D7A4-AD04-4FAA-977A-EC491BEA6CFF" data-ages="14"
-          data-start="2026-11-02" data-end="2026-11-08" data-name="ATIK CUP">
-        <div class="option-head"><strong>ATIK CUP</strong>
-          <span class="muted">2 Nov 2026–8 Nov 2026</span></div>
-        <div class="muted">Antalya, Turkiye · Asphalt · Category 2 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=8D96D7A4-AD04-4FAA-977A-EC491BEA6CFF" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-898B957C-89DB-415D-B1D1-3A390A283DFA" data-ages="14"
-          data-start="2026-11-02" data-end="2026-11-08" data-name="Lexus Junior International Liverpool">
-        <div class="option-head"><strong>Lexus Junior International Liverpool</strong>
-          <span class="muted">2 Nov 2026–8 Nov 2026</span></div>
-        <div class="muted">Liverpool, Great Britain · Acryllic · Category 3 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=898B957C-89DB-415D-B1D1-3A390A283DFA" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-9D8C8CD6-8183-4CD6-BBC1-ACA9E07269A8" data-ages="14"
-          data-start="2026-11-02" data-end="2026-11-08" data-name="TE 14 - HAIFA (closed event)">
-        <div class="option-head"><strong>TE 14 - HAIFA (closed event)</strong>
-          <span class="muted">2 Nov 2026–8 Nov 2026</span></div>
-        <div class="muted">Haifa, Israel · Acryllic · Category 2</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=9D8C8CD6-8183-4CD6-BBC1-ACA9E07269A8" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-1DBCE8FB-549D-4DB1-AA1C-1F6FC2B88B86" data-ages="14"
-          data-start="2026-11-04" data-end="2026-11-08" data-name="Kozerki Cup">
-        <div class="option-head"><strong>Kozerki Cup</strong>
-          <span class="muted">4 Nov 2026–8 Nov 2026</span></div>
-        <div class="muted">Grodzisk Mazowiecki, Poland · Acryllic · Category 3 · up to 1000 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1DBCE8FB-549D-4DB1-AA1C-1F6FC2B88B86" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
-<li class="te" data-te-key="TE-7145CCA6-0D64-4FDA-A917-25AE37414E79" data-ages="16"
+    <div class="te-ages"><button type="button" class="chip te-age" data-age="14">U14 (41)</button><button type="button" class="chip te-age" data-age="16">U16 (19)</button></div>
+    <ul class="plan te-list"><li class="te" data-te-key="TE-7145CCA6-0D64-4FDA-A917-25AE37414E79" data-ages="16"
           data-start="2026-11-09" data-end="2026-11-14" data-name="Yokohama Open U16 - Main Draw RR to Elimination">
         <div class="option-head"><strong>Yokohama Open U16 - Main Draw RR to Elimination</strong>
           <span class="muted">9 Nov 2026–14 Nov 2026</span></div>
@@ -1191,7 +1029,7 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
           data-start="2026-11-09" data-end="2026-11-15" data-name="TE 14- TEL AVIV ROKAH ST (closed event)">
         <div class="option-head"><strong>TE 14- TEL AVIV ROKAH ST (closed event)</strong>
           <span class="muted">9 Nov 2026–15 Nov 2026</span></div>
-        <div class="muted">Tel-Aviv Yafo, Israel · Acryllic · Category 2</div>
+        <div class="muted">Tel-Aviv Yafo, Israel · Acryllic · Category 2 · over 2500 km (estimated from the country)</div>
         <div class="te-actions">
           <button type="button" class="chip go te-add">+ Add to plan</button>
           <a href="https://te.tournamentsoftware.com/sport/tournament?id=903480F6-55DB-4501-B014-F13DD75DCC96" target="_blank" rel="noopener">Tournament page and entry</a>
@@ -1347,21 +1185,11 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
           <a href="https://te.tournamentsoftware.com/sport/tournament?id=3C1CD1F8-C436-4BD1-93A8-0072F2A83ADB" target="_blank" rel="noopener">Tournament page and entry</a>
         </div>
       </li>
-<li class="te" data-te-key="TE-1239C4BB-D785-4FA3-B7D7-68CAB4936584" data-ages="14"
-          data-start="2027-01-04" data-end="2027-01-10" data-name="Tennis Europe de Marcq-en-Baroeul">
-        <div class="option-head"><strong>Tennis Europe de Marcq-en-Baroeul</strong>
-          <span class="muted">4 Jan 2027–10 Jan 2027</span></div>
-        <div class="muted">MARCQ EN BAROEUL, France · Acryllic · Category 2 · up to 2500 km (estimated from the country)</div>
-        <div class="te-actions">
-          <button type="button" class="chip go te-add">+ Add to plan</button>
-          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1239C4BB-D785-4FA3-B7D7-68CAB4936584" target="_blank" rel="noopener">Tournament page and entry</a>
-        </div>
-      </li>
 <li class="te" data-te-key="TE-27C55385-B300-4C22-9AAE-92CCD5606307" data-ages="14"
           data-start="2027-01-04" data-end="2027-01-10" data-name="TENNIS POINT 2027">
         <div class="option-head"><strong>TENNIS POINT 2027</strong>
           <span class="muted">4 Jan 2027–10 Jan 2027</span></div>
-        <div class="muted">BEOGRAD, Serbia · Clay · Category 3</div>
+        <div class="muted">BEOGRAD, Serbia · Clay · Category 3 · up to 1000 km (estimated from the country)</div>
         <div class="te-actions">
           <button type="button" class="chip go te-add">+ Add to plan</button>
           <a href="https://te.tournamentsoftware.com/sport/tournament?id=27C55385-B300-4C22-9AAE-92CCD5606307" target="_blank" rel="noopener">Tournament page and entry</a>
@@ -1375,6 +1203,16 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
         <div class="te-actions">
           <button type="button" class="chip go te-add">+ Add to plan</button>
           <a href="https://te.tournamentsoftware.com/sport/tournament?id=962F4165-1087-42DF-8773-91714B53E399" target="_blank" rel="noopener">Tournament page and entry</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-1239C4BB-D785-4FA3-B7D7-68CAB4936584" data-ages="14"
+          data-start="2027-01-05" data-end="2027-01-10" data-name="Tennis Europe de Marcq-en-Baroeul">
+        <div class="option-head"><strong>Tennis Europe de Marcq-en-Baroeul</strong>
+          <span class="muted">5 Jan 2027–10 Jan 2027</span></div>
+        <div class="muted">MARCQ EN BAROEUL, France · Acryllic · Category 2 · up to 2500 km (estimated from the country)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Add to plan</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=1239C4BB-D785-4FA3-B7D7-68CAB4936584" target="_blank" rel="noopener">Tournament page and entry</a>
         </div>
       </li>
 <li class="te" data-te-key="TE-79E325D4-48ED-4F5E-8E22-9293FA11C76E" data-ages="14"
@@ -1696,6 +1534,46 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
           <button type="button" class="chip go te-add">+ Add to plan</button>
           <a href="https://te.tournamentsoftware.com/sport/tournament?id=7309E00B-E18E-4929-913E-B4FDF7DFA59B" target="_blank" rel="noopener">Tournament page and entry</a>
         </div>
+      </li>
+<li class="te" data-te-key="TE-28D7214C-F22B-4F0D-805D-0E87033A8DFC" data-ages="16"
+          data-start="2027-03-01" data-end="2027-03-07" data-name="EXALCO CUP">
+        <div class="option-head"><strong>EXALCO CUP</strong>
+          <span class="muted">1 Mar 2027–7 Mar 2027</span></div>
+        <div class="muted">Larissa, Greece · Clay · Category 3 · up to 2500 km (estimated from the country)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Add to plan</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=28D7214C-F22B-4F0D-805D-0E87033A8DFC" target="_blank" rel="noopener">Tournament page and entry</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-D9B63E84-77D1-469F-94B2-0E60E7040D52" data-ages="14"
+          data-start="2027-03-01" data-end="2027-03-06" data-name="Cup der Nordverbände 2027">
+        <div class="option-head"><strong>Cup der Nordverbände 2027</strong>
+          <span class="muted">1 Mar 2027–6 Mar 2027</span></div>
+        <div class="muted">Isernhagen, Germany · Acryllic · Category 3 · up to 400 km (estimated from the country)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Add to plan</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=D9B63E84-77D1-469F-94B2-0E60E7040D52" target="_blank" rel="noopener">Tournament page and entry</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-C9AB8A73-AFB9-44C0-B7E2-A8FC0908E639" data-ages="14"
+          data-start="2027-03-01" data-end="2027-03-07" data-name="Kungens Kanna &amp; Drottningens Pris">
+        <div class="option-head"><strong>Kungens Kanna &amp; Drottningens Pris</strong>
+          <span class="muted">1 Mar 2027–7 Mar 2027</span></div>
+        <div class="muted">Stockholm, Sweden · Acryllic · Super Category · up to 2500 km (estimated from the country)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Add to plan</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=C9AB8A73-AFB9-44C0-B7E2-A8FC0908E639" target="_blank" rel="noopener">Tournament page and entry</a>
+        </div>
+      </li>
+<li class="te" data-te-key="TE-4B5C1215-7EE0-49CE-828B-F8B72DBA61E1" data-ages="14"
+          data-start="2027-03-02" data-end="2027-03-07" data-name="32º AZORES / LAWN TENNIS CLUB TOURNAMENT 14 &amp; UNDER - 2027">
+        <div class="option-head"><strong>32º AZORES / LAWN TENNIS CLUB TOURNAMENT 14 &amp; UNDER - 2027</strong>
+          <span class="muted">2 Mar 2027–7 Mar 2027</span></div>
+        <div class="muted">Angra Do Heroismo, Portugal · Acryllic · Category 2 · up to 2500 km (estimated from the country)</div>
+        <div class="te-actions">
+          <button type="button" class="chip go te-add">+ Add to plan</button>
+          <a href="https://te.tournamentsoftware.com/sport/tournament?id=4B5C1215-7EE0-49CE-828B-F8B72DBA61E1" target="_blank" rel="noopener">Tournament page and entry</a>
+        </div>
       </li></ul>
   </section>
 
@@ -1712,14 +1590,15 @@ footer { margin-top: 40px; color: #80868f; font-size: 12px; }
   <span class="hint" id="send-note"></span>
 </div>
 <footer>
-  ITF data as of 24 Oct 2026 · calendar of 186 tournaments for the next 4 months · recommendations respect the ITF entry deadlines and the distance from Prague.<br>
+  ITF data as of 3 Nov 2026 · calendar of 158 tournaments for the next 4 months · recommendations respect the ITF entry deadlines and the distance from Prague.<br>
   Each date has up to three options; once you tick “We are going”, the others disappear. The selection is kept only in this browser — it will be stored permanently once sending the plan back is ready.<br><br>
   This overview was created in collaboration with AI. It may contain inaccuracies.
 </footer>
 </div><script>
 var HRAC = "Demo Player";
-var S = {"locale":"en-GB","lang":"en","dow":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"conflict":"Clash: ","syncPulled":"Changes from another device loaded, ","fbButton":"Feedback","fbTitle":"Send us a comment","fbIntro":"What do you dislike, what is missing or what does not work? A few words are enough, the coach will read it.","fbKinds":{"chyba":"Bug","napad":"Idea","otazka":"Question","jine":"Other"},"fbSend":"Send","fbSendMail":"Send by e-mail","fbCancel":"Close","fbMail":"Cannot send? Write an e-mail","fbSubject":"Comment on the plan — ","fbEmpty":"Please write a few words.","fbSending":"Sending…","fbThanks":"Thank you, your comment has been sent.","fbFail":"Sending failed. Try again, or send an e-mail.","consentTitle":"Sharing with the coach","consentText":"To help improve the tournament recommendations, your tournament choices, reasons for declining, notes, conditions at tournaments and the weeks you enter (holiday, school, training) can be sent automatically to the coach, Jan Perutka. No name or contact details are sent, only the tournament data and the private link of this page. With sending on, your choices and the days you enter are also synchronised between your devices (just open the same link). Sending is voluntary and stays off until you turn it on. If you turn it off, the data already sent is deleted. The data is used only to improve the plan and is not passed on to anyone else.","consentLabel":"I agree to send this to the coach","syncOff":"Sending is off.","syncWait":"Sending…","syncOk":"Sent ","syncOffline":"Waiting for a connection, it will be sent later.","syncFail":"Sending failed, it will be retried on the next change.","deleted":"Turned off, the data already sent has been deleted.","deletePending":"Turned off, the data already sent will be deleted once you are online.","months":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"curPrefix":"CZK ","curSuffix":"","going":"Selected: ","entered":"Entered: ","of":" of ","reportHead":" — feedback on the plan (","weeksTitle":"Weeks entered by the parent:","goingLabel":"WE ARE GOING","notGoingLabel":"NOT GOING","reason":" · reason: ","conditionsTitle":"Conditions at tournaments:","costTitle":"Estimated cost of the selected tournaments: ","costExcl":" (excluding federation trips)","copied":"Copied to the clipboard, opening e-mail.","opening":"Opening e-mail.","subject":"Tournament plan — ","tournament":["tournament","tournaments","tournaments"],"selected":"Selected ","allPaid":" · all paid by the federation","costEst":" · estimated cost ","fedNote":" (federation trips are not counted)","added":"Added · ","delTitle":"Delete the whole entry","delLabel":"Delete entry","blockedPre":"This week has: ","blockedPost":" — tournament suggestions are hidden.","rejected":"Rejected: ","rejectedMark":"✕ ","undoCollapse":"undo","teAdd":"+ Add to plan","teIn":"In plan ✓","types":{"dovolena":"Holiday","skola":"School","fyzicka":"Physical training","tenis":"Tennis training","jine":"Other","te":"Tennis Europe tournament"}};
-var BUILD = "2026-10-24";
+var OK = {"all":["itf","te","cts"],"available":["itf","te"],"defaults":["itf","te"],"choose":true};
+var S = {"locale":"en-GB","lang":"en","dow":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"conflict":"Clash: ","syncPulled":"Changes from another device loaded, ","fbButton":"Feedback","fbTitle":"Send us a comment","fbIntro":"What do you dislike, what is missing or what does not work? A few words are enough, the coach will read it.","fbKinds":{"chyba":"Bug","napad":"Idea","otazka":"Question","jine":"Other"},"fbSend":"Send","fbSendMail":"Send by e-mail","fbCancel":"Close","fbMail":"Cannot send? Write an e-mail","fbSubject":"Comment on the plan — ","fbEmpty":"Please write a few words.","fbSending":"Sending…","fbThanks":"Thank you, your comment has been sent.","fbFail":"Sending failed. Try again, or send an e-mail.","consentTitle":"Sharing with the coach","consentText":"To help improve the tournament recommendations, your tournament choices, reasons for declining, notes, conditions at tournaments and the weeks you enter (holiday, school, training) can be sent automatically to the coach, Jan Perutka. No name or contact details are sent, only the tournament data and the private link of this page. With sending on, your choices and the days you enter are also synchronised between your devices (just open the same link). Sending is voluntary and stays off until you turn it on. If you turn it off, the data already sent is deleted. The data is used only to improve the plan and is not passed on to anyone else.","consentLabel":"I agree to send this to the coach","syncOff":"Sending is off.","syncWait":"Sending…","syncOk":"Sent ","syncOffline":"Waiting for a connection, it will be sent later.","syncFail":"Sending failed, it will be retried on the next change.","deleted":"Turned off, the data already sent has been deleted.","deletePending":"Turned off, the data already sent will be deleted once you are online.","months":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"curPrefix":"€","curSuffix":"","curRate":24.5,"curStep":10,"going":"Selected: ","entered":"Entered: ","of":" of ","reportHead":" — feedback on the plan (","weeksTitle":"Weeks entered by the parent:","goingLabel":"WE ARE GOING","notGoingLabel":"NOT GOING","reason":" · reason: ","conditionsTitle":"Conditions at tournaments:","costTitle":"Estimated cost of the selected tournaments: ","costExcl":" (excluding federation trips)","copied":"Copied to the clipboard, opening e-mail.","opening":"Opening e-mail.","subject":"Tournament plan — ","tournament":["tournament","tournaments","tournaments"],"selected":"Selected ","allPaid":" · all paid by the federation","costEst":" · estimated cost ","fedNote":" (federation trips are not counted)","added":"Added · ","delTitle":"Delete the whole entry","delLabel":"Delete entry","blockedPre":"This week has: ","blockedPost":" — tournament suggestions are hidden.","rejected":"Rejected: ","rejectedMark":"✕ ","undoCollapse":"undo","teAdd":"+ Add to plan","teIn":"In plan ✓","okBar":"Circuits: ","okChange":"Change","okTitle":"Where do you want to play?","okIntro":"Choose the circuits the plan is built from. You can pick several, and their tournaments then show side by side. You can change this at any time.","okSave":"Save","okSoon":"soon","okNames":{"itf":"ITF Juniors","te":"Tennis Europe","cts":"Czech tournaments (CTF)"},"okDesc":{"itf":"International ITF junior tournaments (J30 to J500) with a recommendation based on the player level.","te":"Tennis Europe tournaments for the U14 and U16 age groups.","cts":"Czech Tennis Federation tournaments from baby tennis to adults. Data is being prepared."},"types":{"dovolena":"Holiday","skola":"School","fyzicka":"Physical training","tenis":"Tennis training","jine":"Other","te":"Tennis Europe tournament"}};
+var BUILD = "2026-11-03";
 var EMAIL = "jperutka@proton.me";
 /**
  * Slučování záznamů rodiče z více zařízení (synchronizace). Stejný soubor běží na serveru
@@ -1731,6 +1610,7 @@ var EMAIL = "jperutka@proton.me";
  *   feedback: { <klíč>: { d: { duvod, poznamka, hotovo, ... } | null, t } }   (null = smazáno)
  *   weeks:    [ { id, od, do, typ, te?, poznamka?, dny, t } ]                    (živé položky)
  *   tombs:    { <id týdne>: ISO čas smazání }
+ *   prefs:    { okruhy: { v: ['itf', 'te'], t: ISO čas } }                       (nastavení hráče)
  *
  * Pravidlo: u každé položky vyhrává novější změna (`t`), při shodě rozhoduje stabilní porovnání
  * obsahu, takže výsledek nezávisí na pořadí slučování (komutativní, idempotentní).
@@ -1738,7 +1618,7 @@ var EMAIL = "jperutka@proton.me";
  */
 var PlanMerge = (function () {
   function emptyDoc() {
-    return { state: {}, feedback: {}, weeks: [], tombs: {} };
+    return { state: {}, feedback: {}, weeks: [], tombs: {}, prefs: {} };
   }
 
   function normalize(doc) {
@@ -1747,7 +1627,8 @@ var PlanMerge = (function () {
       state: d.state && typeof d.state === 'object' ? d.state : {},
       feedback: d.feedback && typeof d.feedback === 'object' ? d.feedback : {},
       weeks: Array.isArray(d.weeks) ? d.weeks : [],
-      tombs: d.tombs && typeof d.tombs === 'object' ? d.tombs : {}
+      tombs: d.tombs && typeof d.tombs === 'object' ? d.tombs : {},
+      prefs: d.prefs && typeof d.prefs === 'object' ? d.prefs : {}
     };
   }
 
@@ -1799,7 +1680,7 @@ var PlanMerge = (function () {
       .map(function (id) { return byId[id]; })
       .sort(function (p, q) { return (p.od || '') < (q.od || '') ? -1 : (p.od || '') > (q.od || '') ? 1 : (p.id < q.id ? -1 : 1); });
 
-    return { state: mergeMap(x.state, y.state), feedback: mergeMap(x.feedback, y.feedback), weeks: weeks, tombs: tombs };
+    return { state: mergeMap(x.state, y.state), feedback: mergeMap(x.feedback, y.feedback), weeks: weeks, tombs: tombs, prefs: mergeMap(x.prefs, y.prefs) };
   }
 
   function sameDoc(a, b) {
@@ -1858,6 +1739,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PlanMerge;
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
     stamp();
     scheduleSync();
+    refreshCross();
   }
 
   function apply(group) {
@@ -2184,7 +2066,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PlanMerge;
   }
 
   function money(min, max) {
-    return S.curPrefix + min.toLocaleString(S.locale) + '–' + max.toLocaleString(S.locale) + S.curSuffix;
+    var conv = function (v) { return Math.round(v / S.curRate / S.curStep) * S.curStep; };
+    return S.curPrefix + conv(min).toLocaleString(S.locale) + '–' + conv(max).toLocaleString(S.locale) + S.curSuffix;
   }
 
   function isoToDate(iso) { return new Date(iso + 'T00:00:00Z'); }
@@ -2336,6 +2219,13 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PlanMerge;
         var t = TYPY_TYDNE[w.typ];
         return w.te !== li.dataset.teKey && t && t.blokuje && w.od <= li.dataset.end && w['do'] >= li.dataset.start;
       }).map(function (w) { return TYPY_TYDNE[w.typ].label; });
+      // Kolize napříč okruhy: ITF turnaj, na který se jede nebo je přihlášeno.
+      document.querySelectorAll('.option').forEach(function (o) {
+        var st = state[o.dataset.key];
+        if ((st === 'going' || st === 'entered') && o.dataset.start <= li.dataset.end && addDaysIso(o.dataset.start, 6) >= li.dataset.start) {
+          clash.push('ITF ' + o.dataset.category + ' ' + o.dataset.city);
+        }
+      });
       var tag = li.querySelector('.te-conflict');
       if (clash.length && !tag) {
         tag = document.createElement('span');
@@ -2380,8 +2270,111 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PlanMerge;
     });
   }
 
+  /* ---- okruhy: z čeho se skládá plán (ITF, Tennis Europe, později české turnaje) ---- */
+  function okruhyRead() {
+    var v = doc.prefs && doc.prefs.okruhy && doc.prefs.okruhy.v;
+    var list = Array.isArray(v) ? v.filter(function (id) { return OK.available.indexOf(id) >= 0; }) : [];
+    return list.length ? list : OK.defaults;
+  }
+
+  function okruhyHasChoice() {
+    return !!(doc.prefs && doc.prefs.okruhy);
+  }
+
+  function okruhyApply() {
+    var chosen = okruhyRead();
+    document.querySelectorAll('[data-okruh]').forEach(function (n) {
+      n.classList.toggle('okruh-off', chosen.indexOf(n.dataset.okruh) < 0);
+    });
+    var label = document.getElementById('okruhy-bar-text');
+    if (label) label.textContent = S.okBar + chosen.map(function (id) { return S.okNames[id]; }).join(' · ');
+  }
+
+  function okruhySave(list) {
+    if (!doc.prefs) doc.prefs = {};
+    doc.prefs.okruhy = { v: list, t: nowIso() };
+    try { localStorage.setItem(DOC_KEY, JSON.stringify(doc)); } catch (e) {}
+    scheduleSync();
+    okruhyApply();
+  }
+
+  function buildOkruhyUi() {
+    var bar = document.getElementById('okruhy-bar');
+    if (!bar || !OK.choose) return;
+    bar.innerHTML = '<span id="okruhy-bar-text"></span> <button type="button" class="chip" id="okruhy-change"></button>';
+    bar.querySelector('#okruhy-change').textContent = S.okChange;
+
+    var sheet = document.createElement('div');
+    sheet.className = 'fb-sheet';
+    sheet.hidden = true;
+    var cards = OK.all.map(function (id) {
+      var soon = OK.available.indexOf(id) < 0;
+      return '<label class="circuit-card' + (soon ? ' soon' : '') + '"><input type="checkbox" value="' + id + '"' + (soon ? ' disabled' : '') + '>' +
+        '<span><span class="circuit-name"></span><span class="circuit-desc"></span></span></label>';
+    }).join('');
+    sheet.innerHTML = '<div class="fb-card" role="dialog" aria-modal="true"><h2></h2><p class="hint ok-intro"></p>' + cards +
+      '<div class="fb-actions"><button type="button" class="chip fb-send primary" id="ok-save"></button></div></div>';
+    sheet.querySelector('h2').textContent = S.okTitle;
+    sheet.querySelector('.ok-intro').textContent = S.okIntro;
+    sheet.querySelector('#ok-save').textContent = S.okSave;
+    [].slice.call(sheet.querySelectorAll('.circuit-card')).forEach(function (card, i) {
+      var id = OK.all[i];
+      card.querySelector('.circuit-name').textContent = S.okNames[id] + (OK.available.indexOf(id) < 0 ? ' · ' + S.okSoon : '');
+      card.querySelector('.circuit-desc').textContent = S.okDesc[id];
+    });
+    document.body.appendChild(sheet);
+
+    var boxes = [].slice.call(sheet.querySelectorAll('input[type=checkbox]'));
+    var saveBtn = sheet.querySelector('#ok-save');
+    function ticked() { return boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; }); }
+    function open() {
+      var now = okruhyRead();
+      boxes.forEach(function (b) { b.checked = now.indexOf(b.value) >= 0; });
+      saveBtn.disabled = !ticked().length;
+      sheet.hidden = false;
+    }
+    function close() {
+      var list = ticked();
+      okruhySave(list.length ? list : okruhyRead());
+      sheet.hidden = true;
+    }
+    sheet.addEventListener('change', function () { saveBtn.disabled = !ticked().length; });
+    saveBtn.addEventListener('click', close);
+    sheet.addEventListener('click', function (e) { if (e.target === sheet) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sheet.hidden) close(); });
+    bar.querySelector('#okruhy-change').addEventListener('click', open);
+    // První otevření: rodič se zeptá, kde chce hrát. Zavření bez změny uloží výchozí volbu.
+    if (!okruhyHasChoice()) open();
+  }
+
+  /* ---- kolize napříč okruhy: ITF turnaj, který se kryje s Tennis Europe v plánu ---- */
+  function crossClash() {
+    document.querySelectorAll('.option').forEach(function (li) {
+      var end = addDaysIso(li.dataset.start, 6);
+      var names = ownWeeks.filter(function (w) {
+        return w.te && w.od <= end && w['do'] >= li.dataset.start;
+      }).map(function (w) { return w.poznamka || S.types.te; });
+      var head = li.querySelector('.head');
+      var tag = li.querySelector('.itf-te-conflict');
+      if (names.length && !tag && head) {
+        tag = document.createElement('span');
+        tag.className = 'tag te-conflict itf-te-conflict';
+        head.appendChild(tag);
+      }
+      if (tag) {
+        tag.hidden = !names.length;
+        tag.textContent = S.conflict + names.join(', ');
+      }
+    });
+  }
+
+  function refreshCross() {
+    teApply();
+    crossClash();
+  }
+
   var syncWeeksBase = syncWeeks;
-  syncWeeks = function () { syncWeeksBase(); teApply(); };
+  syncWeeks = function () { syncWeeksBase(); teApply(); crossClash(); okruhyApply(); };
 
 
   /* ---- plovoucí tlačítko: připomínky rodičů ---- */
@@ -2650,5 +2643,6 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PlanMerge;
   if (consent.on) doSync();
 
   syncWeeks();
+  buildOkruhyUi();
 })();
 </script></body></html>
